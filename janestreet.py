@@ -2,7 +2,7 @@ from pyscipopt import Model
 import numpy as np
 
 model = Model("JaneStreet")  # model name is optional
-max_val = 137 #The solution on the website has value 137
+max_val = 140 #The solution on the website has value 137
 filename = "test"
 
 def create_magic_square_vars(model, max_val, square_number):
@@ -14,14 +14,14 @@ def create_magic_square_vars(model, max_val, square_number):
                 square[i,j,l] = model.addVar(f"sq{square_number}_{i}_{j}_{l+1}", vtype="BINARY",obj=l+1)
     return square
 
-def add_almost_magic_square_const(model, max_val, square):
+def add_almost_magic_square_const(model, max_val, square, square_number):
     for i in range(3):
         for j in range(3):
             # Wieso kommt hier kein echtes XOR raus?
             model.addConsXor(square[i,j],True)
             model.addConsCardinality(square[i,j],1)
 
-    magic_num = model.addVar(vtype="I")
+    magic_num = model.addVar(vtype="I", name=f"magic{square_number}")
     for i in range(3):
         row = 0
         col = 0
@@ -60,7 +60,7 @@ for l in range(max_val):
     model.addConsCardinality(vars.flatten(), 1)
 
 # Set current limit, as the website states that there exists a solution with value 1111
-model.setObjlimit(1111)
+# model.setObjlimit(1111)
 
 # Link the squares
 for l in range(max_val):
@@ -73,19 +73,20 @@ for l in range(max_val):
     square3[2,1,l] = square4[0,2,l]
     square2[2,2,l] = square4[1,0,l]
 
-add_almost_magic_square_const(model, max_val, square1)
-add_almost_magic_square_const(model, max_val, square2)
-add_almost_magic_square_const(model, max_val, square3)
-add_almost_magic_square_const(model, max_val, square4)
+add_almost_magic_square_const(model, max_val, square1, 1)
+add_almost_magic_square_const(model, max_val, square2, 2)
+add_almost_magic_square_const(model, max_val, square3, 3)
+add_almost_magic_square_const(model, max_val, square4, 4)
 
 sol = model.readSolFile("KnownSol.sol")
-model.trySol(sol)
+# model.trySol(sol, completely=True)
 
 maxthr = model.getParam("parallel/maxnthreads")
 model.setParam("parallel/minnthreads", 3)
 minthr = model.getParam("parallel/minnthreads")
 print(f"Minimum/Maxium number of threads:{minthr}/{maxthr}")
 model.solveConcurrent()
+model.optimize()
 sol = model.getBestSol()
 print("Optimal value:", model.getObjVal())
 model.writeBestSol(filename=f"{filename}.sol")
