@@ -2,7 +2,7 @@ from pyscipopt import Model
 import numpy as np
 
 model = Model("JaneStreet")  # model name is optional
-max_val = 140 #The solution on the website has value 137
+max_val = 137 #The solution on the website has value 137
 filename = "test"
 
 def create_magic_square_vars(model, max_val, square_number):
@@ -78,15 +78,20 @@ add_almost_magic_square_const(model, max_val, square2, 2)
 add_almost_magic_square_const(model, max_val, square3, 3)
 add_almost_magic_square_const(model, max_val, square4, 4)
 
+model.presolve()
+# Model muss in gewisser Stage sein, damit trySol funktioniert
 sol = model.readSolFile("KnownSol.sol")
-# model.trySol(sol, completely=True)
+print(model.getStage())
+input()
+
+model.trySol(sol, completely=True)
 
 maxthr = model.getParam("parallel/maxnthreads")
 model.setParam("parallel/minnthreads", 3)
 minthr = model.getParam("parallel/minnthreads")
 print(f"Minimum/Maxium number of threads:{minthr}/{maxthr}")
 model.solveConcurrent()
-model.optimize()
+# model.optimize()
 sol = model.getBestSol()
 print("Optimal value:", model.getObjVal())
 model.writeBestSol(filename=f"{filename}.sol")
