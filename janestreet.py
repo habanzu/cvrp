@@ -3,7 +3,7 @@ import numpy as np
 
 model = Model("JaneStreet")  # model name is optional
 max_val = 137 #The solution on the website has value 137
-filename = "test"
+filename = "puzzle1"
 
 def create_magic_square_vars(model, max_val, square_number):
     square = np.empty((3,3,max_val),dtype=object)
@@ -60,7 +60,7 @@ for l in range(max_val):
     model.addConsCardinality(vars.flatten(), 1)
 
 # Set current limit, as the website states that there exists a solution with value 1111
-# model.setObjlimit(1111)
+model.setObjlimit(1111)
 
 # Link the squares
 for l in range(max_val):
@@ -81,8 +81,6 @@ add_almost_magic_square_const(model, max_val, square4, 4)
 model.presolve()
 # Model muss in gewisser Stage sein, damit trySol funktioniert
 sol = model.readSolFile("KnownSol.sol")
-print(model.getStage())
-input()
 
 model.trySol(sol, completely=True)
 
