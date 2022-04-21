@@ -2,8 +2,8 @@ from pyscipopt import Model
 import numpy as np
 
 model = Model("JaneStreet")  # model name is optional
-max_val = 41 #The solution on the website has value 137, I have found a solution with 41
-filename = "test"
+max_val = 102 #There is a known solution with value 480. Therefore with Gaußscher Summenformel it follows, that variables must be less thant 102
+filename = "proveOptimality"
 
 def create_magic_square_vars(model, max_val, square_number):
     square = np.empty((3,3,max_val),dtype=object)
