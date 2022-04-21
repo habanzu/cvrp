@@ -2,8 +2,8 @@ from pyscipopt import Model
 import numpy as np
 
 model = Model("JaneStreet")  # model name is optional
-max_val = 137 #The solution on the website has value 137
-filename = "puzzle1"
+max_val = 45 #The solution on the website has value 137, I have found a solution with 45
+filename = "test"
 
 def create_magic_square_vars(model, max_val, square_number):
     square = np.empty((3,3,max_val),dtype=object)
@@ -17,9 +17,12 @@ def create_magic_square_vars(model, max_val, square_number):
 def add_almost_magic_square_const(model, max_val, square, square_number):
     for i in range(3):
         for j in range(3):
+            # Constraint als Summe formuliert, dann sind es weniger Constraints
+            model.addCons(sum(square[i,j]) == 1)
+
             # Wieso kommt hier kein echtes XOR raus?
-            model.addConsXor(square[i,j],True)
-            model.addConsCardinality(square[i,j],1)
+            # model.addConsXor(square[i,j],True)
+            # model.addConsCardinality(square[i,j],1)
 
     magic_num = model.addVar(vtype="I", name=f"magic{square_number}")
     for i in range(3):
@@ -80,7 +83,7 @@ add_almost_magic_square_const(model, max_val, square4, 4)
 
 model.presolve()
 # Model muss in gewisser Stage sein, damit trySol funktioniert
-sol = model.readSolFile("KnownSol.sol")
+sol = model.readSolFile("puzzle.sol")
 
 model.trySol(sol, completely=True)
 
