@@ -2,7 +2,7 @@ from pyscipopt import Model
 import numpy as np
 
 model = Model("JaneStreet")  # model name is optional
-max_val = 45 #The solution on the website has value 137, I have found a solution with 45
+max_val = 41 #The solution on the website has value 137, I have found a solution with 41
 filename = "test"
 
 def create_magic_square_vars(model, max_val, square_number):
@@ -24,6 +24,7 @@ def add_almost_magic_square_const(model, max_val, square, square_number):
             # model.addConsXor(square[i,j],True)
             # model.addConsCardinality(square[i,j],1)
 
+    # Add constraints for each row
     magic_num = model.addVar(vtype="I", name=f"magic{square_number}")
     for i in range(3):
         row = 0
@@ -36,6 +37,14 @@ def add_almost_magic_square_const(model, max_val, square, square_number):
         model.addCons(col <= magic_num)
         model.addCons(col >= magic_num - 1)
 
+    # Add constraints for total square
+    total_sum = 0
+    for l in range(max_val):
+        total_sum += (l+1)*square[:,:,l].sum()
+    total_sum -= 3*magic_num
+    model.addCons(total_sum <= 0)
+    # model.addCons(total_sum - 3*magic_sum>= - 3)
+
 
     diag1 = 0
     diag2 = 0
@@ -47,6 +56,8 @@ def add_almost_magic_square_const(model, max_val, square, square_number):
     model.addCons(diag1 >= magic_num - 1)
     model.addCons(diag2 <= magic_num)
     model.addCons(diag2 >= magic_num - 1)
+
+    return magic_num
 
 # Upper square
 square1 = create_magic_square_vars(model, max_val, 1)
@@ -63,7 +74,6 @@ for l in range(max_val):
     model.addConsCardinality(vars.flatten(), 1)
 
 # Set current limit, as the website states that there exists a solution with value 1111
-model.setObjlimit(1111)
 
 # Link the squares
 for l in range(max_val):
@@ -76,10 +86,16 @@ for l in range(max_val):
     square3[2,1,l] = square4[0,2,l]
     square2[2,2,l] = square4[1,0,l]
 
-add_almost_magic_square_const(model, max_val, square1, 1)
-add_almost_magic_square_const(model, max_val, square2, 2)
-add_almost_magic_square_const(model, max_val, square3, 3)
-add_almost_magic_square_const(model, max_val, square4, 4)
+magic1 = add_almost_magic_square_const(model, max_val, square1, 1)
+magic2 = add_almost_magic_square_const(model, max_val, square2, 2)
+magic3 = add_almost_magic_square_const(model, max_val, square3, 3)
+magic4 = add_almost_magic_square_const(model, max_val, square4, 4)
+
+#Add symmetry breaking constraint for magic numbers
+model.addCons(magic4 <= magic1)
+model.addCons(magic4 <= magic2)
+model.addCons(magic4 <= magic3)
+model.addCons(magic2 <= magic3)
 
 model.presolve()
 # Model muss in gewisser Stage sein, damit trySol funktioniert
