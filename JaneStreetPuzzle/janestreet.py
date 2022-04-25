@@ -3,7 +3,7 @@ import numpy as np
 
 model = Model("JaneStreet")  # model name is optional
 max_val = 102 #There is a known solution with value 480. Therefore with Gaußscher Summenformel it follows, that variables must be less thant 102
-filename = "proveOptimality"
+filename = "test"
 
 def create_magic_square_vars(model, max_val, square_number):
     square = np.empty((3,3,max_val),dtype=object)
@@ -17,15 +17,11 @@ def create_magic_square_vars(model, max_val, square_number):
 def add_almost_magic_square_const(model, max_val, square, square_number):
     for i in range(3):
         for j in range(3):
-            # Constraint als Summe formuliert, dann sind es weniger Constraints
-            model.addCons(sum(square[i,j]) == 1)
-
-            # Wieso kommt hier kein echtes XOR raus?
-            # model.addConsXor(square[i,j],True)
-            # model.addConsCardinality(square[i,j],1)
+            model.addConsXor(square[i,j].flatten(), True)
 
     # Add constraints for each row
     magic_num = model.addVar(vtype="I", name=f"magic{square_number}")
+    model.addCons(magic_num >= 0)
     for i in range(3):
         row = 0
         col = 0
@@ -41,9 +37,8 @@ def add_almost_magic_square_const(model, max_val, square, square_number):
     total_sum = 0
     for l in range(max_val):
         total_sum += (l+1)*square[:,:,l].sum()
-    total_sum -= 3*magic_num
-    model.addCons(total_sum <= 0)
-    # model.addCons(total_sum - 3*magic_sum>= - 3)
+    model.addCons(total_sum <= 3*magic_num)
+    model.addCons(total_sum >= 3*magic_num - 3)
 
 
     diag1 = 0
@@ -71,9 +66,7 @@ square4 = create_magic_square_vars(model, max_val, 4)
 # Add uniqueness constraints
 for l in range(max_val):
     vars = np.vstack((square1[:,:,l],square2[:,:,l],square3[:,:,l],square4[:,:,l]))
-    model.addConsCardinality(vars.flatten(), 1)
-
-# Set current limit, as the website states that there exists a solution with value 1111
+    model.addConsSOS1(vars.flatten())
 
 # Link the squares
 for l in range(max_val):
@@ -90,6 +83,19 @@ magic1 = add_almost_magic_square_const(model, max_val, square1, 1)
 magic2 = add_almost_magic_square_const(model, max_val, square2, 2)
 magic3 = add_almost_magic_square_const(model, max_val, square3, 3)
 magic4 = add_almost_magic_square_const(model, max_val, square4, 4)
+
+# Add cuts due to known solution
+left_over1, left_over2, left_over3, left_over4 = 0, 0, 0, 0
+for l in range(max_val):
+    left_over1 += (l+1)*(square1[2,1,l] + square2[1,2,l] + square3[1,0,l] + square4[0,1,l])
+    left_over2 += (l+1)*(square2[1,1,l] + square2[2,1,l] + square3[0,1,l] + square3[1,1,l])
+    left_over3 += (l+1)*(square1[1,:2,l].sum() + square4[1,1:,l].sum())
+    left_over4 += (l+1)*(square1[0,2,l] + square2[0,0,l] + square3[2,2,l] + square4[2,0,l])
+# rhs needs to be 8 higher, because magic can be 1 larger than the sum of the rows
+model.addCons(2*magic1 + 2*magic2 + 2*magic3 + 2*magic4 + left_over1 <= 488)
+model.addCons(2*magic1 + 2*magic2 + 2*magic3 + 2*magic4 + left_over4 <= 488)
+model.addCons(3*magic1 + magic2 + magic3 + 3*magic4 + left_over2 <= 488)
+model.addCons(magic1 + 3*magic2 + 3*magic3 + magic4 + left_over3 <= 488)
 
 #Add symmetry breaking constraint for magic numbers
 model.addCons(magic4 <= magic1)
