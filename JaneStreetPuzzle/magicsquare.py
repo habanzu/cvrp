@@ -39,8 +39,6 @@ for l in range(max_val):
 model.addCons(diag1 == magic_num)
 model.addCons(diag2 == magic_num)
 
-
-# model.setObjective(x + y)
 model.optimize()
 sol = model.getBestSol()
 print("Optimal value:", model.getObjVal())
