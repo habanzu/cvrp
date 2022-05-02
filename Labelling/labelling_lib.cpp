@@ -59,7 +59,8 @@ void labelling(double const * dual,const bool farkas, unsigned* result){
                 if(newload > capacity)
                     continue;
                 bool dominated = false;
-                double newcost = x->cost + edges[x->v][i] - dual[i-1];
+                double newcost = x->cost - dual[i-1];
+                newcost = farkas ? newcost: newcost + edges[x->v][i];
                 Label newlabel {i,x->v,newcost, newload, x};
                 for(auto& label: labels[i]){
                     if(label.dominates(newlabel)){
@@ -76,7 +77,8 @@ void labelling(double const * dual,const bool farkas, unsigned* result){
         }
 
         // Check if the path to the last node has negative reduced cost
-        double newcost = x->cost + edges[x->v][num_nodes - 1];
+        double newcost = x->cost - dual[num_nodes-1];
+        newcost = farkas ? newcost: newcost + edges[x->v][num_nodes - 1];
 
         if (newcost < 0){
             cout << "Found Path with negative reduced cost" << endl;
@@ -89,7 +91,6 @@ void labelling(double const * dual,const bool farkas, unsigned* result){
                     cout << "ERROR: Path length exceeds maximum." << endl;
                     break;
                 }
-                cout << "Current label is " << current_label->v << " and pred is " << current_label->pred << endl;
                 ++path_len;
                 current_label = current_label->pred_ptr;
             }
