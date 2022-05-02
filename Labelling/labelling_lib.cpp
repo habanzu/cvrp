@@ -10,7 +10,7 @@ using std::cout;
 using std::endl;
 
 vector<myProcessor> myProcessors;
-vector<unsigned> nodes;
+vector<double> nodes;
 vector<vector<double> > edges;
 unsigned num_nodes;
 double capacity;
@@ -21,30 +21,6 @@ bool Label::dominates(const Label& x){
     } else{
         return false;
     }
-}
-
-myProcessor::myProcessor(int size, double* data){
-    this->size = size;
-    this->data = data;
-}
-
-int myProcessor::process(double *d, int size){
-    for (int i=0; i<size; i++){
-        d[i] = d[i] * d[i];
-    }
-    return 0;
-}
-
-unsigned int myProcessorInit(int size, double* data){
-    unsigned int id;
-    myProcessor tmpInst(size, data);
-    myProcessors.push_back(tmpInst);
-    id = myProcessors.size() -1;
-    return id;
-}
-
-int myProcessorProcess(unsigned int id, double*d, int size){
-    return myProcessors[id].process(d,size);
 }
 
 void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity){
@@ -64,7 +40,6 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
         }
         edges.push_back(v);
     }
-    // Wo gehen prints hin mit cffi?
     cout << "Graph data successfully copied to C." << endl;
 }
 
@@ -76,20 +51,17 @@ void labelling(double const * dual,const bool farkas, unsigned* result){
     q.push(start);
 
     while(!q.empty()){
-        Label &x = q.front();
+        Label *x = &q.front();
         q.pop();
 
         for(unsigned i=1;i<num_nodes -1;++i){
-            if(i != x.v){
-                double newload = x.load + nodes[i];
+            if(i != x->v){
+                double newload = x->load + nodes[i];
                 if(newload > capacity)
                     continue;
                 bool dominated = false;
-                double newcost = x.cost + edges[x.v][i] - dual[i-1];
-                Label newlabel {i,x.v,newcost, newload, &x};
-                // newlabel.pred_ptr = &x;
-                // cout << "Created label at node " << newlabel.v << " and pred is " << newlabel.pred << endl;
-                // cout << "Otherwise pred_ptr points to " << (newlabel.pred_ptr)->v << endl;
+                double newcost = x->cost + edges[x->v][i] - dual[i-1];
+                Label newlabel {i,x->v,newcost, newload, x};
                 for(auto& label: labels[i]){
                     if(label.dominates(newlabel)){
                         dominated = true;
@@ -105,33 +77,34 @@ void labelling(double const * dual,const bool farkas, unsigned* result){
         }
 
         // Check if the path to the last node has negative reduced cost
-        double newcost = x.cost + edges[x.v][num_nodes - 1];
-        // cout << "current node before loop is " << x.v << " and pred is " << x.pred << endl;
-
+        double newcost = x->cost + edges[x->v][num_nodes - 1];
 
         if (newcost < 0){
             cout << "Found Path with negative reduced cost" << endl;
-            cout << "current node in loop is " << x.v << " and pred is " << x.pred << endl;
-            cout << "Otherwise pred_ptr points to " << (x.pred_ptr)->v << endl;
 
             unsigned path_len = 2;
-            Label& current_label = x;
-            while(current_label.pred != 0){
-                if(path_len >= capacity)
+            Label* current_label = x;
+            while(current_label->pred != 0){
+                // Path with capacity + 1 edges has visited capacity + 2 nodes, of which start and end node don't have a demand
+                if(path_len >= capacity + 1){
+                    cout << "ERROR: Path length exceeds maximum." << endl;
                     break;
+                }
+                cout << "Current label is " << current_label->v << " and pred is " << current_label->pred << endl;
                 ++path_len;
-                current_label = *(current_label.pred_ptr);
-                cout << "current node in path_len is " << current_label.v << " and pred is " << current_label.pred << endl;
-
+                current_label = current_label->pred_ptr;
             }
-            cout << "path length is " << path_len << endl;
 
             current_label = x;
             result[path_len - 1] = num_nodes - 1;
             result[0] = 0;
             for(unsigned i = path_len - 2; i > 0; --i){
-                result[i] = current_label.v;
-                current_label = *(current_label.pred_ptr);
+                result[i] = current_label->v;
+                if(current_label->v == 0){
+                    cout << "WARNING: Start label in path when writing result" << endl;
+                    break;
+                }
+                current_label = current_label->pred_ptr;
             }
 
             return;
