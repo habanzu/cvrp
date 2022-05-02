@@ -9,7 +9,6 @@ using std::queue;
 using std::cout;
 using std::endl;
 
-vector<myProcessor> myProcessors;
 vector<double> nodes;
 vector<vector<double> > edges;
 unsigned num_nodes;

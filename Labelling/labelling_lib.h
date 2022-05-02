@@ -1,13 +1,3 @@
-class myProcessor {
-protected:
-    int size;
-    double* data;
-
-public:
-    myProcessor(int size, double* data);
-    int process(double *d, int size);
-};
-
 struct Label{
     unsigned v;
     unsigned pred;
