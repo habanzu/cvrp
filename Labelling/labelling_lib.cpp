@@ -80,8 +80,8 @@ void labelling(double const * dual,const bool farkas, unsigned* result){
         double newcost = x->cost - dual[num_nodes-1];
         newcost = farkas ? newcost: newcost + edges[x->v][num_nodes - 1];
 
-        if (newcost < 0){
-            cout << "Found Path with negative reduced cost" << endl;
+        if ((newcost < 0) && (x->v != 0)){
+            // cout << "Found Path with negative reduced cost" << endl;
 
             unsigned path_len = 2;
             Label* current_label = x;
@@ -96,9 +96,9 @@ void labelling(double const * dual,const bool farkas, unsigned* result){
             }
 
             current_label = x;
-            result[path_len - 1] = num_nodes - 1;
+            result[path_len] = num_nodes - 1;
             result[0] = 0;
-            for(unsigned i = path_len - 2; i > 0; --i){
+            for(unsigned i = path_len - 1; i > 0; --i){
                 result[i] = current_label->v;
                 if(current_label->v == 0){
                     cout << "WARNING: Start label in path when writing result" << endl;
@@ -112,5 +112,6 @@ void labelling(double const * dual,const bool farkas, unsigned* result){
 
 
     }
-    cout << "There are not paths with negative reduced costs" << endl;
+    // cout << "There are not paths with negative reduced costs" << endl;
+    result[0] = 1;
 }
