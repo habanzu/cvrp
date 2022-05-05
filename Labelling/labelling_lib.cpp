@@ -49,6 +49,11 @@ void labelling(double const * dual,const bool farkas, unsigned* result){
     Label start {0,0,0,0};
     q.push(start);
 
+    cout << "PRICER_C: Capacity is " << capacity << endl;
+
+    double lowest_red_cost = 0;
+    bool success = false;
+
     while(!q.empty()){
         Label *x = &q.front();
         q.pop();
@@ -80,16 +85,18 @@ void labelling(double const * dual,const bool farkas, unsigned* result){
         double newcost = x->cost - dual[num_nodes-1];
         newcost = farkas ? newcost: newcost + edges[x->v][num_nodes - 1];
 
-        if ((newcost < 0) && (x->v != 0)){
+        if ((newcost < lowest_red_cost) && (x->v != 0)){
             // cout << "Found Path with negative reduced cost" << endl;
 
             unsigned path_len = 2;
             Label* current_label = x;
-            while(current_label->pred != 0){
+            cout << "PRICER_C: Found path with load " << x->load << endl;
+            while(current_label->pred > 0){
                 // Path with capacity + 1 edges has visited capacity + 2 nodes, of which start and end node don't have a demand
-                if(path_len >= capacity + 1){
-                    cout << "ERROR: Path length exceeds maximum." << endl;
-                    break;
+                cout << "Path is currently at node " << current_label->v << " with load " << nodes[current_label->v] << endl;
+                if(path_len > (capacity + 2)){
+                    cout << "ERROR: Path length exceeds maximum. Current value of path_len is " << path_len << endl;
+                    return;
                 }
                 ++path_len;
                 current_label = current_label->pred_ptr;
@@ -102,16 +109,18 @@ void labelling(double const * dual,const bool farkas, unsigned* result){
                 result[i] = current_label->v;
                 if(current_label->v == 0){
                     cout << "WARNING: Start label in path when writing result" << endl;
-                    break;
+                    return;
                 }
                 current_label = current_label->pred_ptr;
             }
-
-            return;
+            success = true;
         }
 
 
     }
-    // cout << "There are not paths with negative reduced costs" << endl;
-    result[0] = 1;
+
+    if(!success){
+        cout << "PRICER_C: There are no paths with negative reduced costs" << endl;
+        result[0] = 1;
+    }
 }
