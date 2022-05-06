@@ -1,5 +1,6 @@
 #include <vector>
 #include <queue>
+#include <list>
 #include <iostream>
 #include <cmath>
 #include "labelling_lib.h"
@@ -39,23 +40,22 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
         }
         edges.push_back(v);
     }
-    cout << "Graph data successfully copied to C." << endl;
+    cout << "PRICER_C: Graph data successfully copied to C." << endl;
 }
 
-void labelling(double const * dual,const bool farkas, unsigned* result){
-    queue<Label> q;
-    vector<vector<Label>> labels;
+void labelling(double const * dual, const bool farkas, unsigned* result){
+    queue<Label*> q;
+    vector<std::list<Label>> labels;
     labels.resize(num_nodes);
     Label start {0,0,0,0};
-    q.push(start);
+    labels[0].push_back(start);
+    q.push(&(labels[0].back()));
 
-    cout << "PRICER_C: Capacity is " << capacity << endl;
-
-    double lowest_red_cost = 0;
+    double lowest_red_cost = -1e-6;
     bool success = false;
 
     while(!q.empty()){
-        Label *x = &q.front();
+        Label* x = q.front();
         q.pop();
 
         for(unsigned i=1;i<num_nodes -1;++i){
@@ -66,7 +66,8 @@ void labelling(double const * dual,const bool farkas, unsigned* result){
                 bool dominated = false;
                 double newcost = x->cost - dual[i-1];
                 newcost = farkas ? newcost: newcost + edges[x->v][i];
-                Label newlabel {i,x->v,newcost, newload, x};
+                Label newlabel {i, x->v, newcost, newload, x};
+                // newlabel.pred_ptr = x;
                 for(auto& label: labels[i]){
                     if(label.dominates(newlabel)){
                         dominated = true;
@@ -74,8 +75,8 @@ void labelling(double const * dual,const bool farkas, unsigned* result){
                     }
                 }
                 if(!dominated){
-                    q.push(newlabel);
                     labels[i].push_back(newlabel);
+                    q.push(&(labels[i].back()));
                     // TODO: Hier könnte man prüfen, ob ein anderes Label dominiert wird und sich dieses deshalb entfernen lässt
                 }
             }
@@ -90,12 +91,10 @@ void labelling(double const * dual,const bool farkas, unsigned* result){
 
             unsigned path_len = 2;
             Label* current_label = x;
-            cout << "PRICER_C: Found path with load " << x->load << endl;
             while(current_label->pred > 0){
                 // Path with capacity + 1 edges has visited capacity + 2 nodes, of which start and end node don't have a demand
-                cout << "Path is currently at node " << current_label->v << " with load " << nodes[current_label->v] << endl;
                 if(path_len > (capacity + 2)){
-                    cout << "ERROR: Path length exceeds maximum. Current value of path_len is " << path_len << endl;
+                    cout << "PRICER_C ERROR: Path length exceeds maximum. Current value of path_len is " << path_len << endl;
                     return;
                 }
                 ++path_len;
@@ -108,19 +107,16 @@ void labelling(double const * dual,const bool farkas, unsigned* result){
             for(unsigned i = path_len - 1; i > 0; --i){
                 result[i] = current_label->v;
                 if(current_label->v == 0){
-                    cout << "WARNING: Start label in path when writing result" << endl;
+                    cout << "PRICER_C WARNING: Start label in path when writing result" << endl;
                     return;
                 }
                 current_label = current_label->pred_ptr;
             }
             success = true;
         }
-
-
     }
 
     if(!success){
-        cout << "PRICER_C: There are no paths with negative reduced costs" << endl;
         result[0] = 1;
     }
 }
