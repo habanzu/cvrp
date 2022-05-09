@@ -1,6 +1,7 @@
 .ipynb_checkpoints/
 22-04-15_Installation
 .DS_Store
+__pycache__
 
 # C++ Template gitignore
 
