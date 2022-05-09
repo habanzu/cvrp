@@ -58,7 +58,7 @@ void labelling(double const * dual, const bool farkas, unsigned* result){
         Label* x = q.front();
         q.pop();
 
-        for(unsigned i=1;i<num_nodes -1;++i){
+        for(unsigned i=1;i<num_nodes;++i){
             if(i != x->v){
                 double newload = x->load + nodes[i];
                 if(newload > capacity)
@@ -84,7 +84,7 @@ void labelling(double const * dual, const bool farkas, unsigned* result){
 
         // Check if the path to the last node has negative reduced cost
         double newcost = x->cost - dual[num_nodes-1];
-        newcost = farkas ? newcost: newcost + edges[x->v][num_nodes - 1];
+        newcost = farkas ? newcost: newcost + edges[x->v][0];
 
         if ((newcost < lowest_red_cost) && (x->v != 0)){
             // cout << "Found Path with negative reduced cost" << endl;
@@ -102,7 +102,7 @@ void labelling(double const * dual, const bool farkas, unsigned* result){
             }
 
             current_label = x;
-            result[path_len] = num_nodes - 1;
+            result[path_len] = 0;
             result[0] = 0;
             for(unsigned i = path_len - 1; i > 0; --i){
                 result[i] = current_label->v;
