@@ -15,12 +15,33 @@ vector<vector<double> > edges;
 unsigned num_nodes;
 double capacity;
 
-bool Label::dominates(const Label& x){
+bool Label::dominates(const Label& x, const bool elementary){
     if((this->cost <= x.cost) && (this->load <= x.load)){
+        if(!elementary)
+            return true;
+        if(x.v == 0  || this->v == 0)
+            cout << "PRICER_C ERROR: Dominance check on start label." << endl;
+        Label* own_pred = this->pred_ptr;
+        while(own_pred->v > 0){
+            if(!x.check_whether_in_path(own_pred->v))
+                return false;
+            own_pred = own_pred->pred_ptr;
+        }
         return true;
-    } else{
-        return false;
     }
+    return false;
+}
+
+bool Label::check_whether_in_path(const unsigned node) const{
+    if(node == 0)
+        cout << "PRICER_C ERROR: Path check with node 0." << endl;
+    const Label* current_label = this;
+    while(current_label->v > 0){
+        if(current_label->v == node)
+            return true;
+        current_label = current_label->pred_ptr;
+    }
+    return false;
 }
 
 void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity){
@@ -43,7 +64,7 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
     cout << "PRICER_C: Graph data successfully copied to C." << endl;
 }
 
-void labelling(double const * dual, const bool farkas, unsigned* result){
+void labelling(double const * dual, const bool farkas, const bool elementary, unsigned* result){
     queue<Label*> q;
     vector<std::list<Label>> labels;
     labels.resize(num_nodes);
@@ -59,6 +80,8 @@ void labelling(double const * dual, const bool farkas, unsigned* result){
         q.pop();
 
         for(unsigned i=1;i<num_nodes;++i){
+            if(elementary && x->check_whether_in_path(i))
+                continue;
             if(i != x->v){
                 double newload = x->load + nodes[i];
                 if(newload > capacity)
@@ -69,7 +92,7 @@ void labelling(double const * dual, const bool farkas, unsigned* result){
                 Label newlabel {i, x->v, newcost, newload, x};
                 // newlabel.pred_ptr = x;
                 for(auto& label: labels[i]){
-                    if(label.dominates(newlabel)){
+                    if(label.dominates(newlabel, elementary)){
                         dominated = true;
                         break;
                     }
