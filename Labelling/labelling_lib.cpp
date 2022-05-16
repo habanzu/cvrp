@@ -44,6 +44,21 @@ bool Label::check_whether_in_path(const unsigned node) const{
     return false;
 }
 
+unsigned Label::path_len(){
+    unsigned path_len = 2;
+    Label* current_label = this;
+    while(current_label->pred > 0){
+        // Path with capacity + 1 edges has visited capacity + 2 nodes, of which start and end node don't have a demand
+        if(path_len > (capacity + 2)){
+            cout << "PRICER_C ERROR: Path length exceeds maximum. Current value of path_len is " << path_len << endl;
+            return 0;
+        }
+        ++path_len;
+        current_label = current_label->pred_ptr;
+    }
+    return path_len;
+}
+
 void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity){
     ::num_nodes = num_nodes;
     ::capacity = capacity;
@@ -64,9 +79,10 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
     cout << "PRICER_C: Graph data successfully copied to C." << endl;
 }
 
-void labelling(double const * dual, const bool farkas, const bool elementary, unsigned* result){
+unsigned labelling(double const * dual, const bool farkas, const bool elementary, const int max_vars, unsigned* result){
     queue<Label*> q;
     vector<std::list<Label>> labels;
+    vector<Label*> new_vars;
     labels.resize(num_nodes);
     Label start {0,0,0,0};
     labels[0].push_back(start);
@@ -109,29 +125,26 @@ void labelling(double const * dual, const bool farkas, const bool elementary, un
         double newcost = x->cost - dual[num_nodes-1];
         newcost = farkas ? newcost: newcost + edges[x->v][0];
 
+        if(newcost < -1e-6)
+            new_vars.push_back(x);
+
         if ((newcost < lowest_red_cost) && (x->v != 0)){
             // cout << "Found Path with negative reduced cost" << endl;
 
-            unsigned path_len = 2;
-            Label* current_label = x;
-            while(current_label->pred > 0){
-                // Path with capacity + 1 edges has visited capacity + 2 nodes, of which start and end node don't have a demand
-                if(path_len > (capacity + 2)){
-                    cout << "PRICER_C ERROR: Path length exceeds maximum. Current value of path_len is " << path_len << endl;
-                    return;
-                }
-                ++path_len;
-                current_label = current_label->pred_ptr;
+            unsigned path_len = x->path_len();
+
+            for(auto& var: new_vars){
+                
             }
 
-            current_label = x;
+            Label* current_label = x;
             result[path_len] = 0;
             result[0] = 0;
             for(unsigned i = path_len - 1; i > 0; --i){
                 result[i] = current_label->v;
                 if(current_label->v == 0){
                     cout << "PRICER_C WARNING: Start label in path when writing result" << endl;
-                    return;
+                    return 0;
                 }
                 current_label = current_label->pred_ptr;
             }
@@ -139,7 +152,10 @@ void labelling(double const * dual, const bool farkas, const bool elementary, un
         }
     }
 
-    if(!success){
+    if(success){
+        return 1;
+    }else{
         result[0] = 1;
+        return 0;
     }
 }

@@ -7,9 +7,10 @@ struct Label{
 
     bool dominates(const Label& x, const bool elementary);
     bool check_whether_in_path(const unsigned node) const;
+    unsigned path_len();
 };
 
 extern "C" {
     void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity);
-    void labelling(double const * dual, const bool farkas, const bool elementary, unsigned* result);
+    unsigned labelling(double const * dual, const bool farkas, const bool elementary, const int max_vars, unsigned* result);
 }
