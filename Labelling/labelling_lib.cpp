@@ -3,6 +3,7 @@
 #include <list>
 #include <iostream>
 #include <cmath>
+#include <algorithm>
 #include "labelling_lib.h"
 
 using std::vector;
@@ -14,6 +15,7 @@ vector<double> nodes;
 vector<vector<double> > edges;
 unsigned num_nodes;
 double capacity;
+unsigned max_path_len;
 
 bool Label::dominates(const Label& x, const bool elementary){
     if((this->cost <= x.cost) && (this->load <= x.load)){
@@ -59,9 +61,36 @@ unsigned Label::path_len(){
     return path_len;
 }
 
-void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity){
+void Label::write_path_to_output(unsigned* result){
+    unsigned path_len = this->path_len();
+    if(path_len > max_path_len){
+        cout << "PRICER_C WARNING: Path exceeds maximum path length" << endl;
+        return;
+    }
+
+    Label* current_label = this;
+    result[path_len] = 0;
+    result[0] = 0;
+    for(unsigned i = path_len - 1; i > 0; --i){
+        result[i] = current_label->v;
+        if(current_label->v == 0){
+            cout << "PRICER_C WARNING: Start label in path when writing result" << endl;
+            return;
+        }
+        current_label = current_label->pred_ptr;
+    }
+}
+
+double Label::finishing_cost(double const * dual, const bool farkas){
+    double finishing_cost = this->cost - dual[num_nodes-1];
+    finishing_cost = farkas ? finishing_cost: finishing_cost + edges[this->v][0];
+    return finishing_cost;
+}
+
+void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len){
     ::num_nodes = num_nodes;
     ::capacity = capacity;
+    ::max_path_len = max_path_len;
     if(!nodes.empty())
         nodes.clear();
     if(!edges.empty())
@@ -79,7 +108,7 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
     cout << "PRICER_C: Graph data successfully copied to C." << endl;
 }
 
-unsigned labelling(double const * dual, const bool farkas, const bool elementary, const int max_vars, unsigned* result){
+unsigned labelling(double const * dual, const bool farkas, const bool elementary, const unsigned long max_vars, unsigned* result){
     queue<Label*> q;
     vector<std::list<Label>> labels;
     vector<Label*> new_vars;
@@ -89,7 +118,6 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
     q.push(&(labels[0].back()));
 
     double lowest_red_cost = -1e-6;
-    bool success = false;
 
     while(!q.empty()){
         Label* x = q.front();
@@ -122,40 +150,17 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
         }
 
         // Check if the path to the last node has negative reduced cost
-        double newcost = x->cost - dual[num_nodes-1];
-        newcost = farkas ? newcost: newcost + edges[x->v][0];
-
-        if(newcost < -1e-6)
+        double newcost = x->finishing_cost(dual,farkas);
+        if((newcost < lowest_red_cost) && (x->v != 0)){
             new_vars.push_back(x);
-
-        if ((newcost < lowest_red_cost) && (x->v != 0)){
-            // cout << "Found Path with negative reduced cost" << endl;
-
-            unsigned path_len = x->path_len();
-
-            for(auto& var: new_vars){
-                
-            }
-
-            Label* current_label = x;
-            result[path_len] = 0;
-            result[0] = 0;
-            for(unsigned i = path_len - 1; i > 0; --i){
-                result[i] = current_label->v;
-                if(current_label->v == 0){
-                    cout << "PRICER_C WARNING: Start label in path when writing result" << endl;
-                    return 0;
-                }
-                current_label = current_label->pred_ptr;
-            }
-            success = true;
+            lowest_red_cost = newcost;
         }
     }
 
-    if(success){
-        return 1;
-    }else{
-        result[0] = 1;
-        return 0;
+    for(unsigned i=0;i<std::min(max_vars,new_vars.size());++i){
+        new_vars[new_vars.size()-i-1]->write_path_to_output(result+i*max_path_len);
     }
+
+    return new_vars.size();
+
 }
