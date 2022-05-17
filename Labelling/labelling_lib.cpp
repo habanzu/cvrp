@@ -87,6 +87,28 @@ double Label::finishing_cost(double const * dual, const bool farkas){
     return finishing_cost;
 }
 
+unsigned minimal_index(double const* dual, const bool farkas, const vector<Label*>& new_vars ){
+    double highest_red_cost = new_vars[0]->finishing_cost(dual,farkas);
+    unsigned index = 0;
+    for(unsigned i = 1; i < new_vars.size();++i){
+        if(new_vars[i]->finishing_cost(dual,farkas) > highest_red_cost){
+            index = i;
+            highest_red_cost = new_vars[i]->finishing_cost(dual,farkas);
+        }
+    }
+    return index;
+}
+
+double maximal_cost(double const* dual, const bool farkas, const vector<Label*>& new_vars ){
+    double highest_red_cost = new_vars[0]->finishing_cost(dual,farkas);
+    for(unsigned i = 1; i < new_vars.size();++i){
+        if(new_vars[i]->finishing_cost(dual,farkas) > highest_red_cost){
+            highest_red_cost = new_vars[i]->finishing_cost(dual,farkas);
+        }
+    }
+    return highest_red_cost;
+}
+
 void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len){
     ::num_nodes = num_nodes;
     ::capacity = capacity;
@@ -117,7 +139,8 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
     labels[0].push_back(start);
     q.push(&(labels[0].back()));
 
-    double lowest_red_cost = -1e-6;
+    double red_cost_bound = -1e-6;
+    unsigned num_paths = 0;
 
     while(!q.empty()){
         Label* x = q.front();
@@ -151,9 +174,15 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
 
         // Check if the path to the last node has negative reduced cost
         double newcost = x->finishing_cost(dual,farkas);
-        if((newcost < lowest_red_cost) && (x->v != 0)){
-            new_vars.push_back(x);
-            lowest_red_cost = newcost;
+        if((newcost < -1e-6) && (x->v != 0))
+            ++num_paths;
+        if((newcost < red_cost_bound) && (x->v != 0)){
+            if(new_vars.size() == max_vars){
+                new_vars[minimal_index(dual,farkas,new_vars)] = x;
+                red_cost_bound = maximal_cost(dual,farkas,new_vars);
+            } else {
+                new_vars.push_back(x);
+            }
         }
     }
 
@@ -161,6 +190,6 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
         new_vars[new_vars.size()-i-1]->write_path_to_output(result+i*max_path_len);
     }
 
-    return new_vars.size();
+    return num_paths;
 
 }

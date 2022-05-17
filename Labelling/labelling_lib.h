@@ -12,6 +12,8 @@ struct Label{
     double finishing_cost(double const * dual, const bool farkas);
 };
 
+unsigned minimal_index(double const* dual, const bool farkas, const std::vector<Label*>& new_vars);
+
 extern "C" {
     void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len);
     unsigned labelling(double const * dual, const bool farkas, const bool elementary, const unsigned long max_vars, unsigned* result);
