@@ -20,5 +20,5 @@ unsigned minimal_index(double const* dual, const bool farkas, const std::vector<
 
 extern "C" {
     void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len);
-    unsigned labelling(double const * dual, const bool farkas, const bool elementary, const unsigned long max_vars, unsigned* result);
+    unsigned labelling(double const * dual, const bool farkas, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result);
 }

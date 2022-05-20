@@ -34,12 +34,6 @@ Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_pt
 
 Label::~Label(){}//delete[] pred_field;}
 
-void bitwise_dominance(const Label* newlabel, const Label* x, bool opposite){
-    if((opposite != ((newlabel->pred_field[0] & x->pred_field[0]) == newlabel->pred_field[0]) && ((newlabel->pred_field[1] & x->pred_field[1]) == newlabel->pred_field[1]))){
-        cout << "PRICER_C Error: Dominance checks in mismatch." << endl;
-    }
-}
-
 bool Label::dominates(const Label& x, const bool elementary){
     if((this->cost <= x.cost) && (this->load <= x.load)){
         if(!elementary)
@@ -156,7 +150,7 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
     cout << "PRICER_C: Graph data successfully copied to C." << endl;
 }
 
-unsigned labelling(double const * dual, const bool farkas, const bool elementary, const unsigned long max_vars, unsigned* result){
+unsigned labelling(double const * dual, const bool farkas, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result){
     queue<Label*> q;
     vector<std::list<Label>> labels;
     vector<Label*> new_vars;
@@ -174,19 +168,27 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
         for(unsigned i=1;i<num_nodes;++i){
             if(elementary && x->check_whether_in_path(i))
                 continue;
+            if(cyc2 && x->pred == i)
+                continue;
             if(i != x->v){
                 double newload = x->load + nodes[i];
                 if(newload > capacity)
                     continue;
                 bool dominated = false;
+                bool first_dominated = false;
                 double newcost = x->cost - dual[i-1];
                 newcost = farkas ? newcost: newcost + edges[x->v][i];
                 Label newlabel {i, x->v, newcost, newload, x};
 
                 for(auto& label: labels[i]){
                     if(label.dominates(newlabel, elementary)){
+                        if(cyc2 && !first_dominated && (label.pred != newlabel.pred)){
+                            first_dominated = true;
+                            continue;
+                        } else {
                         dominated = true;
                         break;
+                        }
                     }
                 }
                 if(!dominated){
