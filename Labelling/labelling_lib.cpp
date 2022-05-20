@@ -17,6 +17,18 @@ unsigned num_nodes;
 double capacity;
 unsigned max_path_len;
 
+Label::Label(unsigned v, unsigned pred, double cost, double load):v{v}, pred{pred}, cost{cost}, load{load} {
+    unsigned size = (num_nodes % 32 == 0) ? num_nodes / 32 : num_nodes / 32 + 1;
+    pred_field = new unsigned[size];
+}
+
+Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr} {
+    unsigned size = (num_nodes % 32 == 0) ? num_nodes / 32 : num_nodes / 32 + 1;
+    pred_field = new unsigned[size];
+}
+
+Label::~Label(){}//delete[] pred_field;}
+
 bool Label::dominates(const Label& x, const bool elementary){
     if((this->cost <= x.cost) && (this->load <= x.load)){
         if(!elementary)
@@ -109,6 +121,10 @@ double maximal_cost(double const* dual, const bool farkas, const vector<Label*>&
     return highest_red_cost;
 }
 
+// void init_bit_field(unsigned num_nodes){
+//     pred_field = new unsigned[]
+// }
+
 void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len){
     ::num_nodes = num_nodes;
     ::capacity = capacity;
@@ -135,8 +151,7 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
     vector<std::list<Label>> labels;
     vector<Label*> new_vars;
     labels.resize(num_nodes);
-    Label start {0,0,0,0};
-    labels[0].push_back(start);
+    labels[0].push_back(Label {0,0,0,0});
     q.push(&(labels[0].back()));
 
     double red_cost_bound = -1e-6;
@@ -157,7 +172,7 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
                 double newcost = x->cost - dual[i-1];
                 newcost = farkas ? newcost: newcost + edges[x->v][i];
                 Label newlabel {i, x->v, newcost, newload, x};
-                // newlabel.pred_ptr = x;
+
                 for(auto& label: labels[i]){
                     if(label.dominates(newlabel, elementary)){
                         dominated = true;
