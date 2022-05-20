@@ -18,16 +18,27 @@ double capacity;
 unsigned max_path_len;
 
 Label::Label(unsigned v, unsigned pred, double cost, double load):v{v}, pred{pred}, cost{cost}, load{load} {
-    unsigned size = (num_nodes % 32 == 0) ? num_nodes / 32 : num_nodes / 32 + 1;
-    pred_field = new unsigned[size];
+    pred_field[0] = 1;
+    //     unsigned size = (num_nodes % 32 == 0) ? num_nodes / 32 : num_nodes / 32 + 1;
+    //     pred_field = new unsigned[size];
 }
 
 Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr} {
-    unsigned size = (num_nodes % 32 == 0) ? num_nodes / 32 : num_nodes / 32 + 1;
-    pred_field = new unsigned[size];
+        for (unsigned i = 0; i<2; ++i){
+            pred_field[i] = pred_ptr->pred_field[i];
+        }
+        pred_field[v/64] = pred_field[v/64] | 1 << (63 - v%64);
+        //     unsigned size = (num_nodes % 32 == 0) ? num_nodes / 32 : num_nodes / 32 + 1;
+        //     pred_field = new unsigned[size];
 }
 
 Label::~Label(){}//delete[] pred_field;}
+
+void bitwise_dominance(const Label* newlabel, const Label* x, bool opposite){
+    if((opposite != ((newlabel->pred_field[0] & x->pred_field[0]) == newlabel->pred_field[0]) && ((newlabel->pred_field[1] & x->pred_field[1]) == newlabel->pred_field[1]))){
+        cout << "PRICER_C Error: Dominance checks in mismatch." << endl;
+    }
+}
 
 bool Label::dominates(const Label& x, const bool elementary){
     if((this->cost <= x.cost) && (this->load <= x.load)){
@@ -37,10 +48,14 @@ bool Label::dominates(const Label& x, const bool elementary){
             cout << "PRICER_C ERROR: Dominance check on start label." << endl;
         Label* own_pred = this->pred_ptr;
         while(own_pred->v > 0){
-            if(!x.check_whether_in_path(own_pred->v))
+            if(!x.check_whether_in_path(own_pred->v)){
+                bitwise_dominance(this, &x, false);
                 return false;
+            }
             own_pred = own_pred->pred_ptr;
         }
+        bitwise_dominance(this, &x, true);
+
         return true;
     }
     return false;
@@ -121,11 +136,11 @@ double maximal_cost(double const* dual, const bool farkas, const vector<Label*>&
     return highest_red_cost;
 }
 
-// void init_bit_field(unsigned num_nodes){
-//     pred_field = new unsigned[]
-// }
-
 void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len){
+    if(num_nodes > 120){
+        cout << "PRICER_C Error: The number of nodes is to large for the Label struct. Abort." << endl;
+        return;
+    }
     ::num_nodes = num_nodes;
     ::capacity = capacity;
     ::max_path_len = max_path_len;

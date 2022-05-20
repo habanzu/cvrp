@@ -4,7 +4,7 @@ struct Label{
     double cost;
     double load;
     Label* pred_ptr;
-    unsigned* pred_field;
+    unsigned long pred_field[2] = {0};
 
     Label(unsigned v, unsigned pred, double cost, double load);
     Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr);
