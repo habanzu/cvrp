@@ -46,17 +46,12 @@ bool Label::dominates(const Label& x, const bool elementary){
             return true;
         if(x.v == 0  || this->v == 0)
             cout << "PRICER_C ERROR: Dominance check on start label." << endl;
-        Label* own_pred = this->pred_ptr;
-        while(own_pred->v > 0){
-            if(!x.check_whether_in_path(own_pred->v)){
-                bitwise_dominance(this, &x, false);
-                return false;
-            }
-            own_pred = own_pred->pred_ptr;
-        }
-        bitwise_dominance(this, &x, true);
 
-        return true;
+        if(((this->pred_field[0] & x.pred_field[0]) == this->pred_field[0]) && ((this->pred_field[1] & x.pred_field[1]) == this->pred_field[1])){
+            return true;
+        } else {
+            return false;
+        }
     }
     return false;
 }
