@@ -59,13 +59,13 @@ bool Label::dominates(const Label& x, const bool elementary){
 bool Label::check_whether_in_path(const unsigned node) const{
     if(node == 0)
         cout << "PRICER_C ERROR: Path check with node 0." << endl;
-    const Label* current_label = this;
-    while(current_label->v > 0){
-        if(current_label->v == node)
+
+        unsigned long mask = 1 << (63 - node%64);
+        if((this->pred_field[v/64] & mask) == mask){
             return true;
-        current_label = current_label->pred_ptr;
-    }
-    return false;
+        } else {
+            return false;
+        }
 }
 
 unsigned Label::path_len(){
@@ -192,6 +192,7 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
                 if(!dominated){
                     labels[i].push_back(newlabel);
                     q.push(&(labels[i].back()));
+
                     // TODO: Hier könnte man prüfen, ob ein anderes Label dominiert wird und sich dieses deshalb entfernen lässt
                 }
             }
