@@ -132,33 +132,33 @@ double maximal_cost(double const* dual, const bool farkas, const vector<Label*>&
 
 list<Label>::iterator erase_Label(list<Label*>& q, vector<list<Label>>& labels, list<Label>::iterator& it, unsigned i);
 
-void erase_child_label(list<Label*>& q, vector<list<Label>>& labels, Label* label, unsigned i){
-    auto it = labels[i].begin();
-    while(it != labels[i].end()){
-        if(&(*it) == label){
-            erase_Label(q,labels,it, i);
-            return;
-        }
-    }
-}
-
-list<Label>::iterator erase_Label(list<Label*>& q, vector<list<Label>>& labels, list<Label>::iterator& it, unsigned i){
-    // Remove the label from the queue
-    for(auto q_it = q.begin(); q_it != q.end();++q_it){
-        if (*q_it == &(*it)){
-            q.erase(q_it);
-            break;
-        }
-    }
-
-    // All child nodes have to been deleted as well.
-    for(auto child_it = it->childs.begin(); child_it != it->childs.end();){
-        erase_child_label(q,labels, *child_it, (*child_it)->v);
-        child_it = it->childs.erase(child_it);
-    }
-
-    return labels[i].erase(it);
-}
+// void erase_child_label(list<Label*>& q, vector<list<Label>>& labels, Label* label, unsigned i){
+//     auto it = labels[i].begin();
+//     while(it != labels[i].end()){
+//         if(&(*it) == label){
+//             erase_Label(q,labels,it, i);
+//             return;
+//         }
+//     }
+// }
+//
+// list<Label>::iterator erase_Label(list<Label*>& q, vector<list<Label>>& labels, list<Label>::iterator& it, unsigned i){
+//     // Remove the label from the queue
+//     for(auto q_it = q.begin(); q_it != q.end();++q_it){
+//         if (*q_it == &(*it)){
+//             q.erase(q_it);
+//             break;
+//         }
+//     }
+//
+//     // All child nodes have to been deleted as well.
+//     for(auto child_it = it->childs.begin(); child_it != it->childs.end();){
+//         erase_child_label(q,labels, *child_it, (*child_it)->v);
+//         child_it = it->childs.erase(child_it);
+//     }
+//
+//     return labels[i].erase(it);
+// }
 
 void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len){
     if(num_nodes > 120){
@@ -232,38 +232,25 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
             if(!dominated){
                 labels[i].push_back(newlabel);
                 Label* newlabel_ref = &(labels[i].back());
-                newlabel_ref->pred_ptr->childs.push_back(newlabel_ref);
                 q.insert(newlabel_ref);
 
-                // auto it = labels[i].begin();
-                // while(it != labels[i].end()){
-                //     if(newlabel_ref->dominates(*it, elementary) && newlabel_ref != &(*it)){
-                //         // cout << "Found newlabel dominating an old one" << endl;
-                //         // cout << "Newlabel v = " << newlabel_ref->v << " and pred is " << newlabel_ref->pred << endl;
-                //         // cout << "Newlabel cost = " << newlabel_ref->cost << " and load is " << newlabel_ref->load << endl;
-                //         // cout << "dominated v = " << it->v << " and pred is " << it->pred << endl;
-                //         // cout << "dominated cost = " << it->cost << " and load is " << it->load << endl;
-                //
-                //
-                //         // Remove the label from the queue
-                //         for(auto q_it = q.begin(); q_it != q.end();++q_it){
-                //             if (*q_it == &(*it)){
-                //                 q.erase(q_it);
-                //                 break;
-                //             }
-                //         }
-                //         // Reset the pred_ptr of the child nodes
-                //         // TODO: An dieser STelle könnten alle Kinder des dominierten Labels entfernt werden.
-                //         // for(auto child : it->childs){
-                //         //     child->pred_ptr = newlabel_ref;
-                //         // }
-                //         //
-                //         // it = labels[i].erase(it);
-                //         it = erase_Label(q, labels, it, i);
-                //     } else{
-                //         ++it;
-                //     }
-                // }
+                auto it = labels[i].begin();
+                while(it != labels[i].end()){
+                    if(newlabel_ref->dominates(*it, elementary) && newlabel_ref != &(*it)){
+                        // Remove the label from the queue
+                        for(auto q_it = q.begin(); q_it != q.end();++q_it){
+                            if (*q_it == &(*it)){
+                                q.erase(q_it);
+                                break;
+                            }
+                        }
+
+                        it = labels[i].erase(it);
+
+                    } else{
+                        ++it;
+                    }
+                }
             }
 
         }
