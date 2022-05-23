@@ -1,5 +1,4 @@
 #include <vector>
-#include <queue>
 #include <list>
 #include <iostream>
 #include <cmath>
@@ -7,7 +6,7 @@
 #include "labelling_lib.h"
 
 using std::vector;
-using std::queue;
+using std::list;
 using std::cout;
 using std::endl;
 
@@ -125,6 +124,36 @@ double maximal_cost(double const* dual, const bool farkas, const vector<Label*>&
     return highest_red_cost;
 }
 
+list<Label>::iterator erase_Label(list<Label*>& q, vector<list<Label>>& labels, list<Label>::iterator& it, unsigned i);
+
+void erase_child_label(list<Label*>& q, vector<list<Label>>& labels, Label* label, unsigned i){
+    auto it = labels[i].begin();
+    while(it != labels[i].end()){
+        if(&(*it) == label){
+            erase_Label(q,labels,it, i);
+            return;
+        }
+    }
+}
+
+list<Label>::iterator erase_Label(list<Label*>& q, vector<list<Label>>& labels, list<Label>::iterator& it, unsigned i){
+    // Remove the label from the queue
+    for(auto q_it = q.begin(); q_it != q.end();++q_it){
+        if (*q_it == &(*it)){
+            q.erase(q_it);
+            break;
+        }
+    }
+
+    // All child nodes have to been deleted as well.
+    for(auto child_it = it->childs.begin(); child_it != it->childs.end();){
+        erase_child_label(q,labels, *child_it, (*child_it)->v);
+        child_it = it->childs.erase(child_it);
+    }
+
+    return labels[i].erase(it);
+}
+
 void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len){
     if(num_nodes > 120){
         cout << "PRICER_C Error: The number of nodes is to large for the Label struct. Abort." << endl;
@@ -151,53 +180,86 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
 }
 
 unsigned labelling(double const * dual, const bool farkas, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result){
-    queue<Label*> q;
-    vector<std::list<Label>> labels;
+    list<Label*> q;
+    vector<list<Label>> labels;
     vector<Label*> new_vars;
     labels.resize(num_nodes);
     labels[0].push_back(Label {0,0,0,0});
-    q.push(&(labels[0].back()));
+    q.push_back(&(labels[0].back()));
 
     double red_cost_bound = -1e-6;
     unsigned num_paths = 0;
 
     while(!q.empty()){
         Label* x = q.front();
-        q.pop();
+        q.pop_front();
 
         for(unsigned i=1;i<num_nodes;++i){
             if(elementary && x->check_whether_in_path(i))
                 continue;
+            if (i == x->v)
+                continue;
             if(cyc2 && x->pred == i)
                 continue;
-            if(i != x->v){
-                double newload = x->load + nodes[i];
-                if(newload > capacity)
-                    continue;
-                bool dominated = false;
-                bool first_dominated = false;
-                double newcost = x->cost - dual[i-1];
-                newcost = farkas ? newcost: newcost + edges[x->v][i];
-                Label newlabel {i, x->v, newcost, newload, x};
 
-                for(auto& label: labels[i]){
-                    if(label.dominates(newlabel, elementary)){
-                        if(cyc2 && !first_dominated && (label.pred != newlabel.pred)){
-                            first_dominated = true;
-                            continue;
-                        } else {
-                        dominated = true;
-                        break;
-                        }
+            double newload = x->load + nodes[i];
+            if(newload > capacity)
+                continue;
+
+            bool dominated = false;
+            bool first_dominated = false;
+            double newcost = x->cost - dual[i-1];
+            newcost = farkas ? newcost: newcost + edges[x->v][i];
+            Label newlabel {i, x->v, newcost, newload, x};
+
+            for(auto& label: labels[i]){
+                if(label.dominates(newlabel, elementary)){
+                    if(cyc2 && !first_dominated && (label.pred != newlabel.pred)){
+                        first_dominated = true;
+                        continue;
+                    } else {
+                    dominated = true;
+                    break;
                     }
                 }
-                if(!dominated){
-                    labels[i].push_back(newlabel);
-                    q.push(&(labels[i].back()));
+            }
+            if(!dominated){
+                labels[i].push_back(newlabel);
+                Label* newlabel_ref = &(labels[i].back());
+                newlabel_ref->pred_ptr->childs.push_back(newlabel_ref);
+                q.push_back(newlabel_ref);
 
-                    // TODO: Hier könnte man prüfen, ob ein anderes Label dominiert wird und sich dieses deshalb entfernen lässt
+                auto it = labels[i].begin();
+                while(it != labels[i].end()){
+                    if(newlabel_ref->dominates(*it, elementary) && newlabel_ref != &(*it)){
+                        // cout << "Found newlabel dominating an old one" << endl;
+                        // cout << "Newlabel v = " << newlabel_ref->v << " and pred is " << newlabel_ref->pred << endl;
+                        // cout << "Newlabel cost = " << newlabel_ref->cost << " and load is " << newlabel_ref->load << endl;
+                        // cout << "dominated v = " << it->v << " and pred is " << it->pred << endl;
+                        // cout << "dominated cost = " << it->cost << " and load is " << it->load << endl;
+
+
+                        // Remove the label from the queue
+                        for(auto q_it = q.begin(); q_it != q.end();++q_it){
+                            if (*q_it == &(*it)){
+                                q.erase(q_it);
+                                break;
+                            }
+                        }
+                        // Reset the pred_ptr of the child nodes
+                        // TODO: An dieser STelle könnten alle Kinder des dominierten Labels entfernt werden.
+                        // for(auto child : it->childs){
+                        //     child->pred_ptr = newlabel_ref;
+                        // }
+                        //
+                        // it = labels[i].erase(it);
+                        it = erase_Label(q, labels, it, i);
+                    } else{
+                        ++it;
+                    }
                 }
             }
+
         }
 
         // Check if the path to the last node has negative reduced cost
@@ -208,12 +270,14 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
             if(new_vars.size() == max_vars){
                 new_vars[minimal_index(dual,farkas,new_vars)] = x;
                 red_cost_bound = maximal_cost(dual,farkas,new_vars);
+                // break;
+
             } else {
                 new_vars.push_back(x);
             }
         }
     }
-
+    // cout << "SPPRC finished: now writing output" << endl;
     for(unsigned i=0;i<std::min(max_vars,new_vars.size());++i){
         new_vars[new_vars.size()-i-1]->write_path_to_output(result+i*max_path_len);
     }

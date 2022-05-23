@@ -5,6 +5,7 @@ struct Label{
     double load;
     Label* pred_ptr;
     unsigned long pred_field[2] = {0};
+    std::list<Label*> childs;
 
     Label(unsigned v, unsigned pred, double cost, double load);
     Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr);
