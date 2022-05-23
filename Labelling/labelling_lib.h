@@ -9,7 +9,6 @@ struct Label{
 
     Label(unsigned v, unsigned pred, double cost, double load);
     Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr);
-    ~Label();
     bool dominates(const Label& x, const bool elementary);
     bool check_whether_in_path(const unsigned node) const;
     unsigned path_len();

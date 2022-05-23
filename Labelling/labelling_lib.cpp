@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
+#include <set>
 #include "labelling_lib.h"
 
 using std::vector;
@@ -15,6 +16,12 @@ vector<vector<double> > edges;
 unsigned num_nodes;
 double capacity;
 unsigned max_path_len;
+
+struct less_than {
+    bool operator()(const Label* label1, const Label* label2) const{
+        return (label1->load < label2->load);
+    }
+};
 
 Label::Label(unsigned v, unsigned pred, double cost, double load):v{v}, pred{pred}, cost{cost}, load{load} {
     pred_field[0] = 1;
@@ -31,7 +38,6 @@ Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_pt
         //     pred_field = new unsigned[size];
 }
 
-Label::~Label(){}//delete[] pred_field;}
 
 bool Label::dominates(const Label& x, const bool elementary){
     if((this->cost <= x.cost) && (this->load <= x.load)){
@@ -180,19 +186,19 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
 }
 
 unsigned labelling(double const * dual, const bool farkas, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result){
-    list<Label*> q;
+    std::multiset<Label*, less_than> q;
     vector<list<Label>> labels;
     vector<Label*> new_vars;
     labels.resize(num_nodes);
     labels[0].push_back(Label {0,0,0,0});
-    q.push_back(&(labels[0].back()));
+    q.insert(&(labels[0].back()));
 
     double red_cost_bound = -1e-6;
     unsigned num_paths = 0;
 
     while(!q.empty()){
-        Label* x = q.front();
-        q.pop_front();
+        Label* x = *(q.begin());
+        q.erase(q.begin());
 
         for(unsigned i=1;i<num_nodes;++i){
             if(elementary && x->check_whether_in_path(i))
@@ -227,37 +233,37 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
                 labels[i].push_back(newlabel);
                 Label* newlabel_ref = &(labels[i].back());
                 newlabel_ref->pred_ptr->childs.push_back(newlabel_ref);
-                q.push_back(newlabel_ref);
+                q.insert(newlabel_ref);
 
-                auto it = labels[i].begin();
-                while(it != labels[i].end()){
-                    if(newlabel_ref->dominates(*it, elementary) && newlabel_ref != &(*it)){
-                        // cout << "Found newlabel dominating an old one" << endl;
-                        // cout << "Newlabel v = " << newlabel_ref->v << " and pred is " << newlabel_ref->pred << endl;
-                        // cout << "Newlabel cost = " << newlabel_ref->cost << " and load is " << newlabel_ref->load << endl;
-                        // cout << "dominated v = " << it->v << " and pred is " << it->pred << endl;
-                        // cout << "dominated cost = " << it->cost << " and load is " << it->load << endl;
-
-
-                        // Remove the label from the queue
-                        for(auto q_it = q.begin(); q_it != q.end();++q_it){
-                            if (*q_it == &(*it)){
-                                q.erase(q_it);
-                                break;
-                            }
-                        }
-                        // Reset the pred_ptr of the child nodes
-                        // TODO: An dieser STelle könnten alle Kinder des dominierten Labels entfernt werden.
-                        // for(auto child : it->childs){
-                        //     child->pred_ptr = newlabel_ref;
-                        // }
-                        //
-                        // it = labels[i].erase(it);
-                        it = erase_Label(q, labels, it, i);
-                    } else{
-                        ++it;
-                    }
-                }
+                // auto it = labels[i].begin();
+                // while(it != labels[i].end()){
+                //     if(newlabel_ref->dominates(*it, elementary) && newlabel_ref != &(*it)){
+                //         // cout << "Found newlabel dominating an old one" << endl;
+                //         // cout << "Newlabel v = " << newlabel_ref->v << " and pred is " << newlabel_ref->pred << endl;
+                //         // cout << "Newlabel cost = " << newlabel_ref->cost << " and load is " << newlabel_ref->load << endl;
+                //         // cout << "dominated v = " << it->v << " and pred is " << it->pred << endl;
+                //         // cout << "dominated cost = " << it->cost << " and load is " << it->load << endl;
+                //
+                //
+                //         // Remove the label from the queue
+                //         for(auto q_it = q.begin(); q_it != q.end();++q_it){
+                //             if (*q_it == &(*it)){
+                //                 q.erase(q_it);
+                //                 break;
+                //             }
+                //         }
+                //         // Reset the pred_ptr of the child nodes
+                //         // TODO: An dieser STelle könnten alle Kinder des dominierten Labels entfernt werden.
+                //         // for(auto child : it->childs){
+                //         //     child->pred_ptr = newlabel_ref;
+                //         // }
+                //         //
+                //         // it = labels[i].erase(it);
+                //         it = erase_Label(q, labels, it, i);
+                //     } else{
+                //         ++it;
+                //     }
+                // }
             }
 
         }
