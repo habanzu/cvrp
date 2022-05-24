@@ -4,6 +4,8 @@
 #include <cmath>
 #include <algorithm>
 #include <set>
+#include <bitset>
+
 #include "labelling_lib.h"
 
 using std::vector;
@@ -25,17 +27,11 @@ struct less_than {
 
 Label::Label(unsigned v, unsigned pred, double cost, double load):v{v}, pred{pred}, cost{cost}, load{load} {
     pred_field[0] = 1;
-    //     unsigned size = (num_nodes % 32 == 0) ? num_nodes / 32 : num_nodes / 32 + 1;
-    //     pred_field = new unsigned[size];
 }
 
 Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr} {
-        for (unsigned i = 0; i<2; ++i){
-            pred_field[i] = pred_ptr->pred_field[i];
-        }
-        pred_field[v/64] = pred_field[v/64] | 1 << (63 - v%64);
-        //     unsigned size = (num_nodes % 32 == 0) ? num_nodes / 32 : num_nodes / 32 + 1;
-        //     pred_field = new unsigned[size];
+    pred_field = pred_ptr->pred_field;
+    pred_field[v] = 1;
 }
 
 
@@ -46,7 +42,7 @@ bool Label::dominates(const Label& x, const bool elementary){
         if(x.v == 0  || this->v == 0)
             cout << "PRICER_C ERROR: Dominance check on start label." << endl;
 
-        if(((this->pred_field[0] & x.pred_field[0]) == this->pred_field[0]) && ((this->pred_field[1] & x.pred_field[1]) == this->pred_field[1])){
+        if((this->pred_field & x.pred_field) == this->pred_field){
             return true;
         } else {
             return false;
@@ -59,8 +55,9 @@ bool Label::check_whether_in_path(const unsigned node) const{
     if(node == 0)
         cout << "PRICER_C ERROR: Path check with node 0." << endl;
 
-        unsigned long mask = 1 << (63 - node%64);
-        if((this->pred_field[v/64] & mask) == mask){
+        std::bitset<128> mask;
+        mask[node] = 1;
+        if((this->pred_field & mask) == mask){
             return true;
         } else {
             return false;

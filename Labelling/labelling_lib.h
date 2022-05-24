@@ -1,10 +1,13 @@
+#include<bitset>
+
 struct Label{
     unsigned v;
     unsigned pred;
     double cost;
     double load;
     Label* pred_ptr;
-    unsigned long pred_field[2] = {0};
+    std::bitset<128> pred_field;
+    // unsigned long pred_field[2] = {0};
 
     Label(unsigned v, unsigned pred, double cost, double load);
     Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr);
