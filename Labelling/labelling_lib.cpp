@@ -166,9 +166,18 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
     double red_cost_bound = -1e-6;
     unsigned num_paths = 0;
 
+    cout << "Starting labelling" << endl;
+
+    unsigned current_load = 0;
+
     while(!q.empty()){
         Label* x = *(q.begin());
         q.erase(q.begin());
+
+        if (x->load != current_load){
+            cout << "Working on node " << x->v << " with load " << x->load << endl;
+            current_load = x->load;
+        }
 
         for(unsigned i=1;i<num_nodes;++i){
             if(elementary && x->check_whether_in_path(i))
@@ -204,8 +213,7 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
                 Label* newlabel_ref = &(labels[i].back());
                 q.insert(newlabel_ref);
 
-                auto it = labels[i].begin();
-                while(it != labels[i].end()){
+                for(auto it = labels[i].begin(); it != labels[i].end(); ){
                     if(newlabel_ref->dominates(*it, elementary) && newlabel_ref != &(*it)){
                         // Remove the label from the queue
                         for(auto q_it = q.begin(); q_it != q.end();++q_it){
@@ -235,11 +243,17 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
                 red_cost_bound = maximal_cost(dual,farkas,new_vars);
             } else {
                 new_vars.push_back(x);
-                if(new_vars.size() == max_vars && abort_early)
-                    break;
+                if((new_vars.size() == max_vars) && abort_early){
+                    // Warum löst dieser Code eine solch Katastrophale Laufzeit aus?
+                    TODO:
+                    cout << "immediately before goto" << endl;
+                    goto label;
+                }
             }
         }
     }
+    label:
+    cout << "goto succesfull" << endl;
     for(unsigned i=0;i<std::min(max_vars,new_vars.size());++i){
         new_vars[new_vars.size()-i-1]->write_path_to_output(result+i*max_path_len);
     }
