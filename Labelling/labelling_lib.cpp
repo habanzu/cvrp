@@ -233,11 +233,10 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
             if(new_vars.size() == max_vars){
                 new_vars[minimal_index(dual,farkas,new_vars)] = x;
                 red_cost_bound = maximal_cost(dual,farkas,new_vars);
-                if(abort_early)
-                    break;
-
             } else {
                 new_vars.push_back(x);
+                if(new_vars.size() == max_vars && abort_early)
+                    break;
             }
         }
     }

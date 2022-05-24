@@ -55,6 +55,15 @@ class VRPPricer(Pricer):
         return self.labelling(dual)
 
     def labelling(self, dual,farkas=False, elementary=False, max_vars=10000, cyc2=False, abort_early=False):
+        if 'elementary' in self.data:
+            elementary = self.data['elementary']
+        if 'max_vars' in self.data:
+            max_vars = self.data['max_vars']
+        if 'cyc2' in self.data:
+            cyc2 = self.data['cyc2']
+        if 'abort_early' in self.data:
+            abort_early = self.data['abort_early']
+
         pointer_dual = ffi.cast("double*", np.array(dual,dtype=np.double).ctypes.data)
 
         # TODO: Possible improvement: result can be reused every time
