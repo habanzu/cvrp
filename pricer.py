@@ -5,7 +5,6 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 import sys, math, random
-from pylgrim import ESPPRC
 
 from cffi import FFI
 ffi = FFI()
@@ -55,23 +54,6 @@ class VRPPricer(Pricer):
 #         print(f"PRICER_PY: Dual variables are {dual}")
         return self.labelling(dual)
 
-    def pylgrim_preprocess(self, dual):
-        G = self.model.graph.to_directed()
-        G.graph['n_res'] = 1
-        for i in range(1,G.number_of_nodes()):
-            G.add_edge("Start",i, weight=G.edges[0,i]['weight'])
-
-        for (u,v) in G.edges():
-            if 0 < v < self.model.graph.number_of_nodes():
-                G[u][v]['load'] = [G.nodes()[v]['demand']]
-                G[u][v]['weight'] -= dual[v-1]
-            else:
-                G[u][v]['load'] = [0]
-
-        G_preprocessed, res_min = ESPPRC.preprocess(G, "Start", 0, [G.graph['capacity']], res_name='load')
-        self.data['preprocessed_graph'] = G_preprocessed
-        self.data['res_min'] = res_min
-
     def labelling(self, dual,farkas=False, elementary=False, max_vars=10000, cyc2=False, abort_early=False):
         if 'elementary' in self.data:
             elementary = self.data['elementary']
@@ -81,17 +63,6 @@ class VRPPricer(Pricer):
             cyc2 = self.data['cyc2']
         if 'abort_early' in self.data:
             abort_early = self.data['abort_early']
-
-        if elementary:
-            self.pylgrim_preprocess(dual)
-            print("Done preprocessing")
-            best_path, best_path_label = ESPPRC.GSSA(self.data['preprocessed_graph'], "Start",0,[self.data['capacity']],self.data['res_min'], res_name='load')
-            num_paths = 1
-            path = [u for u,_,_ in list(best_path)]
-            path[0] = 0
-            path.append(0)
-            print(f"Found path {path}")
-            TODO: Implementierung beenden
 
         # TODO: Possible improvement: result can be reused every time
         pointer_dual = ffi.cast("double*", np.array(dual,dtype=np.double).ctypes.data)
