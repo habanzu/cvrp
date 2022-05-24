@@ -130,36 +130,6 @@ double maximal_cost(double const* dual, const bool farkas, const vector<Label*>&
     return highest_red_cost;
 }
 
-list<Label>::iterator erase_Label(list<Label*>& q, vector<list<Label>>& labels, list<Label>::iterator& it, unsigned i);
-
-// void erase_child_label(list<Label*>& q, vector<list<Label>>& labels, Label* label, unsigned i){
-//     auto it = labels[i].begin();
-//     while(it != labels[i].end()){
-//         if(&(*it) == label){
-//             erase_Label(q,labels,it, i);
-//             return;
-//         }
-//     }
-// }
-//
-// list<Label>::iterator erase_Label(list<Label*>& q, vector<list<Label>>& labels, list<Label>::iterator& it, unsigned i){
-//     // Remove the label from the queue
-//     for(auto q_it = q.begin(); q_it != q.end();++q_it){
-//         if (*q_it == &(*it)){
-//             q.erase(q_it);
-//             break;
-//         }
-//     }
-//
-//     // All child nodes have to been deleted as well.
-//     for(auto child_it = it->childs.begin(); child_it != it->childs.end();){
-//         erase_child_label(q,labels, *child_it, (*child_it)->v);
-//         child_it = it->childs.erase(child_it);
-//     }
-//
-//     return labels[i].erase(it);
-// }
-
 void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len){
     if(num_nodes > 120){
         cout << "PRICER_C Error: The number of nodes is to large for the Label struct. Abort." << endl;
@@ -185,7 +155,7 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
     cout << "PRICER_C: Graph data successfully copied to C." << endl;
 }
 
-unsigned labelling(double const * dual, const bool farkas, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result){
+unsigned labelling(double const * dual, const bool farkas, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, const bool abort_early){
     std::multiset<Label*, less_than> q;
     vector<list<Label>> labels;
     vector<Label*> new_vars;
@@ -263,14 +233,14 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
             if(new_vars.size() == max_vars){
                 new_vars[minimal_index(dual,farkas,new_vars)] = x;
                 red_cost_bound = maximal_cost(dual,farkas,new_vars);
-                // break;
+                if(abort_early)
+                    break;
 
             } else {
                 new_vars.push_back(x);
             }
         }
     }
-    // cout << "SPPRC finished: now writing output" << endl;
     for(unsigned i=0;i<std::min(max_vars,new_vars.size());++i){
         new_vars[new_vars.size()-i-1]->write_path_to_output(result+i*max_path_len);
     }
