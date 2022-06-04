@@ -42,7 +42,8 @@ class VRPPricer(Pricer):
     def init_data(self, G):
         self.data = {}
         self.data["capacity"] = G.graph['capacity']
-        self.data["num_vehicles"] = G.graph['min_trucks']
+        self.data["num_vehicles"] = int(G.graph['min_trucks'])
+        self.data['bounds'] = []
 
     def pricerfarkas(self):
         dual = [self.model.getDualfarkasLinear(con) for con in self.data['cons']]
@@ -76,12 +77,14 @@ class VRPPricer(Pricer):
         if(num_paths == 0):
             print("PY PRICING: There are no paths with negative reduced costs")
             return {'result':SCIP_RESULT.SUCCESS}
+
+        lowest_cost = 0
         for i in range(min(num_paths,max_vars)):
             single_result = result[i*self.data['max_path_len']:(i+1)*self.data['max_path_len']]
             result_indices = np.insert(np.nonzero(single_result),0,0)
             result_indices = np.append(result_indices,0)
             path = tuple(single_result[result_indices])
-#             print(f"Found path {path}")
+
             if path in self.data['vars'].keys():
                 cost = self.model.getVarRedcost(self.data['vars'][path])
                 if farkas:
@@ -90,8 +93,16 @@ class VRPPricer(Pricer):
                     print(f"PY Pricing: Path already exists. Reduced Cost {cost:.2f} | {path}")
                 return {'result':SCIP_RESULT.SUCCESS}
 
-            var = self.model.addVar(vtype="C",obj=nx.path_weight(self.model.graph,path,"weight"),pricedVar=True)
             weight = nx.path_weight(self.model.graph,path,"weight")
+
+            var = self.model.addVar(vtype="C",obj=weight,pricedVar=True)
+            if not farkas:
+                # print(path)
+                # print(f"dual of path {[dual[i-1] for i in path[1:-1]]}")
+                red_cost = weight - sum([dual[i-1] for i in path[1:-1]]) - dual[-1]
+                if red_cost < lowest_cost:
+                    lowest_cost = red_cost
+                # print(f"Red cost is {red_cost}")
 
             counts = np.unique(path[1:-1], return_counts=True)
             for i, node in enumerate(counts[0]):
@@ -100,4 +111,9 @@ class VRPPricer(Pricer):
             self.model.addConsCoeff(self.data['cons'][-1], var, 1)
             self.data['vars'][tuple(path)] = var
 
+        # upper_bound = self.model.getSolVal(self.model.getBestSol(),None)
+        if not farkas:
+            upper_bound = self.model.getObjVal()
+            lower_bound = upper_bound + self.data['num_vehicles']*lowest_cost
+            self.data['bounds'].append((upper_bound,lower_bound))
         return {'result':SCIP_RESULT.SUCCESS}
