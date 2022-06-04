@@ -35,14 +35,22 @@ Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_pt
     pred_field[v] = 1;
 }
 
-bool Label::dominates(const Label& x, const bool elementary){
+Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr, std::bitset<128> ng_memory):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr}, ng_memory{ng_memory}{
+    pred_field = pred_ptr->pred_field;
+    pred_field[v] = 1;
+}
+
+bool Label::dominates(const Label& x, const bool elementary, const bool ngPath){
     if((this->cost <= x.cost) && (this->load <= x.load)){
-        if(!elementary)
+        if(!elementary && !ngPath)
             return true;
         if(x.v == 0  || this->v == 0)
             cout << "PRICER_C ERROR: Dominance check on start label." << endl;
 
-        if((this->pred_field & x.pred_field) == this->pred_field){
+        auto& own_comparator = ngPath ? this->ng_memory : this->pred_field;
+        auto& x_comparator = ngPath ? x.ng_memory : x.pred_field;
+
+        if((own_comparator & x_comparator) == own_comparator){
             return true;
         } else {
             return false;
@@ -51,13 +59,15 @@ bool Label::dominates(const Label& x, const bool elementary){
     return false;
 }
 
-bool Label::check_whether_in_path(const unsigned node) const{
+bool Label::check_whether_in_path(const unsigned node, const bool ngPath) const{
     if(node == 0)
         cout << "PRICER_C ERROR: Path check with node 0." << endl;
 
-        std::bitset<128> mask;
+        std::bitset<128> mask(0);
         mask[node] = 1;
-        if((this->pred_field & mask) == mask){
+
+        auto& comparator = ngPath ? this->ng_memory : this->pred_field;
+        if((comparator & mask) == mask){
             return true;
         } else {
             return false;
@@ -153,12 +163,12 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
     for(unsigned i =1; i<num_nodes;++i){
         double edge_bound = i == 1 ? edges[1][2] : edges[i][1];
         std::bitset<128> neighborhood;
+        neighborhood[i] = 1;
         for(unsigned j=1; j<= ngParam; ++j){
             neighborhood[j] = 1;
             edge_bound = (edges[i][j] > edge_bound) ? edges[i][j] : edge_bound;
         }
         if(i <= ngParam && ngParam + 1 < num_nodes){
-            neighborhood[i] = 0;
             neighborhood[ngParam + 1] = 1;
             edge_bound = (edges[i][ngParam + 1] > edge_bound) ? edges[i][ngParam + 1] : edge_bound;
         }
@@ -194,12 +204,13 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
     cout << "PRICER_C: Graph data successfully copied to C." << endl;
 }
 
-unsigned labelling(double const * dual, const bool farkas, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, const bool abort_early){
+unsigned labelling(double const * dual, const bool farkas, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, const bool abort_early, const bool ngPath){
     std::multiset<Label*, less_than> q;
     vector<list<Label>> labels;
     vector<Label*> new_vars;
     labels.resize(num_nodes);
     labels[0].push_back(Label {0,0,0,0});
+    (labels[0].begin())->ng_memory = std::bitset<128>();
     q.insert(&(labels[0].back()));
 
     double red_cost_bound = -1e-6;
@@ -210,9 +221,11 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
         q.erase(q.begin());
 
         for(unsigned i=1;i<num_nodes;++i){
-            if(elementary && x->check_whether_in_path(i))
-                continue;
             if (i == x->v)
+                continue;
+            if(elementary && x->check_whether_in_path(i, ngPath))
+                continue;
+            if(ngPath && x->check_whether_in_path(i, ngPath))
                 continue;
             if(cyc2 && x->pred == i)
                 continue;
@@ -225,10 +238,16 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
             bool first_dominated = false;
             double newcost = x->cost - dual[i-1];
             newcost = farkas ? newcost: newcost + edges[x->v][i];
-            Label newlabel {i, x->v, newcost, newload, x};
+            std::bitset<128> neighborhood;
+            if(ngPath){
+                // neighborhood = (x->v == 0) ? neighborhoods[i] : neighborhoods[i] & x->ng_memory;
+                neighborhood = neighborhoods[i] & x->ng_memory;
+                neighborhood[i] = 1;
+            }
+            Label newlabel {i, x->v, newcost, newload, x, neighborhood};
 
             for(auto& label: labels[i]){
-                if(label.dominates(newlabel, elementary)){
+                if(label.dominates(newlabel, elementary, ngPath)){
                     if(cyc2 && !first_dominated && (label.pred != newlabel.pred)){
                         first_dominated = true;
                         continue;
@@ -244,7 +263,7 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
                 q.insert(newlabel_ref);
 
                 for(auto it = labels[i].begin(); it != labels[i].end(); ){
-                    if(newlabel_ref->dominates(*it, elementary) && newlabel_ref != &(*it)){
+                    if(newlabel_ref->dominates(*it, elementary, ngPath) && newlabel_ref != &(*it)){
                         // Remove the label from the queue
                         for(auto q_it = q.begin(); q_it != q.end();++q_it){
                             if (*q_it == &(*it)){

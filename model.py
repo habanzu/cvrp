@@ -36,10 +36,26 @@ def output_variables(model, pricer):
     sol = model.getBestSol()
     # Flushing should probably prevent the console output from SCIP mix up with the following print
     sys.stdout.flush()
+
+    elementary = True
+    comp_value = 1e-6
     print("The solution contains the following paths: ")
+    print(f"Only paths with associated value larger than {comp_value} are analysed.")
     for path, var in pricer.data['vars'].items():
-        if sol[var] > 0.1:
+        if sol[var] > 1e-6:
+            counts = np.unique(path[1:-1], return_counts=True)
+            for i, node in enumerate(counts[0]):
+                if counts[1][i] != 1:
+                    print("The following path is non elementary")
+                    elementary = False
+                    break
             print(f"{sol[var]} * {var}: {path}")
+
+    if elementary:
+        print("Solution contains only elementary paths.")
+    else:
+        print("Solution contains non elementary paths.")
+
 
 def create_example_1():
     G = nx.complete_graph(10)

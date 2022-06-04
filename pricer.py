@@ -10,7 +10,7 @@ from cffi import FFI
 ffi = FFI()
 labelling_lib = ffi.dlopen("Labelling/labelling_lib.so")
 
-funDefs = "void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len, const unsigned ngParam); unsigned labelling(double const * dual, const bool farkas, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, const bool abort_early);"
+funDefs = "void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len, const unsigned ngParam); unsigned labelling(double const * dual, const bool farkas, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, const bool abort_early, const bool ngPath);"
 ffi.cdef(funDefs, override=True)
 
 class VRPPricer(Pricer):
@@ -57,7 +57,7 @@ class VRPPricer(Pricer):
 #         print(f"PRICER_PY: Dual variables are {dual}")
         return self.labelling(dual)
 
-    def labelling(self, dual,farkas=False, elementary=False, max_vars=10000, cyc2=False, abort_early=False, ngParam = 1):
+    def labelling(self, dual,farkas=False, elementary=False, max_vars=10000, cyc2=False, abort_early=False, ngParam = 1, ngPath = False):
         if 'elementary' in self.data:
             elementary = self.data['elementary']
         if 'max_vars' in self.data:
@@ -66,7 +66,8 @@ class VRPPricer(Pricer):
             cyc2 = self.data['cyc2']
         if 'abort_early' in self.data:
             abort_early = self.data['abort_early']
-
+        if 'ngPath' in self.data:
+            ngPath = self.data['ngPath']
         # if self.model.getGap() < 1:
         #     elementary = True
 
@@ -76,7 +77,7 @@ class VRPPricer(Pricer):
         result = np.zeros(max_vars*self.data['max_path_len'] ,dtype=np.uintc)
         result_arr = ffi.cast("unsigned*",result.ctypes.data)
 
-        num_paths = labelling_lib.labelling(pointer_dual, farkas, elementary, max_vars, cyc2, result_arr, abort_early)
+        num_paths = labelling_lib.labelling(pointer_dual, farkas, elementary, max_vars, cyc2, result_arr, abort_early, ngPath)
         print(f"PY PRICING: Found {num_paths} paths with reduced cost")
         # print(f"PY PRICING: Elementary = {elementary}")
 
