@@ -22,7 +22,6 @@ def create_constraints(model, G):
         #TODO: I should check, whether these paths are indeed feasible.
         path = (0,i,0)
         cost = nx.path_weight(G,path,"weight")
-    #     print(f"Do these costs make sense? {cost}")
         var = model.addVar(vtype="C",obj=cost)
         model.vars[path] = var
         cons = model.addCons(var == 1, name=f"node_{i}",modifiable=True)

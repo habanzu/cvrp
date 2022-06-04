@@ -20,12 +20,9 @@ class VRPPricer(Pricer):
         if 'ngParam' not in self.data:
             self.data['ngParam'] = 1
 
-#         print(f" There are {len(self.model.getConss())} constraints in the model and {len(self.data['cons'])} of them are known to the pricer.")
-
         demands = list(nx.get_node_attributes(self.model.graph,"demand").values())
         if not np.all(np.array(demands[1:])):
            print("PRICER_PY: The demands of all nodes must be > 0.")
-#         print(f"PRICER_PY: The demands are {node_data}")
         nodes_arr = ffi.cast("unsigned*", np.array(demands).astype(np.uintc).ctypes.data)
 
         minimal_demands = sum(sorted(demands[1:])[:2])
@@ -68,8 +65,6 @@ class VRPPricer(Pricer):
             abort_early = self.data['abort_early']
         if 'ngPath' in self.data:
             ngPath = self.data['ngPath']
-        # if self.model.getGap() < 1:
-        #     elementary = True
 
         # TODO: Possible improvement: result can be reused every time
         pointer_dual = ffi.cast("double*", np.array(dual,dtype=np.double).ctypes.data)
@@ -79,7 +74,6 @@ class VRPPricer(Pricer):
 
         num_paths = labelling_lib.labelling(pointer_dual, farkas, elementary, max_vars, cyc2, result_arr, abort_early, ngPath)
         print(f"PY PRICING: Found {num_paths} paths with reduced cost")
-        # print(f"PY PRICING: Elementary = {elementary}")
 
         if(num_paths == 0):
             print("PY PRICING: There are no paths with negative reduced costs")
@@ -115,7 +109,6 @@ class VRPPricer(Pricer):
             self.model.addConsCoeff(self.data['cons'][-1], var, 1)
             self.data['vars'][tuple(path)] = var
 
-        # upper_bound = self.model.getSolVal(self.model.getBestSol(),None)
         if not farkas:
             upper_bound = self.model.getObjVal()
             lower_bound = upper_bound + self.data['num_vehicles']*lowest_cost
