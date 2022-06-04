@@ -138,7 +138,6 @@ double maximal_cost(double const* dual, const bool farkas, const vector<Label*>&
 }
 
 void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len, const unsigned ngParam){
-    cout << "ngParam is " << ngParam << endl;
     if(num_nodes > 120){
         cout << "PRICER_C Error: The number of nodes is to large for the Label struct. Abort." << endl;
         return;
@@ -195,12 +194,6 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
         neighborhoods.push_back(neighborhood);
 
     }
-    // unsigned test = 1;
-    //
-    // for(unsigned i = 1;i<num_nodes;++i){
-    //     if(neighborhoods[test][i] == 1)
-    //         cout << i << " is in the neighborhood of " << test << endl;
-    // }
     cout << "PRICER_C: Graph data successfully copied to C." << endl;
 }
 
