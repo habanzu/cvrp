@@ -15,6 +15,7 @@ using std::endl;
 
 vector<double> nodes;
 vector<vector<double> > edges;
+vector<std::bitset<128> > neighborhoods;
 unsigned num_nodes;
 double capacity;
 unsigned max_path_len;
@@ -33,7 +34,6 @@ Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_pt
     pred_field = pred_ptr->pred_field;
     pred_field[v] = 1;
 }
-
 
 bool Label::dominates(const Label& x, const bool elementary){
     if((this->cost <= x.cost) && (this->load <= x.load)){
@@ -127,7 +127,8 @@ double maximal_cost(double const* dual, const bool farkas, const vector<Label*>&
     return highest_red_cost;
 }
 
-void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len){
+void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len, const unsigned ngParam){
+    cout << "ngParam is " << ngParam << endl;
     if(num_nodes > 120){
         cout << "PRICER_C Error: The number of nodes is to large for the Label struct. Abort." << endl;
         return;
@@ -135,20 +136,61 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
     ::num_nodes = num_nodes;
     ::capacity = capacity;
     ::max_path_len = max_path_len;
-    if(!nodes.empty())
-        nodes.clear();
-    if(!edges.empty())
-        edges.clear();
+    nodes.clear();
+    edges.clear();
+    neighborhoods.clear();
 
 
-    for(unsigned i=0;i<num_nodes;i++){
+    for(unsigned i=0;i<num_nodes;++i){
         nodes.push_back(node_data[i]);
         vector<double> v;
-        for(unsigned j=0;j<num_nodes;j++){
+        for(unsigned j=0;j<num_nodes;++j){
             v.push_back(edge_data[i*num_nodes + j]);
         }
         edges.push_back(v);
     }
+    neighborhoods.push_back(0);
+    for(unsigned i =1; i<num_nodes;++i){
+        double edge_bound = i == 1 ? edges[1][2] : edges[i][1];
+        std::bitset<128> neighborhood;
+        for(unsigned j=1; j<= ngParam; ++j){
+            neighborhood[j] = 1;
+            edge_bound = (edges[i][j] > edge_bound) ? edges[i][j] : edge_bound;
+        }
+        if(i <= ngParam && ngParam + 1 < num_nodes){
+            neighborhood[i] = 0;
+            neighborhood[ngParam + 1] = 1;
+            edge_bound = (edges[i][ngParam + 1] > edge_bound) ? edges[i][ngParam + 1] : edge_bound;
+        }
+        unsigned start_index = i <= ngParam ? ngParam + 2 : ngParam + 1;
+
+        for(unsigned j = start_index; j < num_nodes; ++j){
+            if(j==i) continue;
+            if(edges[i][j] < edge_bound){
+                neighborhood[j] = 1;
+                for(unsigned l = 1;l < num_nodes;++l){
+                    if(l==i) continue;
+                    if(edges[i][l] == edge_bound){
+                        neighborhood[l] = 0;
+                        break;
+                    }
+                }
+                edge_bound = 0;
+                for(unsigned l = 1; l < num_nodes;++l){
+                    if (edges[i][l] > edge_bound && neighborhood[l] == 1 && i != l)
+                        edge_bound = edges[i][l];
+                }
+            }
+        }
+        neighborhoods.push_back(neighborhood);
+
+    }
+    // unsigned test = 1;
+    //
+    // for(unsigned i = 1;i<num_nodes;++i){
+    //     if(neighborhoods[test][i] == 1)
+    //         cout << i << " is in the neighborhood of " << test << endl;
+    // }
     cout << "PRICER_C: Graph data successfully copied to C." << endl;
 }
 

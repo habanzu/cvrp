@@ -10,13 +10,15 @@ from cffi import FFI
 ffi = FFI()
 labelling_lib = ffi.dlopen("Labelling/labelling_lib.so")
 
-funDefs = "void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len); unsigned labelling(double const * dual, const bool farkas, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, const bool abort_early);"
+funDefs = "void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len, const unsigned ngParam); unsigned labelling(double const * dual, const bool farkas, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, const bool abort_early);"
 ffi.cdef(funDefs, override=True)
 
 class VRPPricer(Pricer):
     def pricerinit(self):
         self.data['cons'] = [self.model.getTransformedCons(con) for con in self.model.cons]
         self.data['vars'] = {path:self.model.getTransformedVar(var) for (path,var) in self.model.vars.items()}
+        if 'ngParam' not in self.data:
+            self.data['ngParam'] = 1
 
 #         print(f" There are {len(self.model.getConss())} constraints in the model and {len(self.data['cons'])} of them are known to the pricer.")
 
@@ -37,7 +39,7 @@ class VRPPricer(Pricer):
         num_nodes = ffi.cast("unsigned",self.model.graph.number_of_nodes())
 
         capacity_ptr = ffi.cast("double",self.data['capacity'])
-        labelling_lib.initGraph(num_nodes,nodes_arr,edges_arr, capacity_ptr, self.data['max_path_len'])
+        labelling_lib.initGraph(num_nodes,nodes_arr,edges_arr, capacity_ptr, self.data['max_path_len'], self.data['ngParam'])
 
     def init_data(self, G):
         self.data = {}
@@ -55,7 +57,7 @@ class VRPPricer(Pricer):
 #         print(f"PRICER_PY: Dual variables are {dual}")
         return self.labelling(dual)
 
-    def labelling(self, dual,farkas=False, elementary=False, max_vars=10000, cyc2=False, abort_early=False):
+    def labelling(self, dual,farkas=False, elementary=False, max_vars=10000, cyc2=False, abort_early=False, ngParam = 1):
         if 'elementary' in self.data:
             elementary = self.data['elementary']
         if 'max_vars' in self.data:
@@ -65,6 +67,9 @@ class VRPPricer(Pricer):
         if 'abort_early' in self.data:
             abort_early = self.data['abort_early']
 
+        # if self.model.getGap() < 1:
+        #     elementary = True
+
         # TODO: Possible improvement: result can be reused every time
         pointer_dual = ffi.cast("double*", np.array(dual,dtype=np.double).ctypes.data)
 
@@ -73,6 +78,7 @@ class VRPPricer(Pricer):
 
         num_paths = labelling_lib.labelling(pointer_dual, farkas, elementary, max_vars, cyc2, result_arr, abort_early)
         print(f"PY PRICING: Found {num_paths} paths with reduced cost")
+        # print(f"PY PRICING: Elementary = {elementary}")
 
         if(num_paths == 0):
             print("PY PRICING: There are no paths with negative reduced costs")
@@ -97,12 +103,9 @@ class VRPPricer(Pricer):
 
             var = self.model.addVar(vtype="C",obj=weight,pricedVar=True)
             if not farkas:
-                # print(path)
-                # print(f"dual of path {[dual[i-1] for i in path[1:-1]]}")
                 red_cost = weight - sum([dual[i-1] for i in path[1:-1]]) - dual[-1]
                 if red_cost < lowest_cost:
                     lowest_cost = red_cost
-                # print(f"Red cost is {red_cost}")
 
             counts = np.unique(path[1:-1], return_counts=True)
             for i, node in enumerate(counts[0]):
@@ -116,4 +119,5 @@ class VRPPricer(Pricer):
             upper_bound = self.model.getObjVal()
             lower_bound = upper_bound + self.data['num_vehicles']*lowest_cost
             self.data['bounds'].append((upper_bound,lower_bound))
+            return {'result':SCIP_RESULT.SUCCESS,'lowerbound':lower_bound}
         return {'result':SCIP_RESULT.SUCCESS}
