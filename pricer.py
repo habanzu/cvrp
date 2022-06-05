@@ -103,6 +103,7 @@ class VRPPricer(Pricer):
             if i == 0:
                 lowerbound = lower_bound
                 for path in paths:
+                    # print(f"Found path {path}")
                     self.addVar(path,farkas)
 
 

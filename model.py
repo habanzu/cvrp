@@ -4,6 +4,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
+import hygese as hgs
 import sys, math, random
 
 class VRP(Model):
@@ -16,7 +17,7 @@ class VRP(Model):
         self.cons = []
 
 
-def create_constraints(model, G):
+def create_constraints(model, G, heuristic_flag=False):
     # Create a valid set of variables and the constraints to it
     for i in range(1,G.number_of_nodes()):
         #TODO: I should check, whether these paths are indeed feasible.
@@ -30,6 +31,20 @@ def create_constraints(model, G):
     # Add the convexity constraint, which limits the number of available vehicles
     convexity_constraint = model.addCons(sum(model.vars.values()) <= G.graph['min_trucks'], modifiable=True)
     model.cons.append(convexity_constraint)
+
+    if heuristic_flag:
+        paths = heuristic(model)
+        for path in paths:
+            weight = nx.path_weight(G,path,"weight")
+            var = model.addVar(vtype="C",obj=weight)
+            counts = np.unique(path[1:-1], return_counts=True)
+            for i, node in enumerate(counts[0]):
+                model.addConsCoeff(model.cons[node-1], var ,counts[1][i])
+
+            model.addConsCoeff(model.cons[-1], var, 1)
+
+
+
 
 def output_variables(model, pricer):
     sol = model.getBestSol()
@@ -55,6 +70,31 @@ def output_variables(model, pricer):
     else:
         print("Solution contains non elementary paths.")
 
+def heuristic(model):
+    ap = hgs.AlgorithmParameters(timeLimit=3.2)  # seconds
+    hgs_solver = hgs.Solver(parameters=ap, verbose=False)
+    data = dict()
+    G = model.graph
+    n = G.number_of_nodes()
+    x_coords = [G.nodes[i]['coordinates'][0] for i in range(n)]
+    y_coords = [G.nodes[i]['coordinates'][1] for i in range(n)]
+
+    data['x_coordinates'] = x_coords
+    data['y_coordinates'] = y_coords
+    data['service_times'] = np.zeros(n)
+    data['demands'] = [G.nodes[i]['demand'] for i in range(n)]
+    data['vehicle_capacity'] = G.graph['capacity']
+    data['num_vehicles'] = int(G.graph['min_trucks'])
+    data['depot'] = 0
+
+    result = hgs_solver.solve_cvrp(data)
+    paths = []
+    for res in result.routes:
+        res.insert(0,0)
+        res.append(0)
+        path = tuple(res)
+        paths.append(tuple(res))
+    return paths
 
 def create_example_1():
     G = nx.complete_graph(10)

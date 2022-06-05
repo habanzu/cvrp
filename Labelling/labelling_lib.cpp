@@ -15,7 +15,7 @@ using std::endl;
 
 vector<double> nodes;
 vector<vector<double> > edges;
-vector<std::bitset<128> > neighborhoods;
+vector<std::bitset<512> > neighborhoods;
 unsigned num_nodes;
 double capacity;
 unsigned max_path_len;
@@ -35,7 +35,7 @@ Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_pt
     pred_field[v] = 1;
 }
 
-Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr, std::bitset<128> ng_memory):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr}, ng_memory{ng_memory}{
+Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr, std::bitset<512> ng_memory):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr}, ng_memory{ng_memory}{
     pred_field = pred_ptr->pred_field;
     pred_field[v] = 1;
 }
@@ -63,7 +63,7 @@ bool Label::check_whether_in_path(const unsigned node, const bool ngPath) const{
     if(node == 0)
         cout << "PRICER_C ERROR: Path check with node 0." << endl;
 
-        std::bitset<128> mask(0);
+        std::bitset<512> mask(0);
         mask[node] = 1;
 
         auto& comparator = ngPath ? this->ng_memory : this->pred_field;
@@ -138,7 +138,7 @@ double maximal_cost(double const* dual, const bool farkas, const vector<Label*>&
 }
 
 void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len, const unsigned ngParam){
-    if(num_nodes > 120){
+    if(num_nodes > 512){
         cout << "PRICER_C Error: The number of nodes is to large for the Label struct. Abort." << endl;
         return;
     }
@@ -161,7 +161,7 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
     neighborhoods.push_back(0);
     for(unsigned i =1; i<num_nodes;++i){
         double edge_bound = i == 1 ? edges[1][2] : edges[i][1];
-        std::bitset<128> neighborhood;
+        std::bitset<512> neighborhood;
         neighborhood[i] = 1;
         for(unsigned j=1; j<= ngParam; ++j){
             neighborhood[j] = 1;
@@ -203,7 +203,7 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
     vector<Label*> new_vars;
     labels.resize(num_nodes);
     labels[0].push_back(Label {0,0,0,0});
-    (labels[0].begin())->ng_memory = std::bitset<128>();
+    (labels[0].begin())->ng_memory = std::bitset<512>();
     q.insert(&(labels[0].back()));
 
     double red_cost_bound = -1e-6;
@@ -231,7 +231,7 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
             bool first_dominated = false;
             double newcost = x->cost - dual[i-1];
             newcost = farkas ? newcost: newcost + edges[x->v][i];
-            std::bitset<128> neighborhood;
+            std::bitset<512> neighborhood;
             if(ngPath){
                 // neighborhood = (x->v == 0) ? neighborhoods[i] : neighborhoods[i] & x->ng_memory;
                 neighborhood = neighborhoods[i] & x->ng_memory;

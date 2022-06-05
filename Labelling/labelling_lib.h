@@ -6,13 +6,13 @@ struct Label{
     double cost;
     double load;
     Label* pred_ptr;
-    std::bitset<128> pred_field;
-    std::bitset<128> ng_memory;
+    std::bitset<512> pred_field;
+    std::bitset<512> ng_memory;
     // unsigned long pred_field[2] = {0};
 
     Label(unsigned v, unsigned pred, double cost, double load);
     Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr);
-    Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr, std::bitset<128> ng_memory);
+    Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr, std::bitset<512> ng_memory);
     bool dominates(const Label& x, const bool elementary, const bool ngPath);
     bool check_whether_in_path(const unsigned node, const bool ngPath) const;
     unsigned path_len();
