@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <set>
 #include <bitset>
+#include <chrono>
 
 #include "labelling_lib.h"
 
@@ -12,6 +13,7 @@ using std::vector;
 using std::list;
 using std::cout;
 using std::endl;
+using namespace std::chrono;
 
 vector<double> nodes;
 vector<vector<double> > edges;
@@ -197,7 +199,9 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
     cout << "PRICER_C: Graph data successfully copied to C." << endl;
 }
 
-unsigned labelling(double const * dual, const bool farkas, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, const bool abort_early, const bool ngPath){
+unsigned labelling(double const * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, bool* abort_early, const bool ngPath){
+    auto t0 = high_resolution_clock::now();
+
     std::multiset<Label*, less_than> q;
     vector<list<Label>> labels;
     vector<Label*> new_vars;
@@ -273,6 +277,14 @@ unsigned labelling(double const * dual, const bool farkas, const bool elementary
                 }
             }
 
+        }
+
+        auto t1 = high_resolution_clock::now();
+        auto duration = duration_cast<seconds>(t1-t0).count();
+        if(duration > time_limit){
+            cout << "PRICER_C: Time limit exceeded. Found " << num_paths << " valid paths with negative reduced cost." << endl;
+            *abort_early = true;
+            break;
         }
 
         // Check if the path to the last node has negative reduced cost

@@ -85,6 +85,7 @@ def heuristic(model, time):
     data['depot'] = 0
 
     result = hgs_solver.solve_cvrp(data)
+    print(f"HYGESE: Found Solution with value {result.cost}")
     paths = []
     for res in result.routes:
         res.insert(0,0)
