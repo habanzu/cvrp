@@ -17,7 +17,7 @@ class VRP(Model):
         self.cons = []
 
 
-def create_constraints(model, G, heuristic_flag=False):
+def create_constraints(model, G, heuristic_time=0):
     # Create a valid set of variables and the constraints to it
     for i in range(1,G.number_of_nodes()):
         #TODO: I should check, whether these paths are indeed feasible.
@@ -32,8 +32,8 @@ def create_constraints(model, G, heuristic_flag=False):
     convexity_constraint = model.addCons(sum(model.vars.values()) <= G.graph['min_trucks'], modifiable=True)
     model.cons.append(convexity_constraint)
 
-    if heuristic_flag:
-        paths = heuristic(model)
+    if heuristic_time != 0:
+        paths = heuristic(model,heuristic_time)
         for path in paths:
             weight = nx.path_weight(G,path,"weight")
             var = model.addVar(vtype="C",obj=weight)
@@ -42,9 +42,6 @@ def create_constraints(model, G, heuristic_flag=False):
                 model.addConsCoeff(model.cons[node-1], var ,counts[1][i])
 
             model.addConsCoeff(model.cons[-1], var, 1)
-
-
-
 
 def output_variables(model, pricer):
     sol = model.getBestSol()
@@ -70,8 +67,8 @@ def output_variables(model, pricer):
     else:
         print("Solution contains non elementary paths.")
 
-def heuristic(model):
-    ap = hgs.AlgorithmParameters(timeLimit=3.2)  # seconds
+def heuristic(model, time):
+    ap = hgs.AlgorithmParameters(timeLimit=time)  # seconds
     hgs_solver = hgs.Solver(parameters=ap, verbose=False)
     data = dict()
     G = model.graph
