@@ -27,7 +27,7 @@ class VRPPricer(Pricer):
         demands = list(nx.get_node_attributes(self.model.graph,"demand").values())
         if not np.all(np.array(demands[1:])):
            print("PRICER_PY: The demands of all nodes must be > 0.")
-        nodes_arr = ffi.cast("unsigned*", np.array(demands).astype(np.uintc).ctypes.data)
+        nodes_arr = ffi.new("unsigned[]",demands)
 
         minimal_demands = sum(sorted(demands[1:])[:2])
 
@@ -35,7 +35,8 @@ class VRPPricer(Pricer):
         print(f"PRICER_PY: The maximal path length is {self.data['max_path_len']}")
 
         edges = nx.adjacency_matrix(self.model.graph,dtype=np.double).toarray()
-        edges_arr = ffi.cast("double*", edges.ctypes.data)
+        edges = list(edges.flatten())
+        edges_arr = ffi.new("double[]",edges)
 
         num_nodes = ffi.cast("unsigned",self.model.graph.number_of_nodes())
 
@@ -120,12 +121,11 @@ class VRPPricer(Pricer):
     def labelling(self, dual,farkas, time_limit, elementary, max_vars, cyc2, ngParam, ngPath=0):
 
         # TODO: Possible improvement: result can be reused every time
-        pointer_dual = ffi.cast("double*", np.array(dual,dtype=np.double).ctypes.data)
+        pointer_dual = ffi.new("double[]",dual)
 
-        TODO: Wieder effizienter machen. Hab ich probiert um Fehler in der n256 Instanz zu finden.
+        # TODO: Wieder effizienter machen. Hab ich probiert um Fehler in der n256 Instanz zu finden.
         result_arr = ffi.new("unsigned[]",max_vars*self.data['max_path_len'])
         result = np.zeros(max_vars*self.data['max_path_len'] ,dtype=np.uintc)
-        # result_arr = ffi.cast("unsigned*",result.ctypes.data)
 
         abort_early_ptr = ffi.new("bool*",False)
 

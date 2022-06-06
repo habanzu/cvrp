@@ -81,7 +81,7 @@ unsigned Label::path_len(){
     Label* current_label = this;
     while(current_label->pred > 0){
         // Calculation of path len in pricer.py
-        if(path_len > max_path_len){
+        if(path_len > max_path_len || path_len > capacity + 2){
             cout << "PRICER_C ERROR: Path length exceeds maximum. Current value of path_len is " << path_len << endl;
             return 0;
         }
