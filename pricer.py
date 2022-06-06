@@ -125,16 +125,13 @@ class VRPPricer(Pricer):
 
         # TODO: Wieder effizienter machen. Hab ich probiert um Fehler in der n256 Instanz zu finden.
         result_arr = ffi.new("unsigned[]",max_vars*self.data['max_path_len'])
-        result = np.zeros(max_vars*self.data['max_path_len'] ,dtype=np.uintc)
 
         abort_early_ptr = ffi.new("bool*",False)
 
         num_paths = labelling_lib.labelling(pointer_dual, farkas, time_limit, elementary, max_vars, cyc2, result_arr, abort_early_ptr, ngParam)
-        # print(f"PY PRICING: Found {num_paths} paths with reduced cost")
         abort_early = abort_early_ptr[0]
 
-        for i in range(max_vars*self.data['max_path_len']):
-            result[i] = result_arr[i]
+        result = np.frombuffer(ffi.buffer(result_arr),dtype=np.uintc)
 
         upper_bound = self.model.getObjVal()
         if(num_paths == 0):
