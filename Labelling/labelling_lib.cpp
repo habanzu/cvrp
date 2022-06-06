@@ -278,7 +278,6 @@ unsigned labelling(double const * dual, const bool farkas, const unsigned time_l
         auto t1 = high_resolution_clock::now();
         auto duration = duration_cast<seconds>(t1-t0).count();
         if(duration > time_limit){
-            cout << "PRICER_C: Time limit exceeded. Found " << num_paths << " valid paths with negative reduced cost." << endl;
             *abort_early = true;
             break;
         }

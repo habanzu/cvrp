@@ -100,6 +100,8 @@ class VRPPricer(Pricer):
                 paths, upper_bound, lower_bound, abort_early  = self.labelling(dual,farkas,time_limit, False,max_vars,False,False)
             else:
                 raise ValueError("Method in pricerdata methods does not exist.")
+            if abort_early:
+                print(f"PRICER_PY: {method} exceeded time limit. Returned {len(paths)} valid paths with negative reduced cost.")
             if not farkas:
                 if abort_early:
                     if len(self.data['bounds'][method]) == 0:
