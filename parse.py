@@ -12,7 +12,7 @@ def parse(source):
             pattern = r".*trucks: (\d+).*"
             match = re.search(pattern, line)
             if match:
-                min_trucks = match.group(1)
+                min_trucks = int(match.group(1))
                 print(f"PARSE: Minimum number of trucks is {min_trucks}")
             else:
                 min_trucks = None

@@ -47,7 +47,7 @@ class VRPPricer(Pricer):
     def init_data(self, G):
         self.data = {}
         self.data["capacity"] = G.graph['capacity']
-        self.data["num_vehicles"] = int(G.graph['min_trucks'])
+        self.data["num_vehicles"] = G.graph['min_trucks']
 
     def pricerfarkas(self):
         dual = [self.model.getDualfarkasLinear(con) for con in self.data['cons']]
@@ -114,7 +114,7 @@ class VRPPricer(Pricer):
             print("PRICER_PY: All methods exceeded the provided time limit without finding paths with reduced cost.")
             return {'result':SCIP_RESULT.DIDNOTRUN}
 
-        return {'result':SCIP_RESULT.SUCCESS}#,'lowerbound':lowerbound}
+        return {'result':SCIP_RESULT.SUCCESS}
         # return {'result':SCIP_RESULT.SUCCESS}'lowerbound':lowerbound}
 
     def labelling(self, dual,farkas, time_limit, elementary, max_vars, cyc2, ngParam, ngPath=0):
@@ -122,14 +122,19 @@ class VRPPricer(Pricer):
         # TODO: Possible improvement: result can be reused every time
         pointer_dual = ffi.cast("double*", np.array(dual,dtype=np.double).ctypes.data)
 
+        TODO: Wieder effizienter machen. Hab ich probiert um Fehler in der n256 Instanz zu finden.
+        result_arr = ffi.new("unsigned[]",max_vars*self.data['max_path_len'])
         result = np.zeros(max_vars*self.data['max_path_len'] ,dtype=np.uintc)
-        result_arr = ffi.cast("unsigned*",result.ctypes.data)
+        # result_arr = ffi.cast("unsigned*",result.ctypes.data)
 
         abort_early_ptr = ffi.new("bool*",False)
 
         num_paths = labelling_lib.labelling(pointer_dual, farkas, time_limit, elementary, max_vars, cyc2, result_arr, abort_early_ptr, ngParam)
         # print(f"PY PRICING: Found {num_paths} paths with reduced cost")
         abort_early = abort_early_ptr[0]
+
+        for i in range(max_vars*self.data['max_path_len']):
+            result[i] = result_arr[i]
 
         upper_bound = self.model.getObjVal()
         if(num_paths == 0):

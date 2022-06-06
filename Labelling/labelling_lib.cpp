@@ -17,7 +17,7 @@ using namespace std::chrono;
 
 vector<double> nodes;
 vector<vector<double> > edges;
-vector<std::bitset<512> > neighborhoods;
+vector<std::bitset<neighborhood_size> > neighborhoods;
 unsigned num_nodes;
 double capacity;
 unsigned max_path_len;
@@ -37,20 +37,20 @@ Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_pt
     pred_field[v] = 1;
 }
 
-Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr, std::bitset<512> ng_memory):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr}, ng_memory{ng_memory}{
+Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr, std::bitset<neighborhood_size> ng_memory):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr}, ng_memory{ng_memory}{
     pred_field = pred_ptr->pred_field;
     pred_field[v] = 1;
 }
 
-bool Label::dominates(const Label& x, const bool elementary, const bool ngPath){
+bool Label::dominates(const Label& x, const bool elementary, const bool ngParam){
     if((this->cost <= x.cost) && (this->load <= x.load)){
-        if(!elementary && !ngPath)
+        if(!elementary && !ngParam)
             return true;
         if(x.v == 0  || this->v == 0)
             cout << "PRICER_C ERROR: Dominance check on start label." << endl;
 
-        auto& own_comparator = ngPath ? this->ng_memory : this->pred_field;
-        auto& x_comparator = ngPath ? x.ng_memory : x.pred_field;
+        auto& own_comparator = ngParam ? this->ng_memory : this->pred_field;
+        auto& x_comparator = ngParam ? x.ng_memory : x.pred_field;
 
         if((own_comparator & x_comparator) == own_comparator){
             return true;
@@ -61,14 +61,14 @@ bool Label::dominates(const Label& x, const bool elementary, const bool ngPath){
     return false;
 }
 
-bool Label::check_whether_in_path(const unsigned node, const bool ngPath) const{
+bool Label::check_whether_in_path(const unsigned node, const bool ngParam) const{
     if(node == 0)
         cout << "PRICER_C ERROR: Path check with node 0." << endl;
 
-        std::bitset<512> mask(0);
+        std::bitset<neighborhood_size> mask(0);
         mask[node] = 1;
 
-        auto& comparator = ngPath ? this->ng_memory : this->pred_field;
+        auto& comparator = ngParam ? this->ng_memory : this->pred_field;
         if((comparator & mask) == mask){
             return true;
         } else {
@@ -80,8 +80,8 @@ unsigned Label::path_len(){
     unsigned path_len = 2;
     Label* current_label = this;
     while(current_label->pred > 0){
-        // Path with capacity + 1 edges has visited capacity + 2 nodes, of which start and end node don't have a demand
-        if(path_len > (capacity + 2)){
+        // Calculation of path len in pricer.py
+        if(path_len > max_path_len){
             cout << "PRICER_C ERROR: Path length exceeds maximum. Current value of path_len is " << path_len << endl;
             return 0;
         }
@@ -117,7 +117,7 @@ double Label::finishing_cost(double const * dual, const bool farkas){
     return finishing_cost;
 }
 
-unsigned minimal_index(double const* dual, const bool farkas, const vector<Label*>& new_vars ){
+unsigned index_of_max_red_cost(double const* dual, const bool farkas, const vector<Label*>& new_vars ){
     double highest_red_cost = new_vars[0]->finishing_cost(dual,farkas);
     unsigned index = 0;
     for(unsigned i = 1; i < new_vars.size();++i){
@@ -140,7 +140,7 @@ double maximal_cost(double const* dual, const bool farkas, const vector<Label*>&
 }
 
 void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len, const unsigned ngParam){
-    if(num_nodes > 512){
+    if(num_nodes > neighborhood_size){
         cout << "PRICER_C Error: The number of nodes is to large for the Label struct. Abort." << endl;
         return;
     }
@@ -150,7 +150,6 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
     nodes.clear();
     edges.clear();
     neighborhoods.clear();
-
 
     for(unsigned i=0;i<num_nodes;++i){
         nodes.push_back(node_data[i]);
@@ -163,7 +162,7 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
     neighborhoods.push_back(0);
     for(unsigned i =1; i<num_nodes;++i){
         double edge_bound = i == 1 ? edges[1][2] : edges[i][1];
-        std::bitset<512> neighborhood;
+        std::bitset<neighborhood_size> neighborhood;
         neighborhood[i] = 1;
         for(unsigned j=1; j<= ngParam; ++j){
             neighborhood[j] = 1;
@@ -199,7 +198,7 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
     cout << "PRICER_C: Graph data successfully copied to C." << endl;
 }
 
-unsigned labelling(double const * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, bool* abort_early, const bool ngPath){
+unsigned labelling(double const * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, bool* abort_early, const bool ngParam){
     auto t0 = high_resolution_clock::now();
 
     std::multiset<Label*, less_than> q;
@@ -207,7 +206,7 @@ unsigned labelling(double const * dual, const bool farkas, const unsigned time_l
     vector<Label*> new_vars;
     labels.resize(num_nodes);
     labels[0].push_back(Label {0,0,0,0});
-    (labels[0].begin())->ng_memory = std::bitset<512>();
+    (labels[0].begin())->ng_memory = std::bitset<neighborhood_size>();
     q.insert(&(labels[0].back()));
 
     double red_cost_bound = -1e-6;
@@ -220,9 +219,7 @@ unsigned labelling(double const * dual, const bool farkas, const unsigned time_l
         for(unsigned i=1;i<num_nodes;++i){
             if (i == x->v)
                 continue;
-            if(elementary && x->check_whether_in_path(i, ngPath))
-                continue;
-            if(ngPath && x->check_whether_in_path(i, ngPath))
+            if((elementary || ngParam) && x->check_whether_in_path(i, ngParam))
                 continue;
             if(cyc2 && x->pred == i)
                 continue;
@@ -235,16 +232,15 @@ unsigned labelling(double const * dual, const bool farkas, const unsigned time_l
             bool first_dominated = false;
             double newcost = x->cost - dual[i-1];
             newcost = farkas ? newcost: newcost + edges[x->v][i];
-            std::bitset<512> neighborhood;
-            if(ngPath){
-                // neighborhood = (x->v == 0) ? neighborhoods[i] : neighborhoods[i] & x->ng_memory;
+            std::bitset<neighborhood_size> neighborhood;
+            if(ngParam){
                 neighborhood = neighborhoods[i] & x->ng_memory;
                 neighborhood[i] = 1;
             }
             Label newlabel {i, x->v, newcost, newload, x, neighborhood};
 
             for(auto& label: labels[i]){
-                if(label.dominates(newlabel, elementary, ngPath)){
+                if(label.dominates(newlabel, elementary, ngParam)){
                     if(cyc2 && !first_dominated && (label.pred != newlabel.pred)){
                         first_dominated = true;
                         continue;
@@ -260,7 +256,7 @@ unsigned labelling(double const * dual, const bool farkas, const unsigned time_l
                 q.insert(newlabel_ref);
 
                 for(auto it = labels[i].begin(); it != labels[i].end(); ){
-                    if(newlabel_ref->dominates(*it, elementary, ngPath) && newlabel_ref != &(*it)){
+                    if(newlabel_ref->dominates(*it, elementary, ngParam) && newlabel_ref != &(*it)){
                         // Remove the label from the queue
                         for(auto q_it = q.begin(); q_it != q.end();++q_it){
                             if (*q_it == &(*it)){
@@ -293,21 +289,17 @@ unsigned labelling(double const * dual, const bool farkas, const unsigned time_l
             ++num_paths;
         if((newcost < red_cost_bound) && (x->v != 0)){
             if(new_vars.size() == max_vars){
-                new_vars[minimal_index(dual,farkas,new_vars)] = x;
+                new_vars[index_of_max_red_cost(dual,farkas,new_vars)] = x;
                 red_cost_bound = maximal_cost(dual,farkas,new_vars);
             } else {
                 new_vars.push_back(x);
-                if((new_vars.size() == max_vars) && abort_early){
-                    // Warum löst dieser Code eine solch Katastrophale Laufzeit aus?
-                    break;
-                }
             }
         }
     }
-    for(unsigned i=0;i<std::min(max_vars,new_vars.size());++i){
-        new_vars[new_vars.size()-i-1]->write_path_to_output(result+i*max_path_len);
+    for(unsigned i=0;i<new_vars.size();++i){
+        new_vars[i]->write_path_to_output(result+i*max_path_len);
     }
-
+    // return 0;
     return num_paths;
 
 }
