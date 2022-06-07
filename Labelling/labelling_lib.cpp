@@ -9,7 +9,6 @@
 
 #include "labelling_lib.h"
 
-using std::vector;
 using std::list;
 using std::cout;
 using std::endl;
@@ -25,6 +24,8 @@ unsigned max_path_len;
 
 struct less_than {
     bool operator()(const Label& label1, const Label& label2) const{
+        if(label1.load == label2.load)
+            return (label1.cost < label2.cost);
         return (label1.load < label2.load);
     }
 };
@@ -34,23 +35,70 @@ Label::Label(unsigned v, unsigned pred, double cost, double load):v{v}, pred{pre
     ng_memory = bitset<neighborhood_size>();
 }
 
-Label::Label(unsigned v, unsigned pred, double cost, double load, const Label* pred_ptr):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr} {
+Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr} {
     pred_field = pred_ptr->pred_field;
     pred_field[v] = 1;
 }
 
-Label::Label(unsigned v, unsigned pred, double cost, double load, const Label* pred_ptr, bitset<neighborhood_size> ng_memory):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr}, ng_memory{ng_memory}{
+Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr, bitset<neighborhood_size> ng_memory):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr}, ng_memory{ng_memory}{
     pred_field = pred_ptr->pred_field;
     pred_field[v] = 1;
 }
 
-bool Label::dominates(const Label& x, const bool elementary, const bool ngParam) const{
+bool Label::dominates(Label& x, const bool cyc2, const bool elementary, const bool ngParam){
     if((this->cost <= x.cost) && (this->load <= x.load)){
-        if(!elementary && !ngParam)
-            return true;
         if(x.v == 0  || this->v == 0)
             cout << "PRICER_C ERROR: Dominance check on start label." << endl;
-
+        if(!elementary && !ngParam)
+            return true;
+        if(cyc2){
+            if(this->pred == x.pred){
+                for(auto& label: x.dominated_nodes){
+                    this->dominated_nodes.push_back(label);
+                    label->dominator = this;
+                }
+                x.dominated_nodes.clear();
+                for(auto it = x.dominator->dominated_nodes.begin(); it != x.dominator->dominated_nodes.end(); ){
+                    if(*it == &x){
+                        x.dominator->dominated_nodes.erase(it);
+                        continue;
+                    }
+                }
+                return true;
+            }
+            if(!x.dominated){
+                this->dominated_nodes.push_back(&x);
+                x.dominated = true;
+                x.dominator = this;
+                return false;
+            }
+            if(this->pred != x.dominator->pred){
+                for(auto& label: x.dominated_nodes){
+                    this->dominated_nodes.push_back(label);
+                    label->dominator = this;
+                }
+                x.dominated_nodes.clear();
+                for(auto it = x.dominator->dominated_nodes.begin(); it != x.dominator->dominated_nodes.end(); ){
+                    if(*it == &x){
+                        x.dominator->dominated_nodes.erase(it);
+                        continue;
+                    }
+                }
+                return true;
+            }
+            for(auto& label: x.dominated_nodes){
+                this->dominated_nodes.push_back(label);
+                label->dominator = this;
+            }
+            x.dominated_nodes.clear();
+            for(auto it = x.dominator->dominated_nodes.begin(); it != x.dominator->dominated_nodes.end(); ){
+                if(*it == &x){
+                    x.dominator->dominated_nodes.erase(it);
+                    continue;
+                }
+            }
+            return false;
+        }
         auto& own_comparator = ngParam ? this->ng_memory : this->pred_field;
         auto& x_comparator = ngParam ? x.ng_memory : x.pred_field;
 
@@ -243,6 +291,13 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
         Label& x = propagated[it_q->v].back();
         q[queue_index].erase(it_q);
 
+        // In the case of 2 cycle elimination, all the pointers need to be reseated.
+        if(cyc2){
+            for(auto& label: x.dominated_nodes){
+                label->dominator = &x;
+            }
+        }
+
         for(unsigned i=1;i<num_nodes;++i){
             if (i == x.v)
                 continue;
@@ -265,9 +320,9 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
             }
             Label newlabel {i, x.v, newcost, newload, &x, neighborhood};
 
-            for(const Label& label: propagated[i]){
+            for(Label& label: propagated[i]){
                 // TODO: Rewrite dominates()
-                if(label.dominates(newlabel, elementary, ngParam)){
+                if(label.dominates(newlabel, cyc2, elementary, ngParam)){
                     if(cyc2 && !first_dominated && (label.pred != newlabel.pred)){
                         // TODO: Geht hier alles gut mit dem neuen propagated labels Teil?
                         first_dominated = true;
@@ -277,29 +332,26 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
                     }
                 }
             }
+            auto new_label_it = q[i].insert(newlabel);
             if(!dominated){
-
                 for(auto it = q[i].begin(); it != q[i].end(); ){
-                    if(it->load <= newlabel.load && it->dominates(newlabel, elementary, ngParam)){
-                        if(cyc2 && !first_dominated && (it->pred != newlabel.pred)){
-                            // TODO: Geht hier alles gut mit dem neuen propagated labels Teil?
-                            // TODO: Nein. Wenn das neues Label eines in der queue dominiert wird nicht auf zweifache Dominanz geschaut. Dass muss gefixt werden.
-                            first_dominated = true;
-                        } else {
+                    if(&(*it) == &(*new_label_it))
+                        continue;
+                    if(it->load <= newlabel.load && (&(*it))->dominates(*(&(*new_label_it)), cyc2, elementary, ngParam)){
+
                         dominated = true;
                         break;
-                        }
                     }
                     // TODO: Hier müsste nicht jedes Mal auf die load überprüft werden. Das könnte optimiert werden.
-                    if(it->load >= newlabel.load && newlabel.dominates(*it, elementary, ngParam)){
+                    if(it->load >= new_label_it->load && new_label_it->dominates(*it, cyc2, elementary, ngParam)){
                         it = q[i].erase(it);
                         continue;
                     }
                     ++it;
                 }
             }
-            if(!dominated){
-                q[i].insert(newlabel);
+            if(dominated){
+                q[i].erase(new_label_it);
             }
 
         }

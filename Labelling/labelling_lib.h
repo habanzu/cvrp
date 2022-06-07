@@ -1,6 +1,7 @@
 #include<bitset>
 
 using std::bitset;
+using std::vector;
 
 constexpr unsigned neighborhood_size = 512;
 
@@ -9,14 +10,17 @@ struct Label{
     unsigned pred;
     double cost;
     double load;
-    const Label* pred_ptr;
+    Label* pred_ptr;
     bitset<neighborhood_size> pred_field;
     bitset<neighborhood_size> ng_memory;
+    bool dominated = false;
+    Label* dominator;
+    vector<Label*> dominated_nodes;
 
     Label(unsigned v, unsigned pred, double cost, double load);
-    Label(unsigned v, unsigned pred, double cost, double load, const Label* pred_ptr);
-    Label(unsigned v, unsigned pred, double cost, double load, const Label* pred_ptr, bitset<neighborhood_size> ng_memory);
-    bool dominates(const Label& x, const bool elementary, const bool ngParam) const;
+    Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr);
+    Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr, bitset<neighborhood_size> ng_memory);
+    bool dominates(Label& x, const bool cyc2, const bool elementary, const bool ngParam);
     bool check_whether_in_path(const unsigned node, const bool ngParam) const;
     unsigned path_len() const;
     void write_path_to_output(unsigned* result) const ;
