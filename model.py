@@ -16,7 +16,6 @@ class VRP(Model):
         self.vars = {}
         self.cons = []
 
-
 def create_constraints(model, G, heuristic_time=0):
     # Create a valid set of variables and the constraints to it
     for i in range(1,G.number_of_nodes()):

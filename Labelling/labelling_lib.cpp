@@ -13,36 +13,38 @@ using std::vector;
 using std::list;
 using std::cout;
 using std::endl;
+using std::multiset;
 using namespace std::chrono;
 
 vector<double> nodes;
 vector<vector<double> > edges;
-vector<std::bitset<neighborhood_size> > neighborhoods;
+vector<bitset<neighborhood_size> > neighborhoods;
 unsigned num_nodes;
 double capacity;
 unsigned max_path_len;
 
 struct less_than {
-    bool operator()(const Label* label1, const Label* label2) const{
-        return (label1->load < label2->load);
+    bool operator()(const Label& label1, const Label& label2) const{
+        return (label1.load < label2.load);
     }
 };
 
 Label::Label(unsigned v, unsigned pred, double cost, double load):v{v}, pred{pred}, cost{cost}, load{load} {
     pred_field[0] = 1;
+    ng_memory = bitset<neighborhood_size>();
 }
 
-Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr} {
+Label::Label(unsigned v, unsigned pred, double cost, double load, const Label* pred_ptr):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr} {
     pred_field = pred_ptr->pred_field;
     pred_field[v] = 1;
 }
 
-Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr, std::bitset<neighborhood_size> ng_memory):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr}, ng_memory{ng_memory}{
+Label::Label(unsigned v, unsigned pred, double cost, double load, const Label* pred_ptr, bitset<neighborhood_size> ng_memory):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr}, ng_memory{ng_memory}{
     pred_field = pred_ptr->pred_field;
     pred_field[v] = 1;
 }
 
-bool Label::dominates(const Label& x, const bool elementary, const bool ngParam){
+bool Label::dominates(const Label& x, const bool elementary, const bool ngParam) const{
     if((this->cost <= x.cost) && (this->load <= x.load)){
         if(!elementary && !ngParam)
             return true;
@@ -65,20 +67,20 @@ bool Label::check_whether_in_path(const unsigned node, const bool ngParam) const
     if(node == 0)
         cout << "PRICER_C ERROR: Path check with node 0." << endl;
 
-        std::bitset<neighborhood_size> mask(0);
-        mask[node] = 1;
+    bitset<neighborhood_size> mask(0);
+    mask[node] = 1;
 
-        auto& comparator = ngParam ? this->ng_memory : this->pred_field;
-        if((comparator & mask) == mask){
-            return true;
-        } else {
-            return false;
-        }
+    auto& comparator = ngParam ? this->ng_memory : this->pred_field;
+    if((comparator & mask) == mask){
+        return true;
+    } else {
+        return false;
+    }
 }
 
-unsigned Label::path_len(){
+unsigned Label::path_len() const{
     unsigned path_len = 2;
-    Label* current_label = this;
+    const Label* current_label = this;
     while(current_label->pred > 0){
         // Calculation of path len in pricer.py
         if(path_len > max_path_len || path_len > capacity + 2){
@@ -91,14 +93,14 @@ unsigned Label::path_len(){
     return path_len;
 }
 
-void Label::write_path_to_output(unsigned* result){
+void Label::write_path_to_output(unsigned* result) const{
     unsigned path_len = this->path_len();
     if(path_len > max_path_len){
         cout << "PRICER_C WARNING: Path exceeds maximum path length" << endl;
         return;
     }
 
-    Label* current_label = this;
+    const Label* current_label = this;
     result[path_len] = 0;
     result[0] = 0;
     for(unsigned i = path_len - 1; i > 0; --i){
@@ -111,7 +113,7 @@ void Label::write_path_to_output(unsigned* result){
     }
 }
 
-double Label::finishing_cost(double const * dual, const bool farkas){
+double Label::finishing_cost(double const * dual, const bool farkas) const{
     double finishing_cost = this->cost - dual[num_nodes-1];
     finishing_cost = farkas ? finishing_cost: finishing_cost + edges[this->v][0];
     return finishing_cost;
@@ -139,6 +141,27 @@ double maximal_cost(double const* dual, const bool farkas, const vector<Label*>&
     return highest_red_cost;
 }
 
+unsigned index_minimum_load_in_queue(const vector<multiset<Label, less_than>>& q){
+    unsigned min_index;
+    double min_load = capacity + 1;
+    for(unsigned i = 0; i < num_nodes; ++i){
+        if(!q[i].empty() && q[i].begin()->load < min_load){
+            min_index = i;
+            min_load = q[i].begin()->load;
+        }
+    }
+
+    return min_index;
+}
+
+bool queue_empty(const vector<multiset<Label, less_than>>& q){
+    for(unsigned i = 0; i < num_nodes; ++i){
+        if(!q[i].empty())
+            return false;
+    }
+    return true;
+}
+
 void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len, const unsigned ngParam){
     if(num_nodes > neighborhood_size){
         cout << "PRICER_C Error: The number of nodes is to large for the Label struct. Abort." << endl;
@@ -162,7 +185,7 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
     neighborhoods.push_back(0);
     for(unsigned i =1; i<num_nodes;++i){
         double edge_bound = i == 1 ? edges[1][2] : edges[i][1];
-        std::bitset<neighborhood_size> neighborhood;
+        bitset<neighborhood_size> neighborhood;
         neighborhood[i] = 1;
         for(unsigned j=1; j<= ngParam; ++j){
             neighborhood[j] = 1;
@@ -198,52 +221,56 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
     cout << "PRICER_C: Graph data successfully copied to C." << endl;
 }
 
-unsigned labelling(double const * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, bool* abort_early, const bool ngParam){
+unsigned labelling(const double * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, bool* abort_early, const bool ngParam){
     auto t0 = high_resolution_clock::now();
 
-    std::multiset<Label*, less_than> q;
-    vector<list<Label>> labels;
+    vector<multiset<Label, less_than>> q;
+    // TODO: Wieso wirft vector<vector< const Label>> einen Fehler?
+    vector<list<Label> > propagated;
     vector<Label*> new_vars;
-    labels.resize(num_nodes);
-    labels[0].push_back(Label {0,0,0,0});
-    (labels[0].begin())->ng_memory = std::bitset<neighborhood_size>();
-    q.insert(&(labels[0].back()));
+    propagated.resize(num_nodes);
+    q.resize(num_nodes);
+    q[0].insert(Label {0,0,0,0});
 
     double red_cost_bound = -1e-6;
     unsigned num_paths = 0;
 
-    while(!q.empty()){
-        Label* x = *(q.begin());
-        q.erase(q.begin());
+    while(!queue_empty(q)){
+        unsigned queue_index = index_minimum_load_in_queue(q);
+        auto it_q = q[queue_index].begin();
+        propagated[it_q->v].push_back(*it_q);
+        // TODO: Ist das die korrekte Syntax für eine REferenz?
+        Label& x = propagated[it_q->v].back();
+        q[queue_index].erase(it_q);
 
         for(unsigned i=1;i<num_nodes;++i){
-            if (i == x->v)
+            if (i == x.v)
                 continue;
-            if((elementary || ngParam) && x->check_whether_in_path(i, ngParam))
+            if((elementary || ngParam) && x.check_whether_in_path(i, ngParam))
                 continue;
-            if(cyc2 && x->pred == i)
+            if(cyc2 && x.pred == i)
                 continue;
 
-            double newload = x->load + nodes[i];
+            // Create new label
+            const double newload = x.load + nodes[i];
             if(newload > capacity)
                 continue;
-
             bool dominated = false;
             bool first_dominated = false;
-            double newcost = x->cost - dual[i-1];
-            newcost = farkas ? newcost: newcost + edges[x->v][i];
-            std::bitset<neighborhood_size> neighborhood;
+            const double newcost = farkas ? x.cost - dual[i-1]: x.cost - dual[i-1] + edges[x.v][i];
+            bitset<neighborhood_size> neighborhood;
             if(ngParam){
-                neighborhood = neighborhoods[i] & x->ng_memory;
+                neighborhood = neighborhoods[i] & x.ng_memory;
                 neighborhood[i] = 1;
             }
-            Label newlabel {i, x->v, newcost, newload, x, neighborhood};
+            Label newlabel {i, x.v, newcost, newload, &x, neighborhood};
 
-            for(auto& label: labels[i]){
+            for(const Label& label: propagated[i]){
+                // TODO: Rewrite dominates()
                 if(label.dominates(newlabel, elementary, ngParam)){
                     if(cyc2 && !first_dominated && (label.pred != newlabel.pred)){
+                        // TODO: Geht hier alles gut mit dem neuen propagated labels Teil?
                         first_dominated = true;
-                        continue;
                     } else {
                     dominated = true;
                     break;
@@ -251,26 +278,29 @@ unsigned labelling(double const * dual, const bool farkas, const unsigned time_l
                 }
             }
             if(!dominated){
-                labels[i].push_back(newlabel);
-                Label* newlabel_ref = &(labels[i].back());
-                q.insert(newlabel_ref);
 
-                for(auto it = labels[i].begin(); it != labels[i].end(); ){
-                    if(newlabel_ref->dominates(*it, elementary, ngParam) && newlabel_ref != &(*it)){
-                        // Remove the label from the queue
-                        for(auto q_it = q.begin(); q_it != q.end();++q_it){
-                            if (*q_it == &(*it)){
-                                q.erase(q_it);
-                                break;
-                            }
+                for(auto it = q[i].begin(); it != q[i].end(); ){
+                    // TODO: Ich sollte getrennte queues für jeden Knoten haben.
+                    if(it->load <= newlabel.load && it->dominates(newlabel, elementary, ngParam)){
+                        if(cyc2 && !first_dominated && (it->pred != newlabel.pred)){
+                            // TODO: Geht hier alles gut mit dem neuen propagated labels Teil?
+                            // TODO: Nein. Wenn das neues Label eines in der queue dominiert wird nicht auf zweifache Dominanz geschaut. Dass muss gefixt werden.
+                            first_dominated = true;
+                        } else {
+                        dominated = true;
+                        break;
                         }
-
-                        it = labels[i].erase(it);
-
-                    } else{
-                        ++it;
                     }
+                    // TODO: Hier müsste nicht jedes Mal auf die load überprüft werden. DAs könnte optimiert werden.
+                    if(it->load >= newlabel.load && newlabel.dominates(*it, elementary, ngParam)){
+                        it = q[i].erase(it);
+                        continue;
+                    }
+                    ++it;
                 }
+            }
+            if(!dominated){
+                q[i].insert(newlabel);
             }
 
         }
@@ -283,22 +313,21 @@ unsigned labelling(double const * dual, const bool farkas, const unsigned time_l
         }
 
         // Check if the path to the last node has negative reduced cost
-        double newcost = x->finishing_cost(dual,farkas);
-        if((newcost < -1e-6) && (x->v != 0))
+        double newcost = x.finishing_cost(dual,farkas);
+        if((newcost < -1e-6) && (x.v != 0))
             ++num_paths;
-        if((newcost < red_cost_bound) && (x->v != 0)){
+        if((newcost < red_cost_bound) && (x.v != 0)){
             if(new_vars.size() == max_vars){
-                new_vars[index_of_max_red_cost(dual,farkas,new_vars)] = x;
+                new_vars[index_of_max_red_cost(dual,farkas,new_vars)] = &x;
                 red_cost_bound = maximal_cost(dual,farkas,new_vars);
             } else {
-                new_vars.push_back(x);
+                new_vars.push_back(&x);
             }
         }
     }
     for(unsigned i=0;i<new_vars.size();++i){
         new_vars[i]->write_path_to_output(result+i*max_path_len);
     }
-    // return 0;
     return num_paths;
 
 }
