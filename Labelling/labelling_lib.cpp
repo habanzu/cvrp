@@ -280,7 +280,6 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
             if(!dominated){
 
                 for(auto it = q[i].begin(); it != q[i].end(); ){
-                    // TODO: Ich sollte getrennte queues für jeden Knoten haben.
                     if(it->load <= newlabel.load && it->dominates(newlabel, elementary, ngParam)){
                         if(cyc2 && !first_dominated && (it->pred != newlabel.pred)){
                             // TODO: Geht hier alles gut mit dem neuen propagated labels Teil?
@@ -291,7 +290,7 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
                         break;
                         }
                     }
-                    // TODO: Hier müsste nicht jedes Mal auf die load überprüft werden. DAs könnte optimiert werden.
+                    // TODO: Hier müsste nicht jedes Mal auf die load überprüft werden. Das könnte optimiert werden.
                     if(it->load >= newlabel.load && newlabel.dominates(*it, elementary, ngParam)){
                         it = q[i].erase(it);
                         continue;
