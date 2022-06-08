@@ -36,6 +36,11 @@ def parse(source):
     # According to TSP Lib, demands are always integers
     demands = map(lambda x:x.split(), lines[demand_index+1:demand_index+n+1])
     demands = [int(q) for _,q in demands]
+    if demands[0] != 0:
+        print("ERROR: Demand of depot not zero")
+    for q in demands[1:]:
+        if q <= 0:
+            print("ERROR: All demands should be > 0")
 
     if int(lines[depot_index+1]) != 1 or int(lines[depot_index+2]) != -1:
         print("ERROR: Depots cant be parsed.")

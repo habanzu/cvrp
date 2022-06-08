@@ -15,13 +15,6 @@ using std::endl;
 using std::multiset;
 using namespace std::chrono;
 
-vector<double> nodes;
-vector<vector<double> > edges;
-vector<bitset<neighborhood_size> > neighborhoods;
-unsigned num_nodes;
-double capacity;
-unsigned max_path_len;
-
 struct less_than {
     bool operator()(const Label& label1, const Label& label2) const{
         if(label1.load == label2.load)
@@ -30,17 +23,35 @@ struct less_than {
     }
 };
 
-Label::Label(unsigned v, unsigned pred, double cost, double load):v{v}, pred{pred}, cost{cost}, load{load} {
+struct cyc2_dominant_labels{
+    // label1->cost <= label2->cost should always be true
+    unsigned num_labels;
+    multiset<Label, less_than>::const_iterator label1;
+    multiset<Label, less_than>::const_iterator label2;
+    cyc2_dominant_labels(){
+        num_labels = 0;
+    }
+};
+
+vector<unsigned> nodes;
+vector<vector<double> > edges;
+vector<bitset<neighborhood_size> > neighborhoods;
+unsigned num_nodes;
+double capacity;
+unsigned max_path_len;
+vector<vector<cyc2_dominant_labels>> cyc2_dominators;
+
+Label::Label(unsigned v, unsigned pred, double cost, unsigned load):v{v}, pred{pred}, cost{cost}, load{load} {
     pred_field[0] = 1;
     ng_memory = bitset<neighborhood_size>();
 }
 
-Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr} {
+Label::Label(unsigned v, unsigned pred, double cost, unsigned load, Label* pred_ptr):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr} {
     pred_field = pred_ptr->pred_field;
     pred_field[v] = 1;
 }
 
-Label::Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr, bitset<neighborhood_size> ng_memory):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr}, ng_memory{ng_memory}{
+Label::Label(unsigned v, unsigned pred, double cost, unsigned load, Label* pred_ptr, bitset<neighborhood_size> ng_memory):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr}, ng_memory{ng_memory}{
     pred_field = pred_ptr->pred_field;
     pred_field[v] = 1;
 }
@@ -109,6 +120,57 @@ bool Label::dominates(const Label& x, const bool cyc2, const bool elementary, co
             return false;
         }
     }
+    return false;
+}
+
+bool cyc2_dominates(multiset<Label, less_than>& q_i, const multiset<Label, less_than>::const_iterator& x){
+    cyc2_dominant_labels& comparators = cyc2_dominators[x->v][x->load];
+    if(comparators.num_labels == 0){
+        ++comparators.num_labels;
+        comparators.label1 = x;
+        return false;
+    }
+    if(comparators.num_labels == 1){
+        if(comparators.label1->pred == x->pred){
+            if(comparators.label1->cost <= x->cost){
+                return true;
+            } else {
+                q_i.erase(comparators.label1);
+                comparators.label1 = x;
+                return false;
+            }
+        }
+        //see invariant in definiiton
+        if(comparators.label1->cost <= x->cost){
+            comparators.label2 = x;
+        } else {
+            comparators.label2 = comparators.label1;
+            comparators.label1 = x;
+        }
+        ++comparators.num_labels;
+        return false;
+    }
+    if((comparators.label1->cost <= x->cost && comparators.label2->cost <= x->cost) ||
+        (comparators.label1->pred == x->pred && comparators.label1->cost <= x->cost) ||
+        (comparators.label2->pred == x->pred && comparators.label2->cost <= x->cost))
+        return true;
+    if(comparators.label1->pred == x->pred && comparators.label1->cost > x->cost){
+        q_i.erase(comparators.label1);
+        comparators.label1 = x;
+        return false;
+    }
+    if(comparators.label1->cost <= x->cost){
+        q_i.erase(comparators.label2);
+        comparators.label2 = x;
+        return false;
+    }
+    if(comparators.label1->cost > x->cost){
+        q_i.erase(comparators.label2);
+        comparators.label2 = comparators.label1;
+        comparators.label1 = x;
+        return false;
+    }
+    cout << "SHOULD NOT HAPPEN!" << endl;
     return false;
 }
 
@@ -280,6 +342,13 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
     propagated.resize(num_nodes);
     q.resize(num_nodes);
     q[0].insert(Label {0,0,0,0});
+    if(cyc2){
+        cyc2_dominators.clear();
+        cyc2_dominators.resize(num_nodes);
+        for(auto& load_vector: cyc2_dominators){
+            load_vector.resize(capacity + 100, cyc2_dominant_labels());
+        }
+    }
 
     double red_cost_bound = -1e-6;
     unsigned num_paths = 0;
@@ -288,10 +357,8 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
         unsigned queue_index = index_minimum_load_in_queue(q);
         auto it_q = q[queue_index].begin();
         propagated[it_q->v].push_back(*it_q);
-        // TODO: Ist das die korrekte Syntax für eine REferenz?
         Label& x = propagated[it_q->v].back();
         q[queue_index].erase(it_q);
-
         for(unsigned i=1;i<num_nodes;++i){
             if (i == x.v)
                 continue;
@@ -301,7 +368,7 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
                 continue;
 
             // Create new label
-            const double newload = x.load + nodes[i];
+            const unsigned newload = x.load + nodes[i];
             if(newload > capacity)
                 continue;
             bool dominated = false;
@@ -313,6 +380,13 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
                 neighborhood[i] = 1;
             }
             Label newlabel {i, x.v, newcost, newload, &x, neighborhood};
+
+            if(cyc2){
+                const auto& new_label_it = q[i].insert(newlabel);
+                if(cyc2_dominates(q[i], new_label_it))
+                    q[i].erase(new_label_it);
+                continue;
+            }
 
             for(Label& label: propagated[i]){
                 // TODO: Rewrite dominates()

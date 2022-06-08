@@ -102,6 +102,7 @@ def create_example_1():
         G.nodes()[node]['demand'] = random.randint(1,10)
 
     G.graph['capacity'] = 20
+    G.graph['min_trucks'] = 5
     return G
 
 def create_example_2():
@@ -114,4 +115,5 @@ def create_example_2():
         G.nodes()[node]['demand'] = 2
 
     G.graph['capacity'] = 4
+    G.graph['min_trucks'] = 2
     return G

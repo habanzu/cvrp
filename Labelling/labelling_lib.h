@@ -9,7 +9,7 @@ struct Label{
     unsigned v;
     unsigned pred;
     double cost;
-    double load;
+    unsigned load;
     Label* pred_ptr;
     bitset<neighborhood_size> pred_field;
     bitset<neighborhood_size> ng_memory;
@@ -17,9 +17,9 @@ struct Label{
     Label* dominator;
     vector<Label*> dominated_nodes;
 
-    Label(unsigned v, unsigned pred, double cost, double load);
-    Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr);
-    Label(unsigned v, unsigned pred, double cost, double load, Label* pred_ptr, bitset<neighborhood_size> ng_memory);
+    Label(unsigned v, unsigned pred, double cost, unsigned load);
+    Label(unsigned v, unsigned pred, double cost, unsigned load, Label* pred_ptr);
+    Label(unsigned v, unsigned pred, double cost, unsigned load, Label* pred_ptr, bitset<neighborhood_size> ng_memory);
     bool dominates(const Label& x, const bool cyc2, const bool elementary, const bool ngParam) const;
     bool check_whether_in_path(const unsigned node, const bool ngParam) const;
     unsigned path_len() const;
