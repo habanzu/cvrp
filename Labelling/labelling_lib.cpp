@@ -124,54 +124,93 @@ bool Label::dominates(const Label& x, const bool cyc2, const bool elementary, co
 }
 
 bool cyc2_dominates(multiset<Label, less_than>& q_i, const multiset<Label, less_than>::const_iterator& x){
-    cyc2_dominant_labels& comparators = cyc2_dominators[x->v][x->load];
-    if(comparators.num_labels == 0){
-        ++comparators.num_labels;
-        comparators.label1 = x;
-        return false;
-    }
-    if(comparators.num_labels == 1){
-        if(comparators.label1->pred == x->pred){
-            if(comparators.label1->cost <= x->cost){
-                return true;
-            } else {
-                q_i.erase(comparators.label1);
-                comparators.label1 = x;
-                return false;
-            }
+    // siehe TODO unten für dne Grund des auskommentierten Codes
+    vector<multiset<Label, less_than>::const_iterator> delete_before_finishing;
+    bool dominated = false;
+    // For whatever reason, this yields wrong results (aka not enough variables are found when doing the pricing)
+    // but it works correctly for i <= x->load
+    cout << "starting dominance at node " << x->v << " with load " << x->load << " and cost " << x->cost << endl;
+    for(unsigned i = x->load;i <= capacity; ++i){
+        cyc2_dominant_labels* comparators = &(cyc2_dominators[x->v][i]);
+        if(comparators->num_labels == 0){
+            ++comparators->num_labels;
+            comparators->label1 = x;
+            continue;
         }
-        //see invariant in definiiton
-        if(comparators.label1->cost <= x->cost){
-            comparators.label2 = x;
-        } else {
-            comparators.label2 = comparators.label1;
-            comparators.label1 = x;
+        cout << "Dominance check: " << comparators->label1->cost << endl;
+        if(comparators->label1->cost <= x->cost){
+            if(x->load == i)
+                dominated = true;
+            break;
         }
-        ++comparators.num_labels;
-        return false;
+        // Wieso ist das hier problematisch? Es müsste doch immer eine absteigende Folge sein?
+        // if(comparators.label1->load == i)
+        //     delete_before_finishing.push_back(comparators.label1);
+        comparators->label1 = x;
+        continue;
+
+        // if(comparators.num_labels == 1){
+        //     if(comparators.label1->pred == x->pred){
+        //         if(comparators.label1->cost <= x->cost){
+        //             if(x->load == i)
+        //                 dominated = true;
+        //             continue;
+        //         } else {
+        //             // if(comparators.label1->load == i)
+        //             //     delete_before_finishing.push_back(comparators.label1);
+        //             comparators.label1 = x;
+        //             continue;
+        //         }
+        //     }
+        //     //see invariant in definiton
+        //     if(comparators.label1->cost <= x->cost){
+        //         comparators.label2 = x;
+        //     } else {
+        //         comparators.label2 = comparators.label1;
+        //         comparators.label1 = x;
+        //     }
+        //     ++comparators.num_labels;
+        //     continue;
+        // }
+        // if(comparators.label2->cost <= x->cost ||
+        //     (comparators.label1->pred == x->pred && comparators.label1->cost <= x->cost)){
+        //     if (x->load == i)
+        //         dominated = true;
+        //     continue;
+        // }
+        // if(comparators.label1->pred == x->pred && comparators.label1->cost > x->cost){
+        //     // if(comparators.label1->load == i)
+        //     //     delete_before_finishing.push_back(comparators.label1);
+        //     comparators.label1 = x;
+        //     continue;
+        // }
+        // if(comparators.label1->cost > x->cost){
+        //     // if(comparators.label2->load == i)
+        //     //     delete_before_finishing.push_back(comparators.label2);
+        //     comparators.label2 = comparators.label1;
+        //     comparators.label1 = x;
+        //     continue;
+        // }
+        // // if(comparators.label1->cost <= x->cost){
+        //
+        //     comparators.label2 = x;
+        //     continue;
+        //     // if(comparators.label2->load == i)
+        //     //     delete_before_finishing.push_back(comparators.label2);
+        //
+        // // }
+        // cout << "SHOULD NOT HAPPEN!" << endl;
+        // return false;
     }
-    if((comparators.label1->cost <= x->cost && comparators.label2->cost <= x->cost) ||
-        (comparators.label1->pred == x->pred && comparators.label1->cost <= x->cost) ||
-        (comparators.label2->pred == x->pred && comparators.label2->cost <= x->cost))
-        return true;
-    if(comparators.label1->pred == x->pred && comparators.label1->cost > x->cost){
-        q_i.erase(comparators.label1);
-        comparators.label1 = x;
-        return false;
+    // TODO: Mögliche Verbesserung: Im Moment werden Labels beim rausschmeissen aus der Datenstruktur nicht aus q gelöscht.
+    // Der Grund ist: Es ist unklar, wann der letzte Iterator von einem Label entfernt wird.
+    // Von daher ist es auch nicht klar, wann das Element gelöscht werden kann.
+    // cout << "successfull dominance check" << endl;
+    for(auto it : delete_before_finishing){
+        q_i.erase(it);
     }
-    if(comparators.label1->cost <= x->cost){
-        q_i.erase(comparators.label2);
-        comparators.label2 = x;
-        return false;
-    }
-    if(comparators.label1->cost > x->cost){
-        q_i.erase(comparators.label2);
-        comparators.label2 = comparators.label1;
-        comparators.label1 = x;
-        return false;
-    }
-    cout << "SHOULD NOT HAPPEN!" << endl;
-    return false;
+    return dominated;
+
 }
 
 bool Label::check_whether_in_path(const unsigned node, const bool ngParam) const{
@@ -345,8 +384,13 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
     if(cyc2){
         cyc2_dominators.clear();
         cyc2_dominators.resize(num_nodes);
+        cout << "filling the new dominance vector" << endl;
+
         for(auto& load_vector: cyc2_dominators){
-            load_vector.resize(capacity + 100, cyc2_dominant_labels());
+            for(unsigned i =0; i<=capacity; ++i){
+                load_vector.push_back(cyc2_dominant_labels());
+            }
+            // load_vector.resize(capacity+1, cyc2_dominant_labels());
         }
     }
 
@@ -364,8 +408,8 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
                 continue;
             if((elementary || ngParam) && x.check_whether_in_path(i, ngParam))
                 continue;
-            if(cyc2 && x.pred == i)
-                continue;
+            // if(cyc2 && x.pred == i)
+                // continue;
 
             // Create new label
             const unsigned newload = x.load + nodes[i];
