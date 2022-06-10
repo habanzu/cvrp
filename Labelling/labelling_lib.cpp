@@ -41,7 +41,9 @@ double capacity;
 unsigned max_path_len;
 vector<vector<cyc2_dominant_labels>> cyc2_dominators;
 
-Label::Label(unsigned v, unsigned pred, double cost, unsigned load):v{v}, pred{pred}, cost{cost}, load{load} {
+Label::Label(){}
+
+Label::Label(unsigned v, unsigned pred, double cost, unsigned load):v{v}, pred{pred}, cost{cost}, load{load}, farley_val{0} {
     pred_field[0] = 1;
     ng_memory = bitset<neighborhood_size>();
 }
@@ -56,63 +58,21 @@ Label::Label(unsigned v, unsigned pred, double cost, unsigned load, Label* pred_
     pred_field[v] = 1;
 }
 
-bool Label::dominates(const Label& x, const bool cyc2, const bool elementary, const bool ngParam) const{
+Label::Label(unsigned v, unsigned pred, double cost, unsigned load, Label* pred_ptr, double farley_val):v{v}, pred{pred}, cost{cost}, load{load}, farley_val{farley_val}, pred_ptr{pred_ptr}{
+    pred_field = pred_ptr->pred_field;
+    pred_field[v] = 1;
+}
+
+bool Label::dominates(const Label& x, const bool elementary, const bool ngPath, const bool farley) const{
     if((this->cost <= x.cost) && (this->load <= x.load)){
         if(x.v == 0  || this->v == 0)
             cout << "PRICER_C ERROR: Dominance check on start label." << endl;
-        if(!elementary && !ngParam)
+        if(!elementary && !ngPath && !farley)
             return true;
-        if(cyc2){
-            cout << "2 cyle is NOT IMPLEMENTED" << endl;
-            // if(this->pred == x.pred){
-            //     for(auto& label: x.dominated_nodes){
-            //         this->dominated_nodes.push_back(label);
-            //         label->dominator = this;
-            //     }
-            //     x.dominated_nodes.clear();
-            //     for(auto it = x.dominator->dominated_nodes.begin(); it != x.dominator->dominated_nodes.end(); ){
-            //         if(*it == &x){
-            //             x.dominator->dominated_nodes.erase(it);
-            //             continue;
-            //         }
-            //     }
-            //     return true;
-            // }
-            // if(!x.dominated){
-            //     this->dominated_nodes.push_back(&x);
-            //     x.dominated = true;
-            //     x.dominator = this;
-            //     return false;
-            // }
-            // if(this->pred != x.dominator->pred){
-            //     for(auto& label: x.dominated_nodes){
-            //         this->dominated_nodes.push_back(label);
-            //         label->dominator = this;
-            //     }
-            //     x.dominated_nodes.clear();
-            //     for(auto it = x.dominator->dominated_nodes.begin(); it != x.dominator->dominated_nodes.end(); ){
-            //         if(*it == &x){
-            //             x.dominator->dominated_nodes.erase(it);
-            //             continue;
-            //         }
-            //     }
-            //     return true;
-            // }
-            // for(auto& label: x.dominated_nodes){
-            //     this->dominated_nodes.push_back(label);
-            //     label->dominator = this;
-            // }
-            // x.dominated_nodes.clear();
-            // for(auto it = x.dominator->dominated_nodes.begin(); it != x.dominator->dominated_nodes.end(); ){
-            //     if(*it == &x){
-            //         x.dominator->dominated_nodes.erase(it);
-            //         continue;
-            //     }
-            // }
-            return false;
-        }
-        auto& own_comparator = ngParam ? this->ng_memory : this->pred_field;
-        auto& x_comparator = ngParam ? x.ng_memory : x.pred_field;
+        if(farley)
+            return (this->farley_val >= x.farley_val);
+        auto& own_comparator = ngPath ? this->ng_memory : this->pred_field;
+        auto& x_comparator = ngPath ? x.ng_memory : x.pred_field;
 
         if((own_comparator & x_comparator) == own_comparator){
             return true;
@@ -212,14 +172,14 @@ bool cyc2_dominates(multiset<Label, less_than>& q_i, const multiset<Label, less_
 
 }
 
-bool Label::check_whether_in_path(const unsigned node, const bool ngParam) const{
+bool Label::check_whether_in_path(const unsigned node, const bool ngPath) const{
     if(node == 0)
         cout << "PRICER_C ERROR: Path check with node 0." << endl;
 
     bitset<neighborhood_size> mask(0);
     mask[node] = 1;
 
-    auto& comparator = ngParam ? this->ng_memory : this->pred_field;
+    auto& comparator = ngPath ? this->ng_memory : this->pred_field;
     if((comparator & mask) == mask){
         return true;
     } else {
@@ -370,7 +330,7 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
     cout << "PRICER_C: Graph data successfully copied to C." << endl;
 }
 
-unsigned labelling(const double * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, bool* abort_early, const bool ngParam){
+unsigned labelling(const double * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, bool* abort_early, const bool ngPath, double* farley_res){
     auto t0 = high_resolution_clock::now();
 
     vector<multiset<Label, less_than>> q;
@@ -391,8 +351,9 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
     }
 
     double red_cost_bound = -1e-6;
+    double best_farley_val = 0;
+    const bool farley = (*farley_res == 1);
     unsigned num_paths = 0;
-
     while(!queue_empty(q)){
         unsigned queue_index = index_minimum_load_in_queue(q);
         auto it_q = q[queue_index].begin();
@@ -402,7 +363,7 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
         for(unsigned i=1;i<num_nodes;++i){
             if (i == x.v)
                 continue;
-            if((elementary || ngParam) && x.check_whether_in_path(i, ngParam))
+            if((elementary || ngPath) && x.check_whether_in_path(i, ngPath))
                 continue;
             if(cyc2 && x.pred == i)
                 continue;
@@ -412,14 +373,26 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
             if(newload > capacity)
                 continue;
             bool dominated = false;
-            bool first_dominated = false;
-            const double newcost = farkas ? x.cost - dual[i-1]: x.cost - dual[i-1] + edges[x.v][i];
+            double newcost;
+            if(farley){
+                newcost = x.cost + edges[x.v][i];
+            } else {
+                newcost = farkas ? x.cost - dual[i-1]: x.cost - dual[i-1] + edges[x.v][i];
+            }
             bitset<neighborhood_size> neighborhood;
-            if(ngParam){
+            Label newlabel;
+            if(ngPath){
                 neighborhood = neighborhoods[i] & x.ng_memory;
                 neighborhood[i] = 1;
+                newlabel = Label{i, x.v, newcost, newload, &x, neighborhood};
+            } else{
+                if(farley){
+                    const double new_farley_val = x.farley_val + dual[i-1];
+                    newlabel = Label{i, x.v, newcost, newload, &x, new_farley_val};
+                } else {
+                    newlabel = Label{i, x.v, newcost, newload, &x};
+                }
             }
-            Label newlabel {i, x.v, newcost, newload, &x, neighborhood};
 
             if(cyc2){
                 const auto& new_label_it = q[i].insert(newlabel);
@@ -429,26 +402,20 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
             }
 
             for(Label& label: propagated[i]){
-                // TODO: Rewrite dominates()
-                if(label.dominates(newlabel, cyc2, elementary, ngParam)){
-                    if(cyc2 && !first_dominated && (label.pred != newlabel.pred)){
-                        // TODO: Geht hier alles gut mit dem neuen propagated labels Teil?
-                        first_dominated = true;
-                    } else {
+                if(label.dominates(newlabel, elementary, ngPath, farley)){
                     dominated = true;
                     break;
-                    }
                 }
             }
 
             if(!dominated){
                 for(auto it = q[i].begin(); it != q[i].end(); ){
-                    if(it->load <= newlabel.load && it->dominates(newlabel, cyc2, elementary, ngParam)){
+                    if(it->load <= newlabel.load && it->dominates(newlabel, elementary, ngPath, farley)){
                         dominated = true;
                         break;
                     }
                     // TODO: Hier müsste nicht jedes Mal auf die load überprüft werden. Das könnte optimiert werden.
-                    if(it->load >= newlabel.load && newlabel.dominates(*it, cyc2, elementary, ngParam)){
+                    if(it->load >= newlabel.load && newlabel.dominates(*it, elementary, ngPath, farley)){
                         it = q[i].erase(it);
                         continue;
                     }
@@ -469,17 +436,36 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
         }
 
         // Check if the path to the last node has negative reduced cost
-        double newcost = x.finishing_cost(dual,farkas);
-        if((newcost < -1e-6) && (x.v != 0))
-            ++num_paths;
-        if((newcost < red_cost_bound) && (x.v != 0)){
-            if(new_vars.size() == max_vars){
-                new_vars[index_of_max_red_cost(dual,farkas,new_vars)] = &x;
-                red_cost_bound = maximal_cost(dual,farkas,new_vars);
-            } else {
-                new_vars.push_back(&x);
+        // In case of farley: calculate the coefficent and check whether it is positive
+        if(x.v == 0)
+            continue;
+        if(farley){
+            double final_cost = x.cost + edges[x.v][0];
+            double final_farley = x.farley_val + dual[num_nodes - 1];
+            // cout << "Final farley: " << final_farley << ", cost: " << final_cost << endl;
+            if(final_farley <= 0)
+                continue;
+            double candidate = final_cost / final_farley;
+            // cout << "Found candidate " << candidate << endl;
+            if(candidate < best_farley_val || best_farley_val == 0)
+                best_farley_val = candidate;
+        } else{
+            double newcost = x.finishing_cost(dual,farkas);
+            if((newcost < -1e-6))
+                ++num_paths;
+            if((newcost < red_cost_bound)){
+                if(new_vars.size() == max_vars){
+                    new_vars[index_of_max_red_cost(dual,farkas,new_vars)] = &x;
+                    red_cost_bound = maximal_cost(dual,farkas,new_vars);
+                } else {
+                    new_vars.push_back(&x);
+                }
             }
         }
+    }
+    if(farley){
+        // cout << "Best farley coefficent found is " << best_farley_val << endl;
+        *farley_res = best_farley_val;
     }
     for(unsigned i=0;i<new_vars.size();++i){
         new_vars[i]->write_path_to_output(result+i*max_path_len);

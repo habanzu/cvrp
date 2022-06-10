@@ -10,7 +10,7 @@ from cffi import FFI
 ffi = FFI()
 labelling_lib = ffi.dlopen("Labelling/labelling_lib.so")
 
-funDefs = "void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len, const unsigned ngParam); unsigned labelling(const double * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, bool* abort_early, const bool ngPath);"
+funDefs = "void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len, const unsigned ngParam); unsigned labelling(const double * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, bool* abort_early, const bool ngPath, double* farley_res);"
 ffi.cdef(funDefs, override=True)
 
 class VRPPricer(Pricer):
@@ -18,6 +18,7 @@ class VRPPricer(Pricer):
         if 'methods' not in self.data:
             raise ValueError("The method(s) of the pricer need to be specified.")
         self.data['bounds'] = {}
+        self.data['farley_bound'] = []
         for method in self.data['methods']:
             self.data['bounds'][method] = []
 
@@ -88,16 +89,16 @@ class VRPPricer(Pricer):
 
         for i, method in enumerate(self.data['methods']):
             if method == 'elementary':
-                paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit, True,max_vars,False,False)
+                paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars,elementary=True)
             elif method == 'ng8':
-                paths, upper_bound, lower_bound, abort_early  = self.labelling(dual,farkas, time_limit, False,max_vars,False,True,8)
+                paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars,ngPath=True)
             elif method == 'ng20':
                 raise NotImplementedError("At the moment the ng Parameter is fixed to 8.")
-                paths, upper_bound, lower_bound, abort_early  = self.labelling(dual,farkas, time_limit, False,max_vars,False,True,20)
+                paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars,ngPath=True)
             elif method == 'cyc2':
-                paths, upper_bound, lower_bound, abort_early  = self.labelling(dual,farkas, time_limit, False,max_vars,True,False)
+                paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars,cyc2=True)
             elif method == 'SPPRC':
-                paths, upper_bound, lower_bound, abort_early  = self.labelling(dual,farkas,time_limit, False,max_vars,False,False)
+                paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars)
             else:
                 raise ValueError("Method in pricerdata methods does not exist.")
             if abort_early:
@@ -109,10 +110,24 @@ class VRPPricer(Pricer):
                     else:
                         lower_bound = self.data['bounds'][method][-1][1]
                 self.data['bounds'][method].append((upper_bound,lower_bound))
-            if not pricing_success and (len(paths) > 0 or not abort_early):
+            if not pricing_success and ((len(paths) > 0 or not abort_early)):
                 pricing_success = 1
+                # if farkas:
                 for path in paths:
                     self.addVar(path,farkas)
+
+        if not farkas and pricing_success:
+            _, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars, farley = True)
+            if abort_early:
+                print(f"PRICER_PY: Farley exceeded time limit.")
+                if len(self.data['farley_bound']) == 0:
+                    lower_bound = 0
+                else:
+                    lower_bound = self.data['farley_bound'][-1]
+            self.data['farley_bound'].append(lower_bound)
+            # self.addVar(paths[0],farkas)
+
+
         if not pricing_success:
             print("PRICER_PY: All methods exceeded the provided time limit without finding paths with reduced cost.")
             return {'result':SCIP_RESULT.DIDNOTRUN}
@@ -120,7 +135,11 @@ class VRPPricer(Pricer):
         return {'result':SCIP_RESULT.SUCCESS}
         # return {'result':SCIP_RESULT.SUCCESS}'lowerbound':lowerbound}
 
-    def labelling(self, dual,farkas, time_limit, elementary, max_vars, cyc2, ngParam, ngPath=0):
+    def labelling(self, dual,farkas, time_limit, max_vars, elementary=False, cyc2=False, ngPath=False, farley=False):
+        # sys.stdout.flush()
+
+        if farley and farkas:
+            raise ValueError("Farley can't be called with Farkas Pricing")
 
         # TODO: Possible improvement: result can be reused every time
         pointer_dual = ffi.new("double[]",dual)
@@ -130,12 +149,23 @@ class VRPPricer(Pricer):
 
         abort_early_ptr = ffi.new("bool*",False)
 
-        num_paths = labelling_lib.labelling(pointer_dual, farkas, time_limit, elementary, max_vars, cyc2, result_arr, abort_early_ptr, ngParam)
+        if farley:
+            farley_ptr = ffi.new("double*",1)
+        else:
+            farley_ptr = ffi.new("double*",0)
+
+        num_paths = labelling_lib.labelling(pointer_dual, farkas, time_limit, elementary, max_vars, cyc2, result_arr, abort_early_ptr, ngPath, farley_ptr)
         abort_early = abort_early_ptr[0]
+
+        # sys.stdout.flush()
+
+        upper_bound = self.model.getObjVal()
+        if farley:
+            return [], upper_bound, upper_bound*farley_ptr[0], abort_early
 
         result = np.frombuffer(ffi.buffer(result_arr),dtype=np.uintc)
 
-        upper_bound = self.model.getObjVal()
+
         if(num_paths == 0):
             if not farkas:
                 return [], upper_bound, upper_bound, abort_early
