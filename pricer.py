@@ -112,7 +112,6 @@ class VRPPricer(Pricer):
                 self.data['bounds'][method].append((upper_bound,lower_bound))
             if not pricing_success and ((len(paths) > 0 or not abort_early)):
                 pricing_success = 1
-                # if farkas:
                 for path in paths:
                     self.addVar(path,farkas)
 
@@ -125,7 +124,6 @@ class VRPPricer(Pricer):
                 else:
                     lower_bound = self.data['farley_bound'][-1]
             self.data['farley_bound'].append(lower_bound)
-            # self.addVar(paths[0],farkas)
 
 
         if not pricing_success:
