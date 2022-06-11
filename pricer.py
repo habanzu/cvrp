@@ -47,6 +47,22 @@ class VRPPricer(Pricer):
         print(f"PY PRICING: The neighborhood has been fixed to {ngParam} neighbors.")
         labelling_lib.initGraph(num_nodes,nodes_arr,edges_arr, capacity_ptr, self.data['max_path_len'], ngParam)
 
+        G = self.model.graph.to_directed()
+        G.graph['n_res'] = 2
+
+        for i in range(1,G.number_of_nodes()):
+            G.add_edge("Source",i, weight= 0)
+
+        G.remove_edges_from(list(G.edges(0)))
+        G = nx.relabel_nodes(G,{0:"Sink"})
+
+        for (u,v) in G.edges():
+            if v == "Sink":
+                G[u][v]['res_cost'] = np.array([1,1])
+            else:
+                G[u][v]['res_cost'] = np.array([G.nodes()[v]["demand"],1])
+        self.data["cspy_graph"] = G
+
     def init_data(self, G):
         self.data = {}
         self.data["capacity"] = G.graph['capacity']
@@ -85,29 +101,20 @@ class VRPPricer(Pricer):
         return var
 
     def cspy(self, dual, farkas):
-        G = self.model.graph.to_directed()
-        G.graph['n_res'] = 2
-
-        for i in range(1,G.number_of_nodes()):
-            if farkas:
-                G.add_edge("Source",i, weight= 0)
-            else:
-                G.add_edge("Source",i, weight=G.edges[0,i]['weight'])
-
-        G.remove_edges_from(list(G.edges(0)))
-
+        G = self.data["cspy_graph"]
         for (u,v) in G.edges():
+            old_v = v
+            old_u = u
+            if v == "Sink":
+                old_v = 0
+            if u == "Source":
+                old_u = 0
             if farkas:
-                G[u][v]['weight'] = -dual[v-1]
+                G[u][v]['weight'] = -dual[old_v-1]
             else:
-                G[u][v]['weight'] -= dual[v-1]
-            if 0 < v :
-                G[u][v]['res_cost'] = np.array([G.nodes()[v]["demand"],1])
-            else:
-                G[u][v]['res_cost'] = np.array([1,1])
+                G[u][v]['weight'] = self.model.graph[old_u][old_v]['weight'] - dual[old_v-1]
 
-        G = nx.relabel_nodes(G,{0:"Sink"})
-        alg = cspy.BiDirectional(G, [G.graph['capacity'] + 1,G.number_of_nodes()], [0,0], elementary=True, direction='forward')
+        alg = cspy.BiDirectional(G, [G.graph['capacity'] + 2,G.number_of_nodes()], [0,0], elementary=True, direction='forward')
         alg.run()
         upper_bound = self.model.getObjVal()
         path  = tuple( 0 if node == "Source" or node == "Sink" else node for node in alg.path)
@@ -127,14 +134,15 @@ class VRPPricer(Pricer):
 
         for i, method in enumerate(self.data['methods']):
             if method == 'ESPPRC':
-                if not self.data['use_cspy']:
-                    paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars,elementary=True)
-                else:
-                    paths, upper_bound, lower_bound, abort_early = self.cspy(dual, farkas)
-                if abort_early and len(paths) == 0:
-                    self.data['use_cspy'] = True
-                    print("PRICER_PY: Switching to cspy.")
-                    paths, upper_bound, lower_bound, abort_early = self.cspy(dual, farkas)
+                # if not self.data['use_cspy']:
+
+                # else:
+                paths, upper_bound, lower_bound, abort_early = self.cspy(dual, farkas)
+                paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars,elementary=True)
+                # if abort_early and len(paths) == 0:
+                #     self.data['use_cspy'] = True
+                #     print("PRICER_PY: Switching to cspy.")
+                #     paths, upper_bound, lower_bound, abort_early = self.cspy(dual, farkas)
             elif method == 'ng8':
                 paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars,ngPath=True)
             elif method == 'ng20':
@@ -226,9 +234,10 @@ class VRPPricer(Pricer):
             weight = nx.path_weight(self.model.graph,path,"weight")
 
             if not farkas:
-                red_cost = weight - sum([dual[i-1] for i in path[1:-1]]) - dual[-1]
+                red_cost = weight - sum([dual[i-1] for i in path[:-1]])
                 if red_cost < lowest_cost:
                     lowest_cost = red_cost
+        print(f"PRICER_PY: Labelling found path with cost {lowest_cost}")
 
         if not farkas:
             lower_bound = upper_bound + self.data['num_vehicles']*lowest_cost
