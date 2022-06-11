@@ -94,7 +94,7 @@ def heuristic(model, time):
     return paths
 
 def create_example_1():
-    G = nx.complete_graph(10)
+    G = nx.complete_graph(50)
     for (u, v) in G.edges():
         G.edges[u,v]['weight'] = random.randint(1,10)
 
