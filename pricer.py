@@ -5,6 +5,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 import sys, math, random
+import cspy
 
 from cffi import FFI
 ffi = FFI()
@@ -50,6 +51,7 @@ class VRPPricer(Pricer):
         self.data = {}
         self.data["capacity"] = G.graph['capacity']
         self.data["num_vehicles"] = G.graph['min_trucks']
+        self.data["use_cspy"] = False
 
     def pricerfarkas(self):
         dual = [self.model.getDualfarkasLinear(con) for con in self.data['cons']]
@@ -82,6 +84,42 @@ class VRPPricer(Pricer):
         self.data['vars'][tuple(path)] = var
         return var
 
+    def cspy(self, dual, farkas):
+        G = self.model.graph.to_directed()
+        G.graph['n_res'] = 2
+
+        for i in range(1,G.number_of_nodes()):
+            if farkas:
+                G.add_edge("Source",i, weight= 0)
+            else:
+                G.add_edge("Source",i, weight=G.edges[0,i]['weight'])
+
+        G.remove_edges_from(list(G.edges(0)))
+
+        for (u,v) in G.edges():
+            if farkas:
+                G[u][v]['weight'] = -dual[v-1]
+            else:
+                G[u][v]['weight'] -= dual[v-1]
+            if 0 < v :
+                G[u][v]['res_cost'] = np.array([G.nodes()[v]["demand"],1])
+            else:
+                G[u][v]['res_cost'] = np.array([1,1])
+
+        G = nx.relabel_nodes(G,{0:"Sink"})
+        alg = cspy.BiDirectional(G, [G.graph['capacity'] + 1,G.number_of_nodes()], [0,0], elementary=True, direction='forward')
+        alg.run()
+        upper_bound = self.model.getObjVal()
+        path  = tuple( 0 if node == "Source" or node == "Sink" else node for node in alg.path)
+        print(f"CSPY: Found elementary path {path} with cost {alg.total_cost}")
+        lower_bound = 0
+        if not farkas:
+            lower_bound = upper_bound + self.data['num_vehicles']*alg.total_cost
+        if alg.total_cost >= -1e-6:
+            return [], upper_bound, lower_bound , False
+        return [path], upper_bound, lower_bound, False
+
+
     def SPPRC_chooser(self, dual, farkas):
         max_vars = self.data['max_vars']
         time_limit = self.data['time_limit']
@@ -89,7 +127,14 @@ class VRPPricer(Pricer):
 
         for i, method in enumerate(self.data['methods']):
             if method == 'elementary':
-                paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars,elementary=True)
+                if not self.data['use_cspy']:
+                    paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars,elementary=True)
+                else:
+                    paths, upper_bound, lower_bound, abort_early = self.cspy(dual, farkas)
+                if abort_early and len(paths) == 0:
+                    self.data['use_cspy'] = True
+                    print("PRICER_PY: Switching to cspy.")
+                    paths, upper_bound, lower_bound, abort_early = self.cspy(dual, farkas)
             elif method == 'ng8':
                 paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars,ngPath=True)
             elif method == 'ng20':
@@ -115,7 +160,7 @@ class VRPPricer(Pricer):
                 for path in paths:
                     self.addVar(path,farkas)
 
-        if not farkas and pricing_success:
+        if not farkas and pricing_success and self.data['farley']:
             _, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars, farley = True)
             if abort_early:
                 print(f"PRICER_PY: Farley exceeded time limit.")

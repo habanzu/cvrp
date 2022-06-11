@@ -94,7 +94,7 @@ def heuristic(model, time):
     return paths
 
 def create_example_1():
-    G = nx.complete_graph(50)
+    G = nx.complete_graph(10)
     for (u, v) in G.edges():
         G.edges[u,v]['weight'] = random.randint(1,10)
 
@@ -113,6 +113,7 @@ def create_example_2():
 
     for node in G.nodes():
         G.nodes()[node]['demand'] = 2
+    G.nodes()[2]['demand'] = 1
 
     G.graph['capacity'] = 4
     G.graph['min_trucks'] = 2
