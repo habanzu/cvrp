@@ -126,7 +126,7 @@ class VRPPricer(Pricer):
         pricing_success = 0
 
         for i, method in enumerate(self.data['methods']):
-            if method == 'elementary':
+            if method == 'ESPPRC':
                 if not self.data['use_cspy']:
                     paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars,elementary=True)
                 else:
