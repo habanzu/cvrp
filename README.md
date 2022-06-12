@@ -1,6 +1,6 @@
-# GMeinhardt
+# cvrp
 
-
+A repository for the bachelor's thesis of Georg Meinhardt in the summer term of 2022. It's meant for an implementation of a Branch-Price-and-Cut algorithm for the Capacitated Vehicle Routing Problem. Goal of the thesis is to analyse lower bounds.
 
 ## Getting started
 
