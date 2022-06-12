@@ -237,7 +237,7 @@ class VRPPricer(Pricer):
                 red_cost = weight - sum([dual[i-1] for i in path[:-1]])
                 if red_cost < lowest_cost:
                     lowest_cost = red_cost
-        print(f"PRICER_PY: Labelling found path with cost {lowest_cost}")
+        # print(f"PRICER_PY: Labelling found path with cost {lowest_cost}")
 
         if not farkas:
             lower_bound = upper_bound + self.data['num_vehicles']*lowest_cost

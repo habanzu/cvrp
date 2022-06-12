@@ -361,7 +361,7 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
         Label& x = propagated[it_q->v].back();
         q[queue_index].erase(it_q);
         for(unsigned i=1;i<num_nodes;++i){
-            if (i == x.v)
+            if (i == x.v || dual[i-1] <= 0 )
                 continue;
             if((elementary || ngPath) && x.check_whether_in_path(i, ngPath))
                 continue;
