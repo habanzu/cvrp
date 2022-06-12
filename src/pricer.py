@@ -134,15 +134,7 @@ class VRPPricer(Pricer):
 
         for i, method in enumerate(self.data['methods']):
             if method == 'ESPPRC':
-                # if not self.data['use_cspy']:
-
-                # else:
-                paths, upper_bound, lower_bound, abort_early = self.cspy(dual, farkas)
                 paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars,elementary=True)
-                # if abort_early and len(paths) == 0:
-                #     self.data['use_cspy'] = True
-                #     print("PRICER_PY: Switching to cspy.")
-                #     paths, upper_bound, lower_bound, abort_early = self.cspy(dual, farkas)
             elif method == 'ng8':
                 paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars,ngPath=True)
             elif method == 'ng20':
