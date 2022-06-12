@@ -15,14 +15,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin https://gitlab.informatik.uni-bonn.de/meinhard/cvrp.git
+git remote add origin https://gitlab.informatik.uni-bonn.de/coan/thesis/gmeinhardt.git
 git branch -M main
 git push -uf origin main
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](https://gitlab.informatik.uni-bonn.de/meinhard/cvrp/-/settings/integrations)
+- [ ] [Set up project integrations](https://gitlab.informatik.uni-bonn.de/coan/thesis/gmeinhardt/-/settings/integrations)
 
 ## Collaborate with your team
 
