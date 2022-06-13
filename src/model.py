@@ -84,13 +84,15 @@ def heuristic(model, time, max_it, max_stale_it):
 
     stale_it = 0
     i = 0
+    best_cost = 0
     while(stale_it < max_stale_it) and i < max_it:
         found_new = False
         ap = hgs.AlgorithmParameters(timeLimit=time, seed=i)  # seconds
         hgs_solver = hgs.Solver(parameters=ap, verbose=False)
 
         result = hgs_solver.solve_cvrp(data)
-        # print(f"HYGESE: Found Solution with value {result.cost}")
+        if best_cost == 0 or result.cost < best_cost:
+            best_cost = result.cost
         for res in result.routes:
             res.insert(0,0)
             res.append(0)
@@ -103,7 +105,7 @@ def heuristic(model, time, max_it, max_stale_it):
         else:
             stale_it = stale_it + 1
         i = i + 1
-    print(f"HYGESE: Found {len(paths)} initial routes in {i} rounds")
+    print(f"HYGESE: Found {len(paths)} initial routes in {i} rounds. Best sol val is {best_cost}")
     return paths
 
 def create_example_1():

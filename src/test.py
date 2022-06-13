@@ -4,8 +4,10 @@ from model import VRP, create_constraints, output_variables, create_example_2
 from pricer import VRPPricer
 from parse import parse
 
-Instance = "E/E-n23-k3"
+Instance = "E/E-n76-k14"
+print(f"MAIN: Instance {Instance}")
 G = parse(f"Instances/{Instance}.vrp")
+# G.graph['min_trucks'] = 26
 
 model = VRP(G)
 
@@ -20,7 +22,7 @@ pricer.data['farley'] = False
 
 model.includePricer(pricer, "pricer","does pricing")
 
-create_constraints(model,G,heuristic_stale_it=100, heuristic_max_it=2e4)
+create_constraints(model,G,heuristic_stale_it=100, heuristic_max_it=2e4, heuristic_time=1e-2)
 
 model.optimize()
 model.hideOutput(quiet=False)
