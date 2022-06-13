@@ -16,7 +16,7 @@ class VRP(Model):
         self.vars = {}
         self.cons = []
 
-def create_constraints(model, G, heuristic_time=0):
+def create_constraints(model, G, heuristic_time=0.001, heuristic_stale_it=2, heuristic_max_it=1e4):
     # Create a valid set of variables and the constraints to it
     for i in range(1,G.number_of_nodes()):
         #TODO: I should check, whether these paths are indeed feasible.
@@ -31,8 +31,8 @@ def create_constraints(model, G, heuristic_time=0):
     convexity_constraint = model.addCons(sum(model.vars.values()) <= G.graph['min_trucks'], modifiable=True)
     model.cons.append(convexity_constraint)
 
-    if heuristic_time != 0:
-        paths = heuristic(model,heuristic_time)
+    if heuristic_time > 0 and heuristic_max_it > 0:
+        paths = heuristic(model,heuristic_time, heuristic_max_it, heuristic_stale_it)
         for path in paths:
             weight = nx.path_weight(G,path,"weight")
             var = model.addVar(vtype="C",obj=weight)
@@ -66,9 +66,7 @@ def output_variables(model, pricer):
     else:
         print("Solution contains non elementary paths.")
 
-def heuristic(model, time):
-    ap = hgs.AlgorithmParameters(timeLimit=time)  # seconds
-    hgs_solver = hgs.Solver(parameters=ap, verbose=False)
+def heuristic(model, time, max_it, max_stale_it):
     data = dict()
     G = model.graph
     n = G.number_of_nodes()
@@ -82,15 +80,30 @@ def heuristic(model, time):
     data['vehicle_capacity'] = G.graph['capacity']
     data['num_vehicles'] = int(G.graph['min_trucks'])
     data['depot'] = 0
-
-    result = hgs_solver.solve_cvrp(data)
-    print(f"HYGESE: Found Solution with value {result.cost}")
     paths = []
-    for res in result.routes:
-        res.insert(0,0)
-        res.append(0)
-        path = tuple(res)
-        paths.append(tuple(res))
+
+    stale_it = 0
+    i = 0
+    while(stale_it < max_stale_it) and i < max_it:
+        found_new = False
+        ap = hgs.AlgorithmParameters(timeLimit=time, seed=i)  # seconds
+        hgs_solver = hgs.Solver(parameters=ap, verbose=False)
+
+        result = hgs_solver.solve_cvrp(data)
+        # print(f"HYGESE: Found Solution with value {result.cost}")
+        for res in result.routes:
+            res.insert(0,0)
+            res.append(0)
+            path = tuple(res)
+            if path not in paths:
+                found_new = True
+                paths.append(tuple(res))
+        if found_new:
+            stale_it = 0
+        else:
+            stale_it = stale_it + 1
+        i = i + 1
+    print(f"HYGESE: Found {len(paths)} initial routes in {i} rounds")
     return paths
 
 def create_example_1():
