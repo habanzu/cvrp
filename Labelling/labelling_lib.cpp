@@ -343,7 +343,6 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
     if(cyc2){
         cyc2_dominators.clear();
         cyc2_dominators.resize(num_nodes);
-        cout << "filling the new dominance vector" << endl;
 
         for(auto& load_vector: cyc2_dominators){
             load_vector.resize(capacity+1, cyc2_dominant_labels());
@@ -440,11 +439,11 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
         if(x.v == 0)
             continue;
         if(farley){
-            double final_cost = x.cost + edges[x.v][0];
             double final_farley = x.farley_val + dual[num_nodes - 1];
-            // cout << "Final farley: " << final_farley << ", cost: " << final_cost << endl;
             if(final_farley <= 0)
                 continue;
+            double final_cost = x.cost + edges[x.v][0];
+            // cout << "Final farley: " << final_farley << ", cost: " << final_cost << endl;
             double candidate = final_cost / final_farley;
             // cout << "Found candidate " << candidate << endl;
             if(candidate < best_farley_val || best_farley_val == 0)
