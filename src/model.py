@@ -16,6 +16,7 @@ class VRP(Model):
         self.vars = {}
         self.cons = []
 
+
 def create_constraints(model, G, heuristic_time=0.001, heuristic_stale_it=2, heuristic_max_it=1e4):
     # Create a valid set of variables and the constraints to it
     for i in range(1,G.number_of_nodes()):
@@ -34,6 +35,10 @@ def create_constraints(model, G, heuristic_time=0.001, heuristic_stale_it=2, heu
     if heuristic_time > 0 and heuristic_max_it > 0:
         paths = heuristic(model,heuristic_time, heuristic_max_it, heuristic_stale_it)
         for path in paths:
+            load = sum([G.nodes()[i]['demand'] for i in path[1:-1]])
+            if load > G.graph['capacity']:
+                raise ValueError(f"PRICER_PY ERROR: Load exceeds capacity. Load {load}")
+            
             weight = nx.path_weight(G,path,"weight")
             var = model.addVar(vtype="C",obj=weight)
             counts = np.unique(path[1:-1], return_counts=True)

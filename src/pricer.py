@@ -88,6 +88,9 @@ class VRPPricer(Pricer):
                 print(f"PY Pricing: Path already exists. Reduced Cost {cost:.2f} | {path}")
             raise NotImplementedError("Path already exists. This is probably due to a missing branching rule.")
 
+        load = sum([self.model.graph.nodes()[i]['demand'] for i in path[1:-1]])
+        if load > self.data['capacity']:
+            print(f"PRICER_PY ERROR: Load exceeds capacity. Load {load}")
         weight = nx.path_weight(self.model.graph,path,"weight")
 
         var = self.model.addVar(vtype="C",obj=weight,pricedVar=True)
