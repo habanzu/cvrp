@@ -7,12 +7,14 @@ import numpy as np
 import hygese as hgs
 import sys, math, random
 
+from output import write_heuristic_results
+
 class VRP(Model):
     def __init__(self,graph):
         super().__init__()
 
-        self.original_graph = graph
-        self.graph = graph.copy()
+        # self.original_graph = graph
+        self.graph = graph
         self.vars = {}
         self.cons = []
 
@@ -38,7 +40,7 @@ def create_constraints(model, G, heuristic_time=0.001, heuristic_stale_it=2, heu
             load = sum([G.nodes()[i]['demand'] for i in path[1:-1]])
             if load > G.graph['capacity']:
                 raise ValueError(f"PRICER_PY ERROR: Load exceeds capacity. Load {load}")
-            
+
             weight = nx.path_weight(G,path,"weight")
             var = model.addVar(vtype="C",obj=weight)
             counts = np.unique(path[1:-1], return_counts=True)
@@ -111,6 +113,8 @@ def heuristic(model, time, max_it, max_stale_it):
             stale_it = stale_it + 1
         i = i + 1
     print(f"HYGESE: Found {len(paths)} initial routes in {i} rounds. Best sol val is {best_cost}")
+    items = (len(paths), i, time, max_it, max_stale_it)
+    write_heuristic_results(model.graph.graph["output_file"], items)
     return paths
 
 def create_example_1():

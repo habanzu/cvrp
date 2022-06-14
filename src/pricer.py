@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys, math, random
 import cspy
+import time
+from output import write_labelling_result
 
 from cffi import FFI
 ffi = FFI()
@@ -47,27 +49,26 @@ class VRPPricer(Pricer):
         print(f"PY PRICING: The neighborhood has been fixed to {ngParam} neighbors.")
         labelling_lib.initGraph(num_nodes,nodes_arr,edges_arr, capacity_ptr, self.data['max_path_len'], ngParam)
 
-        G = self.model.graph.to_directed()
-        G.graph['n_res'] = 2
-
-        for i in range(1,G.number_of_nodes()):
-            G.add_edge("Source",i, weight= 0)
-
-        G.remove_edges_from(list(G.edges(0)))
-        G = nx.relabel_nodes(G,{0:"Sink"})
-
-        for (u,v) in G.edges():
-            if v == "Sink":
-                G[u][v]['res_cost'] = np.array([1,1])
-            else:
-                G[u][v]['res_cost'] = np.array([G.nodes()[v]["demand"],1])
-        self.data["cspy_graph"] = G
+        # G = self.model.graph.to_directed()
+        # G.graph['n_res'] = 2
+        #
+        # for i in range(1,G.number_of_nodes()):
+        #     G.add_edge("Source",i, weight= 0)
+        #
+        # G.remove_edges_from(list(G.edges(0)))
+        # G = nx.relabel_nodes(G,{0:"Sink"})
+        #
+        # for (u,v) in G.edges():
+        #     if v == "Sink":
+        #         G[u][v]['res_cost'] = np.array([1,1])
+        #     else:
+        #         G[u][v]['res_cost'] = np.array([G.nodes()[v]["demand"],1])
+        # self.data["cspy_graph"] = G
 
     def init_data(self, G):
         self.data = {}
         self.data["capacity"] = G.graph['capacity']
         self.data["num_vehicles"] = G.graph['min_trucks']
-        self.data["use_cspy"] = False
 
     def pricerfarkas(self):
         dual = [self.model.getDualfarkasLinear(con) for con in self.data['cons']]
@@ -136,17 +137,18 @@ class VRPPricer(Pricer):
         pricing_success = 0
 
         for i, method in enumerate(self.data['methods']):
+            start = time.time()
             if method == 'ESPPRC':
-                paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars,elementary=True)
+                paths, upper_bound, lower_bound, abort_early, num_paths  = self.labelling(dual,farkas,time_limit,max_vars,elementary=True)
             elif method == 'ng8':
-                paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars,ngPath=True)
+                paths, upper_bound, lower_bound, abort_early, num_paths  = self.labelling(dual,farkas,time_limit,max_vars,ngPath=True)
             elif method == 'ng20':
                 raise NotImplementedError("At the moment the ng Parameter is fixed to 8.")
-                paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars,ngPath=True)
+                paths, upper_bound, lower_bound, abort_early, num_paths  = self.labelling(dual,farkas,time_limit,max_vars,ngPath=True)
             elif method == 'cyc2':
-                paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars,cyc2=True)
+                paths, upper_bound, lower_bound, abort_early, num_paths  = self.labelling(dual,farkas,time_limit,max_vars,cyc2=True)
             elif method == 'SPPRC':
-                paths, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars)
+                paths, upper_bound, lower_bound, abort_early, num_paths  = self.labelling(dual,farkas,time_limit,max_vars)
             else:
                 raise ValueError("Method in pricerdata methods does not exist.")
             if abort_early:
@@ -162,9 +164,13 @@ class VRPPricer(Pricer):
                 pricing_success = 1
                 for path in paths:
                     self.addVar(path,farkas)
+            end = time.time()
+            duration = round(end - start, 2)
+            items = (method, duration, pricing_success, upper_bound, lower_bound, abort_early, num_paths)
+            write_labelling_result(self.model.graph.graph["output_file"], items)
 
         if not farkas and pricing_success and self.data['farley']:
-            _, upper_bound, lower_bound, abort_early = self.labelling(dual,farkas,time_limit,max_vars, farley = True)
+            _, upper_bound, lower_bound, abort_early, _ = self.labelling(dual,farkas,time_limit,max_vars, farley = True)
             if abort_early:
                 print(f"PRICER_PY: Farley exceeded time limit.")
                 if len(self.data['farley_bound']) == 0:
@@ -172,14 +178,16 @@ class VRPPricer(Pricer):
                 else:
                     lower_bound = self.data['farley_bound'][-1]
             self.data['farley_bound'].append(lower_bound)
-
+            end = time.time()
+            duration = round(end - start, 2)
+            items = ("Farley", duration, abort_early, upper_bound, lower_bound, abort_early, "Not Applicable")
+            write_labelling_result(self.model.graph.graph["output_file"], items)
 
         if not pricing_success:
             print("PRICER_PY: All methods exceeded the provided time limit without finding paths with reduced cost.")
             return {'result':SCIP_RESULT.DIDNOTRUN}
 
         return {'result':SCIP_RESULT.SUCCESS}
-        # return {'result':SCIP_RESULT.SUCCESS}'lowerbound':lowerbound}
 
     def labelling(self, dual,farkas, time_limit, max_vars, elementary=False, cyc2=False, ngPath=False, farley=False):
         # sys.stdout.flush()
@@ -207,16 +215,16 @@ class VRPPricer(Pricer):
 
         upper_bound = self.model.getObjVal()
         if farley:
-            return [], upper_bound, upper_bound*farley_ptr[0], abort_early
+            return [], upper_bound, upper_bound*farley_ptr[0], abort_early, num_paths
 
         result = np.frombuffer(ffi.buffer(result_arr),dtype=np.uintc)
 
 
         if(num_paths == 0):
             if not farkas:
-                return [], upper_bound, upper_bound, abort_early
+                return [], upper_bound, upper_bound, abort_early, num_paths
             else:
-                return [], 0 , 0, abort_early
+                return [], 0 , 0, abort_early, num_paths
 
         lowest_cost = 0
         paths = []
@@ -236,6 +244,6 @@ class VRPPricer(Pricer):
 
         if not farkas:
             lower_bound = upper_bound + self.data['num_vehicles']*lowest_cost
-            return paths, upper_bound, lower_bound, abort_early
+            return paths, upper_bound, lower_bound, abort_early, num_paths
         else:
-            return paths, 0 , 0, abort_early
+            return paths, 0 , 0, abort_early, num_paths

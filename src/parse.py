@@ -57,6 +57,7 @@ def parse(source):
     for node in G.nodes():
         G.nodes()[node]['demand'] = demands[node]
         G.nodes()[node]['coordinates'] = node_coords[node]
+    G.graph['Instance'] = source
     G.graph['capacity'] = capacity
     G.graph['min_trucks'] = min_trucks
     return G
