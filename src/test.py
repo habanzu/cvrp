@@ -3,7 +3,7 @@ import networkx as nx
 from model import VRP, create_constraints, output_variables, create_example_2
 from pricer import VRPPricer
 from parse import parse
-from output import write_general_attributes, create_file
+from output import create_file
 
 Instance = "E/E-n23-k3"
 output_name = Instance.split("/")[-1]
@@ -25,8 +25,8 @@ print(f"MAIN: Time limit is {pricer.data['time_limit']}")
 pricer.data['farley'] = True
 
 create_file(output_name,G, pricer)
-model.includePricer(pricer, "pricer","does pricing")
 
+model.includePricer(pricer, "pricer","does pricing")
 create_constraints(model,G,heuristic_stale_it=20, heuristic_max_it=2e1, heuristic_time=1e-2)
 
 model.optimize()
