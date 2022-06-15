@@ -96,7 +96,8 @@ def heuristic(model, time, max_it, max_stale_it):
     best_cost = 0
     while(stale_it < max_stale_it) and i < max_it:
         found_new = False
-        ap = hgs.AlgorithmParameters(timeLimit=time, seed=i)  # seconds
+        if i == 0:
+            ap = hgs.AlgorithmParameters(timeLimit= model.graph.number_of_nodes()/10, seed=i)  # seconds
         hgs_solver = hgs.Solver(parameters=ap, verbose=False)
 
         result = hgs_solver.solve_cvrp(data)

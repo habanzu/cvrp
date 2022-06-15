@@ -33,6 +33,11 @@ class VRPPricer(Pricer):
             raise ValueError("The time limit of the Labelling needs to be specified.")
         print(f"SETUP: time_limit is {self.data['time_limit']}")
 
+        if 'farley' not in self.data:
+            self.data['farley'] = False
+        print(f"SETUP: Farley is {self.data['farley']}")
+
+
         self.data['bounds'] = {}
         self.data['farley_bound'] = []
         for method in self.data['methods']:
