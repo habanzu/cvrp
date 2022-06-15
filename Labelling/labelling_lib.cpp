@@ -251,7 +251,7 @@ double maximal_cost(double const* dual, const bool farkas, const vector<Label*>&
 }
 
 unsigned index_minimum_load_in_queue(const vector<multiset<Label, less_than>>& q){
-    unsigned min_index;
+    unsigned min_index = 2*num_nodes;
     double min_load = capacity + 1;
     for(unsigned i = 0; i < num_nodes; ++i){
         if(!q[i].empty() && q[i].begin()->load < min_load){
@@ -259,7 +259,8 @@ unsigned index_minimum_load_in_queue(const vector<multiset<Label, less_than>>& q
             min_load = q[i].begin()->load;
         }
     }
-
+    if(min_index >= num_nodes)
+        cout << "PRICER_C ERROR: Couldnt find valid minimal index in labelling queue." << endl;
     return min_index;
 }
 
