@@ -355,6 +355,11 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
     const bool farley = (*farley_res == 1);
     unsigned num_paths = 0;
     while(!queue_empty(q)){
+        // Compile time flags for speeding up things a little bit
+        // constexpr bool elementary = true;
+        // constexpr bool cyc2 = false;
+        // constexpr bool ngPath = false;
+        // constexpr bool farley = false;
         unsigned queue_index = index_minimum_load_in_queue(q);
         auto it_q = q[queue_index].begin();
         propagated[it_q->v].push_back(*it_q);
