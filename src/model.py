@@ -98,8 +98,6 @@ def heuristic(model, time, max_it, max_stale_it):
         found_new = False
         if i == 0:
             ap = hgs.AlgorithmParameters(timeLimit= model.graph.number_of_nodes()/10, seed=i)  # seconds
-            ap = hgs.AlgorithmParameters(timeLimit= time, seed=i)
-
         else:
             ap = hgs.AlgorithmParameters(timeLimit= time, seed=i)
         hgs_solver = hgs.Solver(parameters=ap, verbose=False)
