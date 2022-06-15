@@ -1,7 +1,18 @@
 import networkx as nx
 import re
 
-def parse(source):
+from src.output import create_file
+
+def parse(Instance, K=0):
+    print(f"MAIN: Instance {Instance}")
+    if Instance[0] == "E":
+        dir = "E"
+    elif Instance[0] == "X":
+        dir = "Uchoa"
+    else:
+        raise ValueError("Instance Class is not known to the parser.")
+    source = f"Instances/{dir}/{Instance}.vrp"
+
     with open(source,'r') as f:
         lines = f.readlines()
 
@@ -15,8 +26,9 @@ def parse(source):
                 min_trucks = int(match.group(1))
                 print(f"PARSE: Minimum number of trucks is {min_trucks}")
             else:
-                min_trucks = None
+                min_trucks = K
                 print("PARSE: There is no minimum number of trucks.")
+                print(f"PARSE: Using the provided K = {K}")
         elif line.startswith('CAPACITY'):
             capacity = int(line.split()[-1])
         elif line.startswith('EDGE_WEIGHT_TYPE'):
@@ -57,7 +69,10 @@ def parse(source):
     for node in G.nodes():
         G.nodes()[node]['demand'] = demands[node]
         G.nodes()[node]['coordinates'] = node_coords[node]
-    G.graph['Instance'] = source
+    G.graph['Instance'] = Instance
     G.graph['capacity'] = capacity
     G.graph['min_trucks'] = min_trucks
+
+    create_file(Instance,G)
+
     return G

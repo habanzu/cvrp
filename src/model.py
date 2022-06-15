@@ -7,7 +7,7 @@ import numpy as np
 import hygese as hgs
 import sys, math, random
 
-from output import write_heuristic_results
+from src.output import write_heuristic_results, write_attributes
 
 class VRP(Model):
     def __init__(self,graph):
@@ -19,7 +19,9 @@ class VRP(Model):
         self.cons = []
 
 
-def create_constraints(model, G, heuristic_time=0.001, heuristic_stale_it=2, heuristic_max_it=1e4):
+def create_constraints(model, pricer, heuristic_time=0.001, heuristic_stale_it=2, heuristic_max_it=1e4):
+    G = model.graph
+    write_attributes(model.graph,pricer)
     # Create a valid set of variables and the constraints to it
     for i in range(1,G.number_of_nodes()):
         #TODO: I should check, whether these paths are indeed feasible.

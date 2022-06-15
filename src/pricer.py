@@ -7,7 +7,7 @@ import numpy as np
 import sys, math, random
 import cspy
 import time
-from output import write_labelling_result
+from src.output import write_labelling_result, write_attributes
 
 from cffi import FFI
 ffi = FFI()
@@ -17,9 +17,22 @@ funDefs = "void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_
 ffi.cdef(funDefs, override=True)
 
 class VRPPricer(Pricer):
+    def __init__(self,G):
+        super().__init__()
+
+        self.data = {}
+        self.data["capacity"] = G.graph['capacity']
+        self.data["num_vehicles"] = G.graph['min_trucks']
+
     def pricerinit(self):
         if 'methods' not in self.data:
             raise ValueError("The method(s) of the pricer need to be specified.")
+        print(f"SETUP: methods are {self.data['methods']}")
+
+        if 'time_limit' not in self.data:
+            raise ValueError("The time limit of the Labelling needs to be specified.")
+        print(f"SETUP: time_limit is {self.data['time_limit']}")
+
         self.data['bounds'] = {}
         self.data['farley_bound'] = []
         for method in self.data['methods']:
@@ -64,11 +77,6 @@ class VRPPricer(Pricer):
         #     else:
         #         G[u][v]['res_cost'] = np.array([G.nodes()[v]["demand"],1])
         # self.data["cspy_graph"] = G
-
-    def init_data(self, G):
-        self.data = {}
-        self.data["capacity"] = G.graph['capacity']
-        self.data["num_vehicles"] = G.graph['min_trucks']
 
     def pricerfarkas(self):
         dual = [self.model.getDualfarkasLinear(con) for con in self.data['cons']]
@@ -129,7 +137,6 @@ class VRPPricer(Pricer):
         if alg.total_cost >= -1e-6:
             return [], upper_bound, lower_bound , False
         return [path], upper_bound, lower_bound, False
-
 
     def SPPRC_chooser(self, dual, farkas):
         max_vars = self.data['max_vars']

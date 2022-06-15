@@ -1,0 +1,12 @@
+Instance, X-n120-k6
+capacity, 21
+min_trucks, 6
+output_file, output/X-n120-k6.log
+Start date, 2022-06-15
+Start time, 10-21-50
+capacity, 21
+num_vehicles, 6
+methods, ['ng8', 'cyc2', 'SPPRC']
+max_vars, 10000
+time_limit, 120
+farley, False
