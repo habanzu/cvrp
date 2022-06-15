@@ -6,6 +6,9 @@ __pycache__
 # xlsx temporary files
 ~$*.xlsx
 
+# Output files
+output
+
 # pylgrim
 pylgrim
 

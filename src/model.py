@@ -98,9 +98,19 @@ def heuristic(model, time, max_it, max_stale_it):
         found_new = False
         if i == 0:
             ap = hgs.AlgorithmParameters(timeLimit= model.graph.number_of_nodes()/10, seed=i)  # seconds
+            ap = hgs.AlgorithmParameters(timeLimit= time, seed=i)
+
+        else:
+            ap = hgs.AlgorithmParameters(timeLimit= time, seed=i)
         hgs_solver = hgs.Solver(parameters=ap, verbose=False)
 
         result = hgs_solver.solve_cvrp(data)
+        if(result.cost == 0):
+            time *=10
+            max_it /=10
+            print(f"HYGESE: Did not find valid solution at iteration {i}")
+            continue
+
         if best_cost == 0 or result.cost < best_cost:
             best_cost = result.cost
         for res in result.routes:
@@ -116,7 +126,7 @@ def heuristic(model, time, max_it, max_stale_it):
             stale_it = stale_it + 1
         i = i + 1
     print(f"HYGESE: Found {len(paths)} initial routes in {i} rounds. Best sol val is {best_cost}")
-    items = (len(paths), i, time, max_it, max_stale_it)
+    items = (len(paths), best_cost, i, time, max_it, max_stale_it)
     write_heuristic_results(model.graph.graph["output_file"], items)
     return paths
 
