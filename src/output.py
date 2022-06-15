@@ -33,6 +33,6 @@ def write_heuristic_results(file, items):
     print("Writing heuristic results")
     items = (str(item) for item in items)
     with open(file,"a") as f:
-        f.write("Number of routes, number of iterations, time, max_it, max_stale_it\n")
+        f.write("Number of routes, Best Solution Value, number of iterations, time, max_it, max_stale_it\n")
         f.write(", ".join(items) + "\n")
         f.write("method, duration, pricing_success, upper_bound, lower_bound, abort_early, num_paths\n")
