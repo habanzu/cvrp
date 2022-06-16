@@ -102,7 +102,7 @@ def heuristic(model, heuristic_time, max_it, max_stale_it, time_limit):
 
         alg_start_time = time.time()
         result = hgs_solver.solve_cvrp(data)
-        if (time.time() - alg_start_time) > 9*heuristic_time:
+        if (time.time() - alg_start_time) > 9*heuristic_time and i > 0:
             print(f"HYGESE: Took {round(time.time() - alg_start_time, 6)} to solve the heuristic")
             print(f"HYGESE: Increasing heuristic time limit")
             heuristic_time *=10
