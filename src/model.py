@@ -7,7 +7,7 @@ import numpy as np
 import hygese as hgs
 import sys, math, random
 
-from src.output import write_heuristic_results, write_attributes
+from src.output import write_heuristic_results, write_attributes, write_heuristic_params
 
 class VRP(Model):
     def __init__(self,graph):
@@ -81,6 +81,8 @@ def heuristic(model, time, max_it, max_stale_it):
     x_coords = [G.nodes[i]['coordinates'][0] for i in range(n)]
     y_coords = [G.nodes[i]['coordinates'][1] for i in range(n)]
 
+    write_heuristic_params(G.graph['output_file'],(time, max_it, max_stale_it))
+
     data['x_coordinates'] = x_coords
     data['y_coordinates'] = y_coords
     data['service_times'] = np.zeros(n)
@@ -123,7 +125,7 @@ def heuristic(model, time, max_it, max_stale_it):
             stale_it = stale_it + 1
         i = i + 1
     print(f"HYGESE: Found {len(paths)} initial routes in {i} rounds. Best sol val is {best_cost}")
-    items = (len(paths), best_cost, i, time, max_it, max_stale_it)
+    items = (len(paths), best_cost, i, time, max_it)
     write_heuristic_results(model.graph.graph["output_file"], items)
     return paths
 

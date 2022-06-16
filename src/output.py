@@ -30,11 +30,16 @@ def write_labelling_result(file, items):
     with open(file,"a") as f:
         f.write(", ".join(items) + "\n")
 
+def write_heuristic_params(file, items):
+    with open(file, "a") as f:
+        f.write("time, max_it, max_stale_it\n")
+        f.write(", ".join(map(str,items)) + "\n")
+
 def write_heuristic_results(file, items):
-    print("Writing heuristic results")
+    # print("Writing heuristic results")
     items = (str(item) for item in items)
     with open(file,"a") as f:
-        f.write("Number of routes, Best Solution Value, number of iterations, time, max_it, max_stale_it\n")
+        f.write("heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, final time, final max_it\n")
         f.write(", ".join(items) + "\n")
         f.write("method, duration, pricing_success, upper_bound, lower_bound, abort_early, num_paths\n")
 
