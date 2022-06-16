@@ -13,7 +13,7 @@ from cffi import FFI
 ffi = FFI()
 labelling_lib = ffi.dlopen("Labelling/labelling_lib.so")
 
-funDefs = "void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len, const unsigned ngParam); unsigned labelling(const double * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, bool* abort_early, const bool ngPath, double* farley_res);"
+funDefs = "void initGraph(const unsigned num_nodes, const unsigned* node_data, const double* edge_data, const double capacity, const unsigned max_path_len, const unsigned* ngParams); unsigned labelling(const double * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, bool* abort_early, const unsigned ngParam, double* farley_res);"
 ffi.cdef(funDefs, override=True)
 
 class VRPPricer(Pricer):
@@ -48,7 +48,7 @@ class VRPPricer(Pricer):
 
         demands = list(nx.get_node_attributes(self.model.graph,"demand").values())
         if not np.all(np.array(demands[1:])):
-           print("PRICER_PY: The demands of all nodes must be > 0.")
+           raise ValueError("PRICER_PY ERROR: The demands of all nodes must be > 0.")
         nodes_arr = ffi.new("unsigned[]",demands)
 
         minimal_demands = sum(sorted(demands[1:])[:2])
@@ -63,9 +63,12 @@ class VRPPricer(Pricer):
         num_nodes = ffi.cast("unsigned",self.model.graph.number_of_nodes())
 
         capacity_ptr = ffi.cast("double",self.data['capacity'])
-        ngParam = 8
-        print(f"PY PRICING: The neighborhood has been fixed to {ngParam} neighbors.")
-        labelling_lib.initGraph(num_nodes,nodes_arr,edges_arr, capacity_ptr, self.data['max_path_len'], ngParam)
+        ngParams = [int(method.strip("ng")) for method in self.data['methods'] if method.startswith("ng")]
+        ngParams.insert(0,len(ngParams))
+        ngParams_ptr = ffi.new("unsigned[]",ngParams)
+        # ngParam = 8
+        print(f"PRICER_PY: The neighborhood has been initialzied to {ngParams[1:]} neighbors.")
+        labelling_lib.initGraph(num_nodes,nodes_arr,edges_arr, capacity_ptr, self.data['max_path_len'], ngParams_ptr)
 
         # G = self.model.graph.to_directed()
         # G.graph['n_res'] = 2
@@ -117,32 +120,6 @@ class VRPPricer(Pricer):
         self.data['vars'][tuple(path)] = var
         return var
 
-    def cspy(self, dual, farkas):
-        G = self.data["cspy_graph"]
-        for (u,v) in G.edges():
-            old_v = v
-            old_u = u
-            if v == "Sink":
-                old_v = 0
-            if u == "Source":
-                old_u = 0
-            if farkas:
-                G[u][v]['weight'] = -dual[old_v-1]
-            else:
-                G[u][v]['weight'] = self.model.graph[old_u][old_v]['weight'] - dual[old_v-1]
-
-        alg = cspy.BiDirectional(G, [G.graph['capacity'] + 2,G.number_of_nodes()], [0,0], elementary=True, direction='forward')
-        alg.run()
-        upper_bound = self.model.getObjVal()
-        path  = tuple( 0 if node == "Source" or node == "Sink" else node for node in alg.path)
-        print(f"CSPY: Found elementary path {path} with cost {alg.total_cost}")
-        lower_bound = 0
-        if not farkas:
-            lower_bound = upper_bound + self.data['num_vehicles']*alg.total_cost
-        if alg.total_cost >= -1e-6:
-            return [], upper_bound, lower_bound , False
-        return [path], upper_bound, lower_bound, False
-
     def SPPRC_chooser(self, dual, farkas):
         max_vars = self.data['max_vars']
         time_limit = self.data['time_limit']
@@ -152,11 +129,9 @@ class VRPPricer(Pricer):
             start = time.time()
             if method == 'ESPPRC':
                 paths, upper_bound, lower_bound, abort_early, num_paths  = self.labelling(dual,farkas,time_limit,max_vars,elementary=True)
-            elif method == 'ng8':
-                paths, upper_bound, lower_bound, abort_early, num_paths  = self.labelling(dual,farkas,time_limit,max_vars,ngPath=True)
-            elif method == 'ng20':
-                raise NotImplementedError("At the moment the ng Parameter is fixed to 8.")
-                paths, upper_bound, lower_bound, abort_early, num_paths  = self.labelling(dual,farkas,time_limit,max_vars,ngPath=True)
+            elif method.startswith("ng"):
+                ngParam = int(method.strip("ng"))
+                paths, upper_bound, lower_bound, abort_early, num_paths  = self.labelling(dual,farkas,time_limit,max_vars,ngParam=ngParam)
             elif method == 'cyc2':
                 paths, upper_bound, lower_bound, abort_early, num_paths  = self.labelling(dual,farkas,time_limit,max_vars,cyc2=True)
             elif method == 'SPPRC':
@@ -201,37 +176,27 @@ class VRPPricer(Pricer):
 
         return {'result':SCIP_RESULT.SUCCESS}
 
-    def labelling(self, dual,farkas, time_limit, max_vars, elementary=False, cyc2=False, ngPath=False, farley=False):
-        # sys.stdout.flush()
-
+    def labelling(self, dual,farkas, time_limit, max_vars, elementary=False, cyc2=False, ngParam=0, farley=False):
         if farley and farkas:
-            raise ValueError("Farley can't be called with Farkas Pricing")
+            raise ValueError("PRICER_PY ERROR: Farley can't be called with Farkas Pricing")
 
         # TODO: Possible improvement: result can be reused every time
         pointer_dual = ffi.new("double[]",dual)
-
-        # TODO: Wieder effizienter machen. Hab ich probiert um Fehler in der n256 Instanz zu finden.
         result_arr = ffi.new("unsigned[]",max_vars*self.data['max_path_len'])
-
         abort_early_ptr = ffi.new("bool*",False)
-
         if farley:
             farley_ptr = ffi.new("double*",1)
         else:
             farley_ptr = ffi.new("double*",0)
 
-        num_paths = labelling_lib.labelling(pointer_dual, farkas, time_limit, elementary, max_vars, cyc2, result_arr, abort_early_ptr, ngPath, farley_ptr)
+        num_paths = labelling_lib.labelling(pointer_dual, farkas, time_limit, elementary, max_vars, cyc2, result_arr, abort_early_ptr, ngParam, farley_ptr)
         abort_early = abort_early_ptr[0]
-
-        # sys.stdout.flush()
 
         upper_bound = self.model.getObjVal()
         if farley:
             return [], upper_bound, upper_bound*farley_ptr[0], abort_early, num_paths
 
         result = np.frombuffer(ffi.buffer(result_arr),dtype=np.uintc)
-
-
         if(num_paths == 0):
             if not farkas:
                 return [], upper_bound, upper_bound, abort_early, num_paths
@@ -252,10 +217,35 @@ class VRPPricer(Pricer):
                 red_cost = weight - sum([dual[i-1] for i in path[:-1]])
                 if red_cost < lowest_cost:
                     lowest_cost = red_cost
-        # print(f"PRICER_PY: Labelling found path with cost {lowest_cost}")
 
         if not farkas:
             lower_bound = upper_bound + self.data['num_vehicles']*lowest_cost
             return paths, upper_bound, lower_bound, abort_early, num_paths
         else:
             return paths, 0 , 0, abort_early, num_paths
+
+    def cspy(self, dual, farkas):
+        G = self.data["cspy_graph"]
+        for (u,v) in G.edges():
+            old_v = v
+            old_u = u
+            if v == "Sink":
+                old_v = 0
+            if u == "Source":
+                old_u = 0
+            if farkas:
+                G[u][v]['weight'] = -dual[old_v-1]
+            else:
+                G[u][v]['weight'] = self.model.graph[old_u][old_v]['weight'] - dual[old_v-1]
+
+        alg = cspy.BiDirectional(G, [G.graph['capacity'] + 2,G.number_of_nodes()], [0,0], elementary=True, direction='forward')
+        alg.run()
+        upper_bound = self.model.getObjVal()
+        path  = tuple( 0 if node == "Source" or node == "Sink" else node for node in alg.path)
+        print(f"CSPY: Found elementary path {path} with cost {alg.total_cost}")
+        lower_bound = 0
+        if not farkas:
+            lower_bound = upper_bound + self.data['num_vehicles']*alg.total_cost
+        if alg.total_cost >= -1e-6:
+            return [], upper_bound, lower_bound , False
+        return [path], upper_bound, lower_bound, False
