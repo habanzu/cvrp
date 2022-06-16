@@ -1,13 +1,12 @@
 from pyscipopt import Model, Pricer, SCIP_RESULT, SCIP_STAGE
-import warnings
+import warnings, sys, math, random, time
 warnings.simplefilter(action='ignore', category=FutureWarning)
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 import hygese as hgs
-import sys, math, random
 
-from src.output import write_heuristic_results, write_attributes
+from src.output import write_heuristic_results, write_attributes, write_heuristic_params
 
 class VRP(Model):
     def __init__(self,graph):
@@ -17,7 +16,6 @@ class VRP(Model):
         self.graph = graph
         self.vars = {}
         self.cons = []
-
 
 def create_constraints(model, pricer, heuristic_time=0.001, heuristic_stale_it=2, heuristic_max_it=1e4):
     G = model.graph
@@ -37,7 +35,7 @@ def create_constraints(model, pricer, heuristic_time=0.001, heuristic_stale_it=2
     model.cons.append(convexity_constraint)
 
     if heuristic_time > 0 and heuristic_max_it > 0:
-        paths = heuristic(model,heuristic_time, heuristic_max_it, heuristic_stale_it)
+        paths = heuristic(model,heuristic_time, heuristic_max_it, heuristic_stale_it, pricer.data['time_limit'])
         for path in paths:
             load = sum([G.nodes()[i]['demand'] for i in path[1:-1]])
             if load > G.graph['capacity']:
@@ -75,12 +73,14 @@ def output_variables(model, pricer):
     else:
         print("Solution contains non elementary paths.")
 
-def heuristic(model, time, max_it, max_stale_it):
+def heuristic(model, heuristic_time, max_it, max_stale_it, time_limit):
     data = dict()
     G = model.graph
     n = G.number_of_nodes()
     x_coords = [G.nodes[i]['coordinates'][0] for i in range(n)]
     y_coords = [G.nodes[i]['coordinates'][1] for i in range(n)]
+
+    write_heuristic_params(G.graph['output_file'],(heuristic_time, max_it, max_stale_it))
 
     data['x_coordinates'] = x_coords
     data['y_coordinates'] = y_coords
@@ -89,22 +89,27 @@ def heuristic(model, time, max_it, max_stale_it):
     data['vehicle_capacity'] = G.graph['capacity']
     data['num_vehicles'] = int(G.graph['min_trucks'])
     data['depot'] = 0
-    paths = []
 
-    stale_it = 0
-    i = 0
-    best_cost = 0
+    paths, stale_it, i, best_cost, start = [], 0, 0, 0, time.time()
+
     while(stale_it < max_stale_it) and i < max_it:
         found_new = False
         if i == 0:
             ap = hgs.AlgorithmParameters(timeLimit= model.graph.number_of_nodes()/10, seed=i)  # seconds
         else:
-            ap = hgs.AlgorithmParameters(timeLimit= time, seed=i)
+            ap = hgs.AlgorithmParameters(timeLimit= heuristic_time, seed=i)
         hgs_solver = hgs.Solver(parameters=ap, verbose=False)
 
+        alg_start_time = time.time()
         result = hgs_solver.solve_cvrp(data)
+        if (time.time() - alg_start_time) > 9*heuristic_time:
+            print(f"HYGESE: Took {round(time.time() - alg_start_time, 6)} to solve the heuristic")
+            print(f"HYGESE: Increasing heuristic time limit")
+            heuristic_time *=10
+            max_it /=10
+
         if(result.cost == 0):
-            time *=10
+            heuristic_time *=10
             max_it /=10
             print(f"HYGESE: Did not find valid solution at iteration {i}")
             continue
@@ -123,8 +128,11 @@ def heuristic(model, time, max_it, max_stale_it):
         else:
             stale_it = stale_it + 1
         i = i + 1
+        if time.time()- start > time_limit:
+            print(f"HYGESE: Reached time limit")
+            break
     print(f"HYGESE: Found {len(paths)} initial routes in {i} rounds. Best sol val is {best_cost}")
-    items = (len(paths), best_cost, i, time, max_it, max_stale_it)
+    items = (len(paths), best_cost, i, heuristic_time, max_it)
     write_heuristic_results(model.graph.graph["output_file"], items)
     return paths
 

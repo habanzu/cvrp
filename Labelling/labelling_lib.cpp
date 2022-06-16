@@ -35,7 +35,8 @@ struct cyc2_dominant_labels{
 
 vector<unsigned> nodes;
 vector<vector<double> > edges;
-vector<bitset<neighborhood_size> > neighborhoods;
+vector<vector<bitset<neighborhood_size> >> neighborhoods;
+vector<unsigned> neighborhood_indices;
 unsigned num_nodes;
 double capacity;
 unsigned max_path_len;
@@ -272,48 +273,44 @@ bool queue_empty(const vector<multiset<Label, less_than>>& q){
     return true;
 }
 
-void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const double capacity, const unsigned max_path_len, const unsigned ngParam){
-    if(num_nodes > neighborhood_size){
-        cout << "PRICER_C Error: The number of nodes is to large for the Label struct. Abort." << endl;
-        return;
+vector<bitset<neighborhood_size> > init_neighborhoods(const unsigned num_nodes, const unsigned ngParam){
+    // There are num_nodes -1 nodes without the depot, so ngParam needs to be less than that
+    if(ngParam >= num_nodes - 1){
+        cout << "PRICER_C ERROR: ngParam > num_nodes" << endl;
     }
-    ::num_nodes = num_nodes;
-    ::capacity = capacity;
-    ::max_path_len = max_path_len;
-    nodes.clear();
-    edges.clear();
-    neighborhoods.clear();
 
-    for(unsigned i=0;i<num_nodes;++i){
-        nodes.push_back(node_data[i]);
-        vector<double> v;
-        for(unsigned j=0;j<num_nodes;++j){
-            v.push_back(edge_data[i*num_nodes + j]);
-        }
-        edges.push_back(v);
+    if(ngParam == 0){
+        cout << "PRICER_C ERROR: ngParam can't be 0" << endl;
     }
+
+    vector<bitset<neighborhood_size> > neighborhoods;
+    // Initialize neighborhoods for ng-Path Relaxations
     neighborhoods.push_back(0);
     for(unsigned i =1; i<num_nodes;++i){
-        double edge_bound = i == 1 ? edges[1][2] : edges[i][1];
         bitset<neighborhood_size> neighborhood;
+
+        // Initialize neighborhood with ngParam first nodes
+        double edge_bound = i == 1 ? edges[1][2] : edges[i][1];
         neighborhood[i] = 1;
-        for(unsigned j=1; j<= ngParam; ++j){
+        const unsigned upper_index = (i <= ngParam) ? ngParam + 1 : ngParam;
+        for(unsigned j=1; j<= upper_index; ++j){
             neighborhood[j] = 1;
             edge_bound = (edges[i][j] > edge_bound) ? edges[i][j] : edge_bound;
         }
-        if(i <= ngParam && ngParam + 1 < num_nodes){
-            neighborhood[ngParam + 1] = 1;
-            edge_bound = (edges[i][ngParam + 1] > edge_bound) ? edges[i][ngParam + 1] : edge_bound;
-        }
-        unsigned start_index = i <= ngParam ? ngParam + 2 : ngParam + 1;
+
+        // Search the rest of the nodes for cheaper neighbors
+        unsigned start_index = (i <= ngParam) ? ngParam + 2 : ngParam + 1;
 
         for(unsigned j = start_index; j < num_nodes; ++j){
-            if(j==i) continue;
+            if(j==i || neighborhood[j]) continue;
             if(edges[i][j] < edge_bound){
                 neighborhood[j] = 1;
-                for(unsigned l = 1;l < num_nodes;++l){
+                for(unsigned l = 1;l <= num_nodes;++l){
+                    if(l==num_nodes){
+                        cout << "PRICER_C ERROR: Index out of range when initializing neighborhoods" << endl;
+                    }
                     if(l==i) continue;
-                    if(edges[i][l] == edge_bound){
+                    if((edges[i][l] == edge_bound) && neighborhood[l] == 1){
                         neighborhood[l] = 0;
                         break;
                     }
@@ -328,10 +325,46 @@ void initGraph(unsigned num_nodes, unsigned* node_data, double* edge_data, const
         neighborhoods.push_back(neighborhood);
 
     }
+    return neighborhoods;
+}
+
+void initGraph(const unsigned num_nodes, const unsigned* node_data, const double* edge_data, const double capacity, const unsigned max_path_len, const unsigned* ngParams){
+    if(num_nodes > neighborhood_size){
+        cout << "PRICER_C ERROR: The number of nodes is to large for the Label struct. Abort." << endl;
+        return;
+    }
+    ::num_nodes = num_nodes;
+    ::capacity = capacity;
+    ::max_path_len = max_path_len;
+    nodes.clear();
+    edges.clear();
+    neighborhoods.clear();
+    neighborhood_indices.clear();
+
+    for(unsigned i=0;i<num_nodes;++i){
+        nodes.push_back(node_data[i]);
+        vector<double> v;
+        for(unsigned j=0;j<num_nodes;++j){
+            v.push_back(edge_data[i*num_nodes + j]);
+        }
+        edges.push_back(v);
+    }
+
+    // The first element of ngParams should be the size of the list.
+    const unsigned size_ngParams = ngParams[0];
+
+    for(unsigned i =1; i<=size_ngParams;++i){
+        const unsigned ngParam = ngParams[i];
+        if(ngParam >= neighborhood_indices.size())
+            neighborhood_indices.resize(ngParam+1);
+        neighborhoods.push_back(init_neighborhoods(num_nodes,ngParams[i]));
+        neighborhood_indices[ngParam] = i-1;
+    }
+
     cout << "PRICER_C: Graph data successfully copied to C." << endl;
 }
 
-unsigned labelling(const double * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, bool* abort_early, const bool ngPath, double* farley_res){
+unsigned labelling(const double * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, bool* abort_early, const unsigned ngParam, double* farley_res){
     auto t0 = high_resolution_clock::now();
 
     vector<multiset<Label, less_than>> q;
@@ -353,8 +386,16 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
     double red_cost_bound = -1e-6;
     double best_farley_val = 0;
     const bool farley = (*farley_res == 1);
+    const bool ngPath = (ngParam != 0);
+    const auto& tmp = neighborhoods[neighborhood_indices[ngParam]];
+    const auto& neighborhoods = tmp;
     unsigned num_paths = 0;
     while(!queue_empty(q)){
+        // Compile time flags for speeding up things a little bit
+        // constexpr bool elementary = true;
+        // constexpr bool cyc2 = false;
+        // constexpr bool ngPath = false;
+        // constexpr bool farley = false;
         unsigned queue_index = index_minimum_load_in_queue(q);
         auto it_q = q[queue_index].begin();
         propagated[it_q->v].push_back(*it_q);
