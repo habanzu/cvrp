@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+import numpy as np
 
 def write_attributes(G, pricer):
     with open(G.graph["output_file"],"a") as f:
@@ -36,3 +37,37 @@ def write_heuristic_results(file, items):
         f.write("Number of routes, Best Solution Value, number of iterations, time, max_it, max_stale_it\n")
         f.write(", ".join(items) + "\n")
         f.write("method, duration, pricing_success, upper_bound, lower_bound, abort_early, num_paths\n")
+
+def write_solution(model, pricer):
+    sol = model.getBestSol()
+    sol_val = model.getObjVal()
+    file = model.graph.graph['output_file']
+
+    elementary = True
+    cyc2 = True
+    accuracy = 1e-4
+
+    with open(file,"a") as f:
+        num_paths = sum(1 for var in pricer.data['vars'].values() if sol[var]*var.getObj() > accuracy)
+        f.write("Solval, number of paths, impact cutoff\n")
+        f.write(", ".join(map(str,(sol_val, num_paths, accuracy))) + "\n")
+        f.write("Elementary, 2-Cycle, Path Value, Path\n")
+        for path, var in pricer.data['vars'].items():
+            if sol[var]*var.getObj() > accuracy:
+                path_elementary = True
+                path_cyc2 = True
+                counts = np.unique(path[1:-1], return_counts=True)
+                for i, node in enumerate(counts[0]):
+                    if counts[1][i] != 1:
+                        path_elementary = False
+                        elementary = False
+                        break
+                for i, node in enumerate(path[3:-1]):
+                    if(path[i+1] == node):
+                        path_cyc2 = False
+                        cyc2 = False
+                        break
+                f.write(", ".join(map(str,(path_elementary, path_cyc2, round(sol[var],4), path))) + "\n")
+
+        f.write(f"all_elementary, {elementary}\n")
+        f.write(f"all_cyc2, {cyc2}\n")

@@ -18,7 +18,6 @@ class VRP(Model):
         self.vars = {}
         self.cons = []
 
-
 def create_constraints(model, pricer, heuristic_time=0.001, heuristic_stale_it=2, heuristic_max_it=1e4):
     G = model.graph
     write_attributes(model.graph,pricer)
