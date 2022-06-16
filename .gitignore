@@ -12,6 +12,9 @@ output
 # pylgrim
 pylgrim
 
+# Temporary nfs files
+.nfs*
+
 # C++ Template gitignore
 
 
