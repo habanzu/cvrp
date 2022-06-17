@@ -33,5 +33,5 @@ methods = ["SPPRC","cyc2","ng8","ng20","ESPPRC"]
 test_combinations = [(file,method,0) for file, method in itertools.product(files,methods)]
 
 if __name__ == '__main__':
-    with Pool(8) as p:
+    with Pool() as p:
         p.starmap(runInstance, test_combinations)
