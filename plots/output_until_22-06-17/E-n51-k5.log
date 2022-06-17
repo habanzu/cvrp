@@ -1,0 +1,17 @@
+Instance, E-n51-k5
+capacity, 160
+min_trucks, 5
+output_file, output/E-n51-k5.log
+Start date, 2022-06-15
+Start time, 11-57-02
+capacity, 160
+num_vehicles, 5
+methods, ['ESPPRC']
+max_vars, 1000
+time_limit, 86400
+farley, False
+Number of routes, Best Solution Value, number of iterations, time, max_it, max_stale_it
+375, 521.0, 292, 0.01, 20000.0, 20
+method, duration, pricing_success, upper_bound, lower_bound, abort_early, num_paths
+ESPPRC, 86402.41, 1, 520.3066666666666, 0, True, 36429
+ESPPRC, 86402.71, 1, 520.3066666666667, 0, True, 3719

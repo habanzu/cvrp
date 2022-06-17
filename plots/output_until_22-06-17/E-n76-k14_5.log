@@ -1,0 +1,14 @@
+Instance, E-n76-k14
+capacity, 100
+min_trucks, 14
+output_file, output/E-n76-k14_5.log
+Start date, 2022-06-16
+Start time, 17-47-29
+capacity, 100
+num_vehicles, 14
+methods, ['ng20']
+max_vars, 1000000
+time_limit, 86400
+farley, False
+initial time, initial max_it, max_stale_it
+0.001, 2000000.0, 20

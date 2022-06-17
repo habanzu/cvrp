@@ -1,0 +1,30 @@
+Instance, E-n76-k14
+capacity, 100
+min_trucks, 14
+output_file, output/E-n76-k14_6.log
+Start date, 2022-06-16
+Start time, 17-48-12
+capacity, 100
+num_vehicles, 14
+methods, ['ng20']
+max_vars, 1000000
+time_limit, 86400
+farley, False
+initial time, initial max_it, max_stale_it
+0.001, 2000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it
+1268, 1021.0, 200, 0.01, 200.0
+method, duration, pricing_success, upper_bound, lower_bound, abort_early, num_paths
+ng20, 5.5, 1, 1003.4613224250564, 848.2150924964892, False, 587
+ng20, 7.23, 1, 1002.7843401759533, 992.8281642228728, False, 10
+ng20, 7.23, 1, 1002.7692573402418, 1002.7692573402418, False, 0
+Solval, number of paths, impact cutoff
+1002.7692573402418, 5, 0.0001
+Elementary, 2-Cycle, Path Value, Path
+True, True, 0.0388, (0, 10, 31, 9, 39, 0)
+True, True, 0.0649, (0, 28, 61, 69, 36, 37, 5, 0)
+True, True, 0.2485, (0, 27, 57, 13, 54, 19, 35, 7, 0)
+True, True, 0.0555, (0, 35, 53, 11, 65, 58, 0)
+True, True, 0.1064, (0, 57, 15, 20, 70, 60, 71, 69, 47, 0)
+all_elementary, True
+all_cyc2, True

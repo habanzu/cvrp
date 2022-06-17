@@ -1,0 +1,16 @@
+Instance, X-n172-k51
+capacity, 161
+min_trucks, 53
+output_file, output/X-n172-k51.log
+Start date, 2022-06-15
+Start time, 12-07-17
+capacity, 161
+num_vehicles, 53
+methods, ['ESPPRC']
+max_vars, 1000
+time_limit, 86400
+farley, False
+Number of routes, Best Solution Value, number of iterations, time, max_it, max_stale_it
+5782, 45607.0, 2000, 1.0, 2000.0, 20
+method, duration, pricing_success, upper_bound, lower_bound, abort_early, num_paths
+ESPPRC, 86402.04, 0, 45317.08923346366, 0, True, 0
