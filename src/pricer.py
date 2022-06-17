@@ -7,7 +7,7 @@ import numpy as np
 import sys, math, random
 import cspy
 import time
-from src.output import write_labelling_result, write_attributes
+from src.output import write_labelling_result, write_attributes, write_message
 
 from cffi import FFI
 ffi = FFI()
@@ -172,6 +172,7 @@ class VRPPricer(Pricer):
 
         if not pricing_success:
             print("PRICER_PY: All methods exceeded the provided time limit without finding paths with reduced cost.")
+            write_message(self.model.graph.graph["output_file"], "time_limit_exceeded, terminating\n")
             return {'result':SCIP_RESULT.DIDNOTRUN}
 
         return {'result':SCIP_RESULT.SUCCESS}

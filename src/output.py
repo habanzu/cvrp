@@ -24,6 +24,7 @@ def create_file(filename, G):
         file_path = f"output/{filename}_{identifier}.log"
         identifier += 1
     G.graph["output_file"] = file_path
+    print(f"PARSE: Writing to file {file_path}")
 
 def write_labelling_result(file, items):
     items = (str(item) for item in items)
@@ -76,3 +77,7 @@ def write_solution(model, pricer):
 
         f.write(f"all_elementary, {elementary}\n")
         f.write(f"all_cyc2, {cyc2}\n")
+
+def write_message(file, message):
+    with open(file, "a") as f:
+        f.write(message)
