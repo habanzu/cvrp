@@ -1,0 +1,53 @@
+Instance, E-n33-k4
+capacity, 8000
+min_trucks, 4
+output_file, output/E-n33-k4_2.log
+Start date, 2022-06-16
+Start time, 17-35-44
+capacity, 8000
+num_vehicles, 4
+methods, ['ng20']
+max_vars, 1000000
+time_limit, 86400
+farley, False
+initial time, initial max_it, max_stale_it
+0.001, 2000000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it
+123, 835.0, 213, 0.001, 2000000.0
+method, duration, pricing_success, upper_bound, lower_bound, abort_early, num_paths
+ng20, 2.97, 1, 835.0, -1085.0, False, 9861
+ng20, 4.77, 1, 828.1428571428571, -228.99999999999977, False, 13952
+ng20, 3.64, 1, 828.1428571428571, 214.42857142857133, False, 8219
+ng20, 8.44, 1, 820.5999999999999, 426.08888888888987, False, 14861
+ng20, 22.19, 1, 819.4, 639.8705882352941, False, 7644
+ng20, 88.52, 1, 814.5974025974026, 733.5151515151538, False, 1296
+ng20, 92.63, 1, 810.0271565495208, 724.9153354632573, False, 791
+ng20, 943.86, 1, 804.336137667304, 777.9850860420634, False, 131
+ng20, 440.01, 1, 803.4191176470589, 790.8014705882354, False, 59
+ng20, 816.56, 1, 803.3984375, 799.3984375, False, 2
+ng20, 897.89, 1, 803.3796875, 803.3796875, False, 0
+Solval, number of paths, impact cutoff
+803.3796875, 20, 0.0001
+Elementary, 2-Cycle, Path Value, Path
+True, True, 0.0453, (0, 30, 29, 27, 26, 0)
+True, True, 0.1031, (0, 30, 29, 28, 26, 0)
+True, True, 0.1156, (0, 31, 26, 27, 28, 29, 0)
+True, True, 0.2641, (0, 31, 26, 27, 16, 28, 0)
+True, True, 0.0375, (0, 4, 7, 9, 10, 32, 11, 2, 3, 0)
+True, True, 0.125, (0, 4, 7, 8, 10, 32, 11, 12, 3, 0)
+True, True, 0.1047, (0, 30, 31, 14, 15, 13, 11, 0)
+True, True, 0.0016, (0, 30, 31, 14, 1, 11, 0)
+True, True, 0.0578, (0, 29, 16, 27, 26, 25, 17, 13, 0)
+True, True, 0.1437, (0, 4, 5, 6, 7, 9, 8, 32, 11, 2, 0)
+False, True, 0.1063, (0, 4, 7, 9, 8, 10, 32, 6, 5, 4, 0)
+True, True, 0.25, (0, 3, 12, 11, 32, 8, 9, 7, 6, 5, 4, 0)
+True, True, 0.1609, (0, 30, 29, 16, 24, 23, 22, 20, 21, 19, 18, 0)
+True, True, 0.4812, (0, 3, 2, 13, 1, 15, 14, 31, 30, 0)
+True, True, 0.0328, (0, 31, 17, 25, 24, 23, 22, 20, 21, 19, 18, 0)
+True, True, 0.3562, (0, 13, 17, 25, 24, 23, 22, 20, 21, 19, 18, 10, 9, 6, 5, 0)
+True, True, 0.0188, (0, 17, 25, 24, 23, 22, 20, 21, 19, 18, 10, 8, 6, 0)
+True, True, 0.2125, (0, 4, 7, 8, 10, 32, 11, 12, 2, 0)
+True, True, 0.0188, (0, 17, 25, 24, 23, 22, 20, 21, 19, 18, 10, 8, 5, 0)
+True, True, 0.0188, (0, 4, 5, 6, 7, 8, 10, 32, 11, 2, 0)
+all_elementary, False
+all_cyc2, True
