@@ -393,8 +393,6 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
     double best_farley_val = 0;
     const bool farley = (*farley_res == 1);
     const bool ngPath = (ngParam != 0);
-    const auto& tmp = neighborhoods[neighborhood_indices[ngParam]];
-    const auto& neighborhoods = tmp;
     unsigned num_paths = 0;
     while(!queue_empty(q)){
         // Compile time flags for speeding up things a little bit
@@ -429,7 +427,7 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
             bitset<neighborhood_size> neighborhood;
             Label newlabel;
             if(ngPath){
-                neighborhood = neighborhoods[i] & x.ng_memory;
+                neighborhood = neighborhoods[neighborhood_indices[ngParam]][i] & x.ng_memory;
                 neighborhood[i] = 1;
                 if(farley){
                     const double new_farley_val = x.farley_val + dual[i-1];

@@ -189,7 +189,9 @@ class VRPPricer(Pricer):
         else:
             farley_ptr = ffi.new("double*",0)
 
+        # print("Calling the labelling")
         num_paths = labelling_lib.labelling(pointer_dual, farkas, time_limit, elementary, max_vars, cyc2, result_arr, abort_early_ptr, ngParam, farley_ptr)
+        # print("finished labelling")
         abort_early = abort_early_ptr[0]
 
         upper_bound = self.model.getObjVal()
