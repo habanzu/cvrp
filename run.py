@@ -16,12 +16,12 @@ def runInstance(Instance, method, K=0):
     # Create pricer
     pricer = VRPPricer(G)
     pricer.data['methods'] = [method]
-    pricer.data['max_vars']= int(1e3)
+    pricer.data['max_vars']= int(1e6)
     pricer.data['time_limit'] = 86400
     pricer.data['farley'] = False
 
     model.includePricer(pricer, "pricer","does pricing")
-    create_constraints(model,pricer,heuristic_stale_it=20, heuristic_max_it=2e7, heuristic_time=1e-5)
+    create_constraints(model,pricer,heuristic_stale_it=20, heuristic_max_it=2e8, heuristic_time=1e-5)
 
     model.hideOutput()
     model.optimize()
@@ -31,7 +31,6 @@ def runInstance(Instance, method, K=0):
 files = [file.rstrip(".vrp") for file in os.listdir("Instances/E") if (not file.endswith("sol"))]
 methods = ["SPPRC","cyc2","ng8","ng20","ESPPRC"]
 test_combinations = [(file,method,0) for file, method in itertools.product(files,methods)]
-test_combinations = [(x,y,z) for x,y,z in test_combinations if x.startswith("E-n13") or x.startswith("E-n22")]
 
 if __name__ == '__main__':
     with Pool(8) as p:
