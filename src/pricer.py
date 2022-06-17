@@ -1,13 +1,10 @@
 from pyscipopt import Model, Pricer, SCIP_RESULT, SCIP_STAGE
-import warnings
+import warnings, sys, math, random, cspy, time
 warnings.simplefilter(action='ignore', category=FutureWarning)
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
-import sys, math, random
-import cspy
-import time
-from src.output import write_labelling_result, write_attributes, write_message
+import src.output
 
 from cffi import FFI
 ffi = FFI()
@@ -23,6 +20,7 @@ class VRPPricer(Pricer):
         self.data = {}
         self.data["capacity"] = G.graph['capacity']
         self.data["num_vehicles"] = G.graph['min_trucks']
+        self.data["abort_early"] = False
 
     def pricerinit(self):
         if 'methods' not in self.data:
@@ -154,7 +152,7 @@ class VRPPricer(Pricer):
             end = time.time()
             duration = round(end - start, 2)
             items = (method, duration, pricing_success, upper_bound, lower_bound, abort_early, num_paths)
-            write_labelling_result(self.model.graph.graph["output_file"], items)
+            src.output.write_labelling_result(self.model.graph.graph["output_file"], items)
 
         if not farkas and pricing_success and self.data['farley']:
             _, upper_bound, lower_bound, abort_early, _ = self.labelling(dual,farkas,time_limit,max_vars, farley = True)
@@ -168,12 +166,13 @@ class VRPPricer(Pricer):
             end = time.time()
             duration = round(end - start, 2)
             items = ("Farley", duration, abort_early, upper_bound, lower_bound, abort_early, "Not Applicable")
-            write_labelling_result(self.model.graph.graph["output_file"], items)
+            src.output.write_labelling_result(self.model.graph.graph["output_file"], items)
 
         if not pricing_success:
             print("PRICER_PY: All methods exceeded the provided time limit without finding paths with reduced cost.")
-            write_message(self.model.graph.graph["output_file"], "time_limit_exceeded, terminating\n")
-            return {'result':SCIP_RESULT.DIDNOTRUN}
+            src.output.write_message(self.model.graph.graph["output_file"], "time_limit_exceeded, terminating\n")
+            self.data["abort_early"] = True
+            return {'result':SCIP_RESULT.SUCCESS}
 
         return {'result':SCIP_RESULT.SUCCESS}
 
@@ -190,9 +189,7 @@ class VRPPricer(Pricer):
         else:
             farley_ptr = ffi.new("double*",0)
 
-        # print("Calling the labelling")
         num_paths = labelling_lib.labelling(pointer_dual, farkas, time_limit, elementary, max_vars, cyc2, result_arr, abort_early_ptr, ngParam, farley_ptr)
-        # print("finished labelling")
         abort_early = abort_early_ptr[0]
 
         upper_bound = self.model.getObjVal()

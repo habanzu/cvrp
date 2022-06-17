@@ -15,6 +15,15 @@ def write_attributes(G, pricer):
         for k,v in pricer.data.items():
             f.write(f"{k}, {v}\n")
 
+def write_message(file, message):
+    with open(file, "a") as f:
+        f.write(message)
+
+def write_time(model):
+    file = model.graph.graph['output_file']
+    message = f"scip_total_time, {model.getTotalTime()}\n"
+    write_message(file, message)
+
 def create_file(filename, G):
     if not os.path.exists("output"):
         os.makedirs("output")
@@ -48,6 +57,9 @@ def write_solution(model, pricer):
     sol = model.getBestSol()
     sol_val = model.getObjVal()
     file = model.graph.graph['output_file']
+    write_time(model)
+    if pricer.data["abort_early"]:
+        return
 
     elementary = True
     cyc2 = True
@@ -77,7 +89,3 @@ def write_solution(model, pricer):
 
         f.write(f"all_elementary, {elementary}\n")
         f.write(f"all_cyc2, {cyc2}\n")
-
-def write_message(file, message):
-    with open(file, "a") as f:
-        f.write(message)
