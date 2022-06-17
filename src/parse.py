@@ -3,7 +3,7 @@ import re
 
 from src.output import create_file
 
-def parse(Instance, K=0):
+def parse(Instance, K=0, filename= None):
     print(f"MAIN: Instance {Instance}")
     if Instance[0] == "E":
         dir = "E"
@@ -33,7 +33,7 @@ def parse(Instance, K=0):
             capacity = int(line.split()[-1])
         elif line.startswith('EDGE_WEIGHT_TYPE'):
             if(line.split()[-1] != "EUC_2D"):
-                print("ERROR: Wrong edge weight type.")
+                raise ValueError("PARSE ERROR: Wrong edge weight type.")
         elif line.startswith("NODE_COORD_SECTION"):
             node_coord_index = i
         elif line.startswith("DEMAND_SECTION"):
@@ -73,6 +73,9 @@ def parse(Instance, K=0):
     G.graph['capacity'] = capacity
     G.graph['min_trucks'] = min_trucks
 
-    create_file(Instance,G)
+    if filename is None:
+        create_file(Instance,G)
+    else:
+        create_file(filename,G)
 
     return G
