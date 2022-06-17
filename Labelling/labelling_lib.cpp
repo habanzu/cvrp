@@ -54,7 +54,12 @@ Label::Label(unsigned v, unsigned pred, double cost, unsigned load, Label* pred_
     pred_field[v] = 1;
 }
 
-Label::Label(unsigned v, unsigned pred, double cost, unsigned load, Label* pred_ptr, bitset<neighborhood_size> ng_memory):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr}, ng_memory{ng_memory}{
+Label::Label(unsigned v, unsigned pred, double cost, unsigned load, Label* pred_ptr, bitset<neighborhood_size>& ng_memory):v{v}, pred{pred}, cost{cost}, load{load}, pred_ptr{pred_ptr}, ng_memory{ng_memory}{
+    pred_field = pred_ptr->pred_field;
+    pred_field[v] = 1;
+}
+
+Label::Label(unsigned v, unsigned pred, double cost, unsigned load, Label* pred_ptr, bitset<neighborhood_size>& ng_memory, double farley_val):v{v}, pred{pred}, cost{cost}, load{load}, farley_val{farley_val},  pred_ptr{pred_ptr}, ng_memory{ng_memory}{
     pred_field = pred_ptr->pred_field;
     pred_field[v] = 1;
 }
@@ -70,6 +75,7 @@ bool Label::dominates(const Label& x, const bool elementary, const bool ngPath, 
             cout << "PRICER_C ERROR: Dominance check on start label." << endl;
         if(!elementary && !ngPath && !farley)
             return true;
+        // TODO: For Farley with ng Paths, this code needs to be adapted
         if(farley)
             return (this->farley_val >= x.farley_val);
         auto& own_comparator = ngPath ? this->ng_memory : this->pred_field;
@@ -425,7 +431,12 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
             if(ngPath){
                 neighborhood = neighborhoods[i] & x.ng_memory;
                 neighborhood[i] = 1;
-                newlabel = Label{i, x.v, newcost, newload, &x, neighborhood};
+                if(farley){
+                    const double new_farley_val = x.farley_val + dual[i-1];
+                    newlabel = Label{i, x.v, newcost, newload, &x, neighborhood, new_farley_val};
+                } else {
+                    newlabel = Label{i, x.v, newcost, newload, &x, neighborhood};
+                }
             } else{
                 if(farley){
                     const double new_farley_val = x.farley_val + dual[i-1];

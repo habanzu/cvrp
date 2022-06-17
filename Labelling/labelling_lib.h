@@ -22,7 +22,8 @@ struct Label{
     Label(unsigned v, unsigned pred, double cost, unsigned load);
     Label(unsigned v, unsigned pred, double cost, unsigned load, Label* pred_ptr);
     Label(unsigned v, unsigned pred, double cost, unsigned load, Label* pred_ptr, double farley_val);
-    Label(unsigned v, unsigned pred, double cost, unsigned load, Label* pred_ptr, bitset<neighborhood_size> ng_memory);
+    Label(unsigned v, unsigned pred, double cost, unsigned load, Label* pred_ptr, bitset<neighborhood_size>& ng_memory);
+    Label(unsigned v, unsigned pred, double cost, unsigned load, Label* pred_ptr, bitset<neighborhood_size>& ng_memory, double farley_val);
     bool dominates(const Label& x, const bool elementary, const bool ngParam, const bool farley) const;
     bool check_whether_in_path(const unsigned node, const bool ngParam) const;
     unsigned path_len() const;
