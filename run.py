@@ -17,11 +17,11 @@ def runInstance(Instance, method, K=0):
     pricer = VRPPricer(G)
     pricer.data['methods'] = [method]
     pricer.data['max_vars']= int(1e6)
-    pricer.data['time_limit'] = 86400
+    pricer.data['time_limit'] = int(2*86400)
     pricer.data['farley'] = False
 
     model.includePricer(pricer, "pricer","does pricing")
-    create_constraints(model,pricer,heuristic_stale_it=20, heuristic_max_it=2e8, heuristic_time=1e-5)
+    create_constraints(model,pricer,heuristic_stale_it=20, heuristic_max_it=2e9, heuristic_time=1e-5)
 
     model.hideOutput()
     model.optimize()
