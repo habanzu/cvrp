@@ -1,0 +1,18 @@
+Instance, E-n76-k14
+capacity, 100
+min_trucks, 14
+output_file, output/E-n76-k14_1.log
+Start date, 2022-06-16
+Start time, 09-47-09
+capacity, 100
+num_vehicles, 14
+methods, ['ng20']
+# ng20 was used, despite the output saying otherwise (as the code wasnt parametrized for ng8 and ng20 yet)
+max_vars, 1000
+time_limit, 86400
+farley, False
+Number of routes, Best Solution Value, number of iterations, time, max_it, max_stale_it
+7690, 1021.0, 5846, 0.01, 20000.0, 20
+method, duration, pricing_success, upper_bound, lower_bound, abort_early, num_paths
+ng20, 2777.73, 1, 1002.7692573402418, 990.4376511226249, False, 4
+ng8, 2822.06, 1, 1002.7692573402418, 1002.7692573402418, False, 0

@@ -1,0 +1,17 @@
+Instance, E-n76-k14
+capacity, 100
+min_trucks, 14
+output_file, output/E-n76-k14_2.log
+Start date, 2022-06-16
+Start time, 12-05-49
+capacity, 100
+num_vehicles, 14
+methods, ['ESPPRC']
+max_vars, 1000
+time_limit, 86400
+farley, False
+Number of routes, Best Solution Value, number of iterations, time, max_it, max_stale_it
+7693, 1021.0, 5846, 0.01, 20000.0, 20
+method, duration, pricing_success, upper_bound, lower_bound, abort_early, num_paths
+ESPPRC, 9857.19, 1, 1002.7692573402418, 990.4376511226249, False, 4
+ESPPRC, 9701.4, 1, 1002.7692573402418, 1002.7692573402418, False, 0

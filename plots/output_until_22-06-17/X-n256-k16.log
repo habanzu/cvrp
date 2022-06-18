@@ -1,0 +1,16 @@
+Instance, X-n256-k16
+capacity, 1225
+min_trucks, 16
+output_file, output/X-n256-k16.log
+Start date, 2022-06-15
+Start time, 12-09-47
+capacity, 1225
+num_vehicles, 16
+methods, ['ESPPRC']
+max_vars, 1000
+time_limit, 86400
+farley, False
+Number of routes, Best Solution Value, number of iterations, time, max_it, max_stale_it
+285668, 18916.0, 20000, 0.1, 20000.0, 20
+method, duration, pricing_success, upper_bound, lower_bound, abort_early, num_paths
+ESPPRC, 86402.99, 0, 18268.28478475799, 0, True, 0

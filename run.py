@@ -20,11 +20,11 @@ def runInstance(Instance, method, K=0,max_vars=0):
         pricer.data['max_vars']= int(1e6)
     else:
         pricer.data['max_vars'] = max_vars
-    pricer.data['time_limit'] = 1#7200#86400
+    pricer.data['time_limit'] = 7200#86400
     pricer.data['farley'] = False
 
     model.includePricer(pricer, "pricer","does pricing")
-    create_constraints(model,pricer,heuristic_stale_it=20, heuristic_max_it=2e8, heuristic_time=1e-5)
+    create_constraints(model,pricer,heuristic_stale_it=20, heuristic_max_it=2e9, heuristic_time=1e-5)
 
     model.hideOutput()
     model.optimize()
