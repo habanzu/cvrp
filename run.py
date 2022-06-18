@@ -24,7 +24,7 @@ def runInstance(Instance, method, K=0,max_vars=0):
     pricer.data['farley'] = False
 
     model.includePricer(pricer, "pricer","does pricing")
-    create_constraints(model,pricer,heuristic_stale_it=20, heuristic_max_it=2e9, heuristic_time=1e-5)
+    create_constraints(model,pricer,heuristic_stale_it=20, heuristic_max_it=2e11, heuristic_time=1e-8)
 
     model.hideOutput()
     model.optimize()
@@ -37,5 +37,5 @@ max_vars = [int(10**i) for i in range(7)]
 test_combinations = [(file,method,0,max_var) for file, method, max_var in itertools.product(files,methods,max_vars)]
 
 if __name__ == '__main__':
-    with Pool() as p:
+    with Pool(24) as p:
         p.starmap(runInstance, test_combinations)
