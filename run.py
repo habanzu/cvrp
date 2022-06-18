@@ -5,9 +5,9 @@ from src.output import write_solution
 from multiprocessing import Pool
 import os, itertools
 
-def runInstance(Instance, method, K=0):
+def runInstance(Instance, method, K=0,max_vars=0):
     try:
-        G = parse(Instance, K,filename=f"{Instance}-{method}")
+        G = parse(Instance, K,filename=f"test_added_vars/{Instance}-{method}-v_{max_vars}")
     except ValueError:
         return
 
@@ -16,8 +16,11 @@ def runInstance(Instance, method, K=0):
     # Create pricer
     pricer = VRPPricer(G)
     pricer.data['methods'] = [method]
-    pricer.data['max_vars']= int(1e6)
-    pricer.data['time_limit'] = 86400
+    if max_vars == 0:
+        pricer.data['max_vars']= int(1e6)
+    else:
+        pricer.data['max_vars'] = max_vars
+    pricer.data['time_limit'] = 1#7200#86400
     pricer.data['farley'] = False
 
     model.includePricer(pricer, "pricer","does pricing")
@@ -29,8 +32,9 @@ def runInstance(Instance, method, K=0):
     write_solution(model, pricer)
 
 files = [file.rstrip(".vrp") for file in os.listdir("Instances/E") if (not file.endswith("sol"))]
-methods = ["SPPRC","cyc2","ng8","ng20","ESPPRC"]
-test_combinations = [(file,method,0) for file, method in itertools.product(files,methods)]
+methods = ["ng20","ESPPRC"]
+max_vars = [int(10**i) for i in range(7)]
+test_combinations = [(file,method,0,max_var) for file, method, max_var in itertools.product(files,methods,max_vars)]
 
 if __name__ == '__main__':
     with Pool() as p:

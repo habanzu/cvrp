@@ -74,7 +74,7 @@ def parse(Instance, K=0, filename= None):
     G.graph['min_trucks'] = min_trucks
 
     if filename is None:
-        create_file(Instance,G)
+        create_file(f"output/{Instance}",G)
     else:
         create_file(filename,G)
 

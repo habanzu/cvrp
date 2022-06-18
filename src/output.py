@@ -25,12 +25,10 @@ def write_time(model):
     write_message(file, message)
 
 def create_file(filename, G):
-    if not os.path.exists("output"):
-        os.makedirs("output")
-    file_path = f"output/{filename}.log"
+    file_path = f"{filename}.log"
     identifier = 1
     while os.path.exists(file_path):
-        file_path = f"output/{filename}_{identifier}.log"
+        file_path = f"{filename}_{identifier}.log"
         identifier += 1
     G.graph["output_file"] = file_path
     print(f"PARSE: Writing to file {file_path}")
@@ -51,7 +49,7 @@ def write_heuristic_results(file, items):
     with open(file,"a") as f:
         f.write("heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it\n")
         f.write(", ".join(items) + "\n")
-        f.write("method, duration, pricing_success, upper_bound, lower_bound, abort_early, num_paths\n")
+        f.write("method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, \n")
 
 def write_solution(model, pricer):
     sol = model.getBestSol()
