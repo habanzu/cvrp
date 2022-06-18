@@ -1,0 +1,18 @@
+Instance, X-n120-k6
+capacity, 21
+min_trucks, 6
+output_file, output/X-n120-k6_1.log
+Start date, 2022-06-16
+Start time, 17-20-29
+capacity, 21
+num_vehicles, 6
+methods, ['ESPPRC']
+max_vars, 1000000
+time_limit, 86400
+farley, False
+initial time, initial max_it, max_stale_it
+1e-05, 200000000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it
+315728, 13332.0, 200000, 0.01, 200000.0
+method, duration, pricing_success, upper_bound, lower_bound, abort_early, num_paths
+ESPPRC, 86402.45, 0, 12999.9473341313, 0, True, 0
