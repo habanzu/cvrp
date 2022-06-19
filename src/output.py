@@ -23,6 +23,7 @@ def write_time(model):
     file = model.graph.graph['output_file']
     message = f"scip_total_time, {model.getTotalTime()}\n"
     write_message(file, message)
+    message = f"scip_solving_time, {model.getSolvingTime()}\n"
 
 def create_file(filename, G):
     file_path = f"{filename}.log"
