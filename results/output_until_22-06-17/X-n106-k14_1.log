@@ -1,0 +1,38 @@
+Instance, X-n106-k14
+capacity, 600
+min_trucks, 14
+output_file, output/X-n106-k14_1.log
+Start date, 2022-06-16
+Start time, 17-39-48
+capacity, 600
+num_vehicles, 14
+methods, ['ng20']
+max_vars, 1000000
+time_limit, 86400
+farley, False
+initial time, initial max_it, max_stale_it
+0.001, 2000000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it
+74471, 26421.0, 75346, 0.01, 200000.0
+method, duration, pricing_success, upper_bound, lower_bound, abort_early, num_paths
+ng20, 62222.56, 1, 25518.898714566414, 24741.76373822886, False, 158
+ng20, 66693.02, 1, 25499.183794681485, 25315.547321821028, False, 20
+ng20, 73976.63, 1, 25498.86966103159, 25498.86966103159, False, 0
+Solval, number of paths, impact cutoff
+25498.86966103159, 13, 0.0001
+Elementary, 2-Cycle, Path Value, Path
+False, True, 0.15, (0, 47, 80, 65, 70, 81, 50, 39, 47, 0)
+False, True, 0.2685, (0, 52, 92, 102, 24, 90, 26, 52, 0)
+False, True, 0.2318, (0, 33, 62, 26, 102, 92, 52, 33, 0)
+False, True, 0.0893, (0, 33, 62, 102, 92, 26, 62, 33, 0)
+True, True, 0.0372, (0, 1, 104, 12, 101, 103, 43, 76, 51, 0)
+True, True, 0.1421, (0, 104, 1, 101, 103, 43, 87, 60, 100, 0)
+True, True, 0.075, (0, 35, 89, 30, 42, 98, 23, 55, 32, 16, 0)
+False, True, 0.1187, (0, 56, 68, 95, 59, 35, 16, 20, 56, 0)
+True, True, 0.1187, (0, 14, 58, 88, 91, 69, 105, 17, 31, 63, 0)
+True, True, 0.0062, (0, 51, 60, 43, 97, 93, 28, 101, 104, 0)
+True, True, 0.0002, (0, 25, 47, 61, 80, 65, 4, 98, 42, 32, 0)
+True, True, 0.0668, (0, 59, 38, 4, 98, 23, 3, 32, 73, 35, 0)
+True, True, 0.0264, (0, 35, 89, 30, 42, 3, 55, 98, 4, 38, 0)
+all_elementary, False
+all_cyc2, True
