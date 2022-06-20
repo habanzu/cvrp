@@ -48,6 +48,7 @@ def create_constraints(model, pricer, heuristic_time=0.001, heuristic_stale_it=2
                 model.addConsCoeff(model.cons[node-1], var ,counts[1][i])
 
             model.addConsCoeff(model.cons[-1], var, 1)
+            model.vars[path] = var
 
 def output_variables(model, pricer):
     sol = model.getBestSol()
@@ -59,7 +60,7 @@ def output_variables(model, pricer):
     print("The solution contains the following paths: ")
     print(f"Only paths with associated value larger than {comp_value} are analysed.")
     for path, var in pricer.data['vars'].items():
-        if sol[var] > 1e-6:
+        if sol[var] > comp_value:
             counts = np.unique(path[1:-1], return_counts=True)
             for i, node in enumerate(counts[0]):
                 if counts[1][i] != 1:
