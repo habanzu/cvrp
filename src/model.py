@@ -75,6 +75,7 @@ def output_variables(model, pricer):
         print("Solution contains non elementary paths.")
 
 def heuristic(model, heuristic_time, max_it, max_stale_it, time_limit):
+    heuristic_start_time = time.time()
     data = dict()
     G = model.graph
     n = G.number_of_nodes()
@@ -133,7 +134,8 @@ def heuristic(model, heuristic_time, max_it, max_stale_it, time_limit):
             print(f"HYGESE: Reached time limit")
             break
     print(f"HYGESE: Found {len(paths)} initial routes in {i} rounds. Best sol val is {best_cost}")
-    items = (len(paths), best_cost, i, heuristic_time, max_it)
+    heuristic_time_measured = round(time.time() - heuristic_start_time, 1)
+    items = (len(paths), best_cost, i, heuristic_time, max_it, heuristic_time_measured)
     write_heuristic_results(model.graph.graph["output_file"], items)
     return paths
 

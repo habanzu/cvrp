@@ -17,14 +17,14 @@ def runInstance(Instance, method, K=0,max_vars=0):
     pricer = VRPPricer(G)
     pricer.data['methods'] = [method]
     if max_vars == 0:
-        pricer.data['max_vars']= int(1e6)
+        pricer.data['max_vars']= int(1e4)
     else:
         pricer.data['max_vars'] = max_vars
     pricer.data['time_limit'] = 86400
     pricer.data['farley'] = False
 
     model.includePricer(pricer, "pricer","does pricing")
-    create_constraints(model,pricer,heuristic_stale_it=20, heuristic_max_it=2e9, heuristic_time=1e-5)
+    create_constraints(model,pricer,heuristic_stale_it=20, heuristic_max_it=2e4, heuristic_time=1)
 
     model.hideOutput()
     model.optimize()
@@ -39,7 +39,8 @@ uchoa_K = {file:int(re.search(pattern, file).group(2)) for file in files}
 uchoa_K.update(uchoa_K_exceptions)
 
 methods = ["SPPRC","cyc2","ng8","ng20"]
-test_combinations = [(file,method,uchoa_K[file]) for file, method in itertools.product(files,methods) if int(re.search(pattern, file).group(1)) < 510]
+test_combinations = [(file,method,uchoa_K[file]) for file, method in itertools.product(files,methods) if int(re.search(pattern, file).group(1)) < 200]
+# Bis 510 ist alles oben im dict, wegen Speicherproblemen muss das heuntergesetzt werden.
 
 if __name__ == '__main__':
     with Pool(24) as p:
