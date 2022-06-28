@@ -10,7 +10,7 @@ from cffi import FFI
 ffi = FFI()
 labelling_lib = ffi.dlopen("Labelling/labelling_lib.so")
 
-funDefs = "void initGraph(const unsigned num_nodes, const unsigned* node_data, const double* edge_data, const double capacity, const unsigned max_path_len, const unsigned* ngParams); unsigned labelling(const double * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, unsigned* additional_information, const unsigned ngParam, double* farley_res);"
+funDefs = "void initGraph(const unsigned num_nodes, const unsigned* node_data, const double* edge_data, const double capacity, const unsigned max_path_len, const unsigned* ngParams); unsigned labelling(const double * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, unsigned* additional_information, const unsigned ngParam, double* farley_res, const bool ESPPRC_heur);"
 ffi.cdef(funDefs, override=True)
 
 class VRPPricer(Pricer):
@@ -62,9 +62,10 @@ class VRPPricer(Pricer):
 
         capacity_ptr = ffi.cast("double",self.data['capacity'])
         ngParams = [int(method.strip("ng")) for method in self.data['methods'] if method.startswith("ng")]
+        if 8 not in ngParams:
+            ngParams.append(20)
         ngParams.insert(0,len(ngParams))
         ngParams_ptr = ffi.new("unsigned[]",ngParams)
-        # ngParam = 8
         print(f"PRICER_PY: The neighborhood has been initialzied to {ngParams[1:]} neighbors.")
         labelling_lib.initGraph(num_nodes,nodes_arr,edges_arr, capacity_ptr, self.data['max_path_len'], ngParams_ptr)
 
@@ -121,7 +122,27 @@ class VRPPricer(Pricer):
     def SPPRC_chooser(self, dual, farkas):
         max_vars = self.data['max_vars']
         time_limit = self.data['time_limit']
+        if "ESPPRC_heur" in self.data:
+            heuristic_espprc = self.data['ESPPRC_heur']
+        else:
+            heuristic_espprc = False
         pricing_success = 0
+
+        if heuristic_espprc:
+            start = time.time()
+            paths, upper_bound, lower_bound, abort_early, num_paths, time_measurements  = self.labelling(dual,farkas,time_limit,max_vars, heuristic_espprc=True)
+            if num_paths > 0:
+                abort_early = True
+                method = "ESPPRC_heur"
+                for path in paths:
+                    self.addVar(path,farkas)
+                end = time.time()
+                duration = round(end - start - time_measurements[0],1)
+                items = (method, duration, *time_measurements, pricing_success, round(upper_bound,4), round(lower_bound,4), abort_early, num_paths)
+                src.output.write_labelling_result(self.model.graph.graph["output_file"], items)
+                return {'result':SCIP_RESULT.SUCCESS}
+            else:
+                print("PRICER_PY: Heuristic failed. Running exact pricing.")
 
         for i, method in enumerate(self.data['methods']):
             start = time.time()
@@ -145,6 +166,7 @@ class VRPPricer(Pricer):
                     else:
                         lower_bound = self.data['bounds'][method][-1][1]
                 self.data['bounds'][method].append((upper_bound,lower_bound))
+
             if not pricing_success and ((len(paths) > 0 or not abort_early)):
                 pricing_success = 1
                 for path in paths:
@@ -176,7 +198,7 @@ class VRPPricer(Pricer):
 
         return {'result':SCIP_RESULT.SUCCESS}
 
-    def labelling(self, dual,farkas, time_limit, max_vars, elementary=False, cyc2=False, ngParam=0, farley=False):
+    def labelling(self, dual,farkas, time_limit, max_vars, elementary=False, cyc2=False, ngParam=0, farley=False, heuristic_espprc=False):
         if farley and farkas:
             raise ValueError("PRICER_PY ERROR: Farley can't be called with Farkas Pricing")
 
@@ -189,7 +211,7 @@ class VRPPricer(Pricer):
         else:
             farley_ptr = ffi.new("double*",0)
 
-        num_paths = labelling_lib.labelling(pointer_dual, farkas, time_limit, elementary, max_vars, cyc2, result_arr, additional_information_ptr, ngParam, farley_ptr)
+        num_paths = labelling_lib.labelling(pointer_dual, farkas, time_limit, elementary, max_vars, cyc2, result_arr, additional_information_ptr, ngParam, farley_ptr, heuristic_espprc)
         abort_early = additional_information_ptr[0]
         time_measurements = tuple(round(additional_information_ptr[i]/1e3,1) for i in range(1,4))
 

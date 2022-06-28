@@ -370,16 +370,11 @@ void initGraph(const unsigned num_nodes, const unsigned* node_data, const double
     cout << "PRICER_C: Graph data successfully copied to C." << endl;
 }
 
-unsigned labelling(const double * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, unsigned* additional_information, const unsigned ngParam, double* farley_res){
+unsigned labelling(const double * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, unsigned* additional_information, const unsigned ngParam, double* farley_res, const bool ESPPRC_heur){
     auto t0= high_resolution_clock::now();
     unsigned total_time;
     duration<double> time_propagated_dominance {0};
     duration<double> time_unpropagated_dominance {0};
-    // duration<double> time_insertion = 0;
-    // duration<double> time_label_creation = 0;
-    // duration<double> time_managing_queue = 0;
-    // duration<double> time_finishing = 0;
-
 
     vector<multiset<Label, less_than>> q;
     // TODO: Wieso wirft vector<vector< const Label>> einen Fehler?
@@ -402,11 +397,8 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
     const bool farley = (*farley_res == 1);
     const bool ngPath = (ngParam != 0);
     unsigned num_paths = 0;
-    auto t1 = high_resolution_clock::now();
-    // unsigned time_init = duration_cast<seconds>(high_resolution_clock::now()-t_start_labelling).count();
 
     while(!queue_empty(q)){
-        auto t2 = high_resolution_clock::now();
         // Compile time flags for speeding up things a little bit
         // constexpr bool elementary = false;
         // constexpr bool cyc2 = false;
@@ -418,14 +410,10 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
         Label& x = propagated[it_q->v].back();
         q[queue_index].erase(it_q);
 
-        auto t3 = high_resolution_clock::now();
-        // time_managing_queue += duration_cast<nanoseconds>(high_resolution_clock::now()-t_start_queue).count();
-
         for(unsigned i=1;i<num_nodes;++i){
-            auto t4 = high_resolution_clock::now();
             if (i == x.v || dual[i-1] <= 0 )
                 continue;
-            if((elementary || ngPath) && x.check_whether_in_path(i, ngPath))
+            if((elementary || ngPath || ESPPRC_heur) && x.check_whether_in_path(i, ngPath))
                 continue;
             if(cyc2 && x.pred == i)
                 continue;
@@ -469,7 +457,6 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
             }
 
             auto t5 = high_resolution_clock::now();
-            // time_label_creation += duration_cast<nanoseconds>(t0-t_start).count();
             for(Label& label: propagated[i]){
                 if(label.dominates(newlabel, elementary, ngPath, farley)){
                     dominated = true;
@@ -501,8 +488,6 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
             if(!dominated){
                 q[i].insert(newlabel);
             }
-            auto t8 = high_resolution_clock::now();
-            // time_insertion += duration_cast<nanoseconds>(high_resolution_clock::now() - t2).count();
 
         }
 
@@ -522,9 +507,7 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
             if(final_farley <= 0)
                 continue;
             double final_cost = x.cost + edges[x.v][0];
-            // cout << "Final farley: " << final_farley << ", cost: " << final_cost << endl;
             double candidate = final_cost / final_farley;
-            // cout << "Found candidate " << candidate << endl;
             if(candidate < best_farley_val || best_farley_val == 0)
                 best_farley_val = candidate;
         } else{
@@ -540,11 +523,8 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
                 }
             }
         }
-        auto t10= high_resolution_clock::now();
-        // time_finishing += duration_cast<nanoseconds>(t_finishing-end).count();
     }
     if(farley){
-        // cout << "Best farley coefficent found is " << best_farley_val << endl;
         *farley_res = best_farley_val;
     }
     for(unsigned i=0;i<new_vars.size();++i){
@@ -554,13 +534,6 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
     additional_information[1] = duration_cast<milliseconds>(end - t0).count();
     additional_information[2] = duration_cast<milliseconds>(time_propagated_dominance).count();
     additional_information[3] = duration_cast<milliseconds>(time_unpropagated_dominance).count();
-
-    // cout << "PRICER_C: T " << total_time <<
-        // "s | P " << duration_cast<seconds>(time_propagated_dominance).count() <<
-        // "s | U " << duration_cast<seconds>().count() <<
-        // "s" << endl;
-    // cout << "PRICER_C: T " << total_time << "s, I " << time_init << "s, Q " << time_managing_queue/1000000000 << "s, C "<< time_label_creation/1000000000 << "s, P " << time_propagated_dominance/1000000000 << "s, U " << time_unpropagated_dominance/1000000000 << "s, I " << time_insertion/1000000000 << "s, F " << time_finishing/1000000000 << "s" << endl;
-
     return num_paths;
 
 }
