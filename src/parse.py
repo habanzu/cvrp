@@ -1,4 +1,5 @@
 import networkx as nx
+import pandas as pd
 import re
 
 from src.output import create_file
@@ -79,3 +80,15 @@ def parse(Instance, K=0, filename= None):
         create_file(filename,G)
 
     return G
+
+def parse_footer(file):
+    with open(file,'r') as f:
+        lines = f.readlines()
+
+    for i, line in enumerate(lines[::-1]):
+        if line.startswith("scip_total_time"):
+            return i + 1
+
+def parse_output(file):
+    footer = parse_footer(file)
+    return pd.read_csv(file, header=17 ,skipfooter=footer, engine="python", sep=", ")
