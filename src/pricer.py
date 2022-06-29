@@ -128,7 +128,7 @@ class VRPPricer(Pricer):
             heuristic_espprc = False
         pricing_success = 0
 
-        if heuristic_espprc:
+        if heuristic_espprc and not self.data['methods'] == ['SPPRC']:
             start = time.time()
             paths, upper_bound, lower_bound, abort_early, num_paths, time_measurements  = self.labelling(dual,farkas,time_limit,max_vars, heuristic_espprc=True)
             if num_paths > 0:

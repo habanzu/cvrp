@@ -534,6 +534,8 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
     additional_information[1] = duration_cast<milliseconds>(end - t0).count();
     additional_information[2] = duration_cast<milliseconds>(time_propagated_dominance).count();
     additional_information[3] = duration_cast<milliseconds>(time_unpropagated_dominance).count();
+    if(cyc2)
+        cyc2_dominators.clear();
     return num_paths;
 
 }
