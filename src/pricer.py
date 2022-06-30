@@ -62,28 +62,10 @@ class VRPPricer(Pricer):
 
         capacity_ptr = ffi.cast("double",self.data['capacity'])
         ngParams = [int(method.strip("ng")) for method in self.data['methods'] if method.startswith("ng")]
-        if 8 not in ngParams:
-            ngParams.append(20)
         ngParams.insert(0,len(ngParams))
         ngParams_ptr = ffi.new("unsigned[]",ngParams)
-        print(f"PRICER_PY: The neighborhood has been initialzied to {ngParams[1:]} neighbors.")
+        print(f"PRICER_PY: The neighborhood has been initialized to {ngParams[1:]} neighbors.")
         labelling_lib.initGraph(num_nodes,nodes_arr,edges_arr, capacity_ptr, self.data['max_path_len'], ngParams_ptr)
-
-        # G = self.model.graph.to_directed()
-        # G.graph['n_res'] = 2
-        #
-        # for i in range(1,G.number_of_nodes()):
-        #     G.add_edge("Source",i, weight= 0)
-        #
-        # G.remove_edges_from(list(G.edges(0)))
-        # G = nx.relabel_nodes(G,{0:"Sink"})
-        #
-        # for (u,v) in G.edges():
-        #     if v == "Sink":
-        #         G[u][v]['res_cost'] = np.array([1,1])
-        #     else:
-        #         G[u][v]['res_cost'] = np.array([G.nodes()[v]["demand"],1])
-        # self.data["cspy_graph"] = G
 
     def pricerfarkas(self):
         dual = [self.model.getDualfarkasLinear(con) for con in self.data['cons']]
