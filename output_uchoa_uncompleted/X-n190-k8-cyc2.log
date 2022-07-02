@@ -1,0 +1,15 @@
+Instance, X-n190-k8
+capacity, 138
+min_trucks, 8
+output_file, output_uchoa/X-n190-k8-cyc2.log
+Start date, 2022-06-23
+Start time, 09-55-05
+capacity, 138
+num_vehicles, 8
+abort_early, False
+methods, ['cyc2']
+max_vars, 1000000
+time_limit, 86400
+farley, False
+initial time, initial max_it, max_stale_it
+1e-05, 2000000000.0, 20

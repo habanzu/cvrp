@@ -1,0 +1,25 @@
+Instance, X-n280-k17
+capacity, 192
+min_trucks, 17
+output_file, output_uchoa/X-n280-k17-cyc2.log
+Start date, 2022-06-22
+Start time, 18-11-07
+capacity, 192
+num_vehicles, 17
+abort_early, False
+methods, ['cyc2']
+max_vars, 1000000
+time_limit, 86400
+farley, False
+initial time, initial max_it, max_stale_it
+1e-05, 2000000000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it
+413697, 33630.0, 34269, 1.0, 20000.0
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+cyc2, 203.0, 26.0, 0.0, 0.0, 1, 33099.217, 11491.9352, 0, 184091
+cyc2, 83.7, 25.4, 0.0, 0.0, 1, 33093.0291, 15417.8522, 0, 109900
+cyc2, 126.0, 27.4, 0.0, 0.0, 1, 33084.8092, 2906.5679, 0, 201077
+cyc2, 54.5, 24.5, 0.0, 0.0, 1, 33084.8092, 17368.9909, 0, 78886
+cyc2, 120.4, 27.7, 0.0, 0.0, 1, 33058.188, -712.1427, 0, 204667
+cyc2, 34.5, 23.3, 0.0, 0.0, 1, 33054.8816, 25748.1638, 0, 39474
+cyc2, 55.6, 24.4, 0.0, 0.0, 1, 33013.2897, 24013.5972, 0, 62897

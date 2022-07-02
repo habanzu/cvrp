@@ -1,0 +1,19 @@
+Instance, X-n233-k16
+capacity, 631
+min_trucks, 17
+output_file, output_uchoa/X-n233-k16-SPPRC.log
+Start date, 2022-06-22
+Start time, 13-44-21
+capacity, 631
+num_vehicles, 17
+abort_early, False
+methods, ['SPPRC']
+max_vars, 1000000
+time_limit, 86400
+farley, False
+initial time, initial max_it, max_stale_it
+1e-05, 2000000000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it
+12868, 19230.0, 1206, 100.0, 200.0
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+SPPRC, 57.8, 17.7, 15.4, 1.1, 1, 19000.0952, -78722.5596, 0, 45981

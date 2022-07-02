@@ -1,0 +1,32 @@
+Instance, X-n247-k50
+capacity, 134
+min_trucks, 50
+output_file, output_uchoa/X-n247-k50-ng20.log
+Start date, 2022-06-21
+Start time, 12-42-38
+capacity, 134
+num_vehicles, 50
+abort_early, False
+methods, ['ng20']
+max_vars, 1000000
+time_limit, 86400
+farley, False
+initial time, initial max_it, max_stale_it
+1e-05, 2000000000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it
+2978, 37421.0, 396, 100.0, 200.0
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ng20, 21.2, 5.8, 4.2, 0.7, 1, 37359.4422, -233948.1966, 0, 26264
+ng20, 14.2, 7.3, 5.6, 0.7, 1, 37359.4422, -41511.2753, 0, 21169
+ng20, 9.1, 17.2, 14.0, 1.4, 1, 37359.4422, 1774.2571, 0, 19608
+ng20, 4.4, 18.7, 15.6, 1.4, 1, 37359.4422, 18139.9978, 0, 11892
+ng20, 5.6, 25.9, 22.6, 1.6, 1, 37274.812, 16613.7401, 0, 15702
+ng20, 5.9, 635.2, 616.2, 13.6, 1, 37247.6733, 28200.5308, 0, 12653
+ng20, 1.3, 5018.6, 4318.9, 684.0, 1, 37247.1095, 34273.7288, 0, 3342
+ng20, 1.0, 5585.2, 4933.4, 636.4, 1, 37239.7489, 34674.0031, 0, 2388
+ng20, 2.4, 5711.3, 4902.4, 792.5, 1, 37227.6967, 31902.5827, 0, 6315
+ng20, 0.6, 9233.4, 8063.6, 1148.6, 1, 37225.5908, 35616.7218, 0, 1309
+ng20, 0.3, 7729.7, 6789.0, 922.7, 1, 37214.475, 35495.0443, 0, 439
+ng20, 0.1, 12024.9, 10494.4, 1507.4, 1, 37205.1128, 36400.3169, 0, 163
+ng20, 0.1, 14334.5, 8358.2, 2384.9, 1, 37197.3826, 36762.4914, 0, 110
+ng20, 0.2, 8804.6, 7800.2, 985.2, 1, 37196.74, 37115.0211, 0, 18

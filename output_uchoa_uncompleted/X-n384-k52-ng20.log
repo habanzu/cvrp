@@ -1,0 +1,15 @@
+Instance, X-n384-k52
+capacity, 564
+min_trucks, 53
+output_file, output_uchoa/X-n384-k52-ng20.log
+Start date, 2022-06-23
+Start time, 10-34-56
+capacity, 564
+num_vehicles, 53
+abort_early, False
+methods, ['ng20']
+max_vars, 1000000
+time_limit, 86400
+farley, False
+initial time, initial max_it, max_stale_it
+1e-05, 2000000000.0, 20
