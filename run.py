@@ -3,7 +3,7 @@ from src.pricer import VRPPricer
 from src.parse import parse
 from src.output import write_solution
 from multiprocessing import Pool
-import os, itertools, re
+import os, itertools, re, psutil, time
 
 def runInstance(Instance, method, K=0,max_vars=0):
     try:
@@ -44,7 +44,14 @@ test_combinations = [(file,method,uchoa_K[file]) for file, method in itertools.p
 # Bis 510 ist alles oben im dict, wegen Speicherproblemen muss das heuntergesetzt werden.
 
 if __name__ == '__main__':
-    with Pool(8,maxtasksperchild=1) as p:
+    with Pool(12,maxtasksperchild=1) as p:
         async_res = p.starmap_async(runInstance, test_combinations, 1)
         p.close()
+        while(not async_res.ready()):
+            time.sleep(10)
+            print(f"Current memory: {psutil.virtual_memory().available >> 20} MB")
+            if(psutil.virtual_memory().available >> 30 < 10):
+                print("RUN: Memory is sparse, terminating processes.")
+                p.terminate()
+                break
         p.join()
