@@ -1,0 +1,25 @@
+Instance, E-n51-k5
+capacity, 160
+min_trucks, 5
+output_file, test_added_vars/E-n51-k5-ESPPRC-v_100000.log
+Start date, 2022-06-18
+Start time, 14-32-46
+capacity, 160
+num_vehicles, 5
+abort_early, False
+methods, ['ESPPRC']
+max_vars, 100000
+time_limit, 7200
+farley, False
+initial time, initial max_it, max_stale_it
+1e-08, 200000000000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it
+422, 521.0, 312, 0.01, 200000.0
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ESPPRC, 2.5, 7201.0, 1348.8, 5846.5, 1, 519.8173, 0, 1, 7946
+ESPPRC, 0.4, 7201.0, 1309.6, 5884.6, 1, 519.8173, 0, 1, 221
+ESPPRC, 0.5, 7201.0, 1481.4, 5712.4, 1, 519.8173, 0, 1, 31
+ESPPRC, 0.5, 7201.0, 1504.0, 5689.4, 1, 519.8173, 0, 1, 6
+ESPPRC, 0.4, 7201.0, 1494.4, 5699.1, 0, 519.8173, 0, 1, 0
+time_limit_exceeded, terminating
+scip_total_time, 36016.865518

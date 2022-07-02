@@ -1,0 +1,47 @@
+Instance, X-n303-k21
+capacity, 794
+min_trucks, 21
+output_file, output_uchoa/X-n303-k21-ng20.log
+Start date, 2022-07-01
+Start time, 09-33-22
+capacity, 794
+num_vehicles, 21
+abort_early, False
+methods, ['ng20']
+max_vars, 100
+time_limit, 86400
+farley, False
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it, measured total time
+213202, 21805.0, 20000, 1, 20000.0, 24152.3
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ESPPRC_heur, 0.1, 5.4, 4.2, 0.5, 0, 21158.0738, 16839.4082, True, 9025
+ESPPRC_heur, 0.1, 6.9, 5.4, 0.7, 0, 21158.0738, 17530.621, True, 7553
+ESPPRC_heur, 0.1, 5.6, 4.3, 0.6, 0, 21158.0738, 17767.9465, True, 3491
+ESPPRC_heur, 0.1, 5.5, 4.2, 0.5, 0, 21158.0738, 19125.0943, True, 2766
+ESPPRC_heur, 0.0, 7.4, 5.7, 0.7, 0, 21154.91, 19235.5695, True, 3700
+ESPPRC_heur, 0.1, 5.9, 4.5, 0.6, 0, 21154.91, 19174.3564, True, 3302
+ESPPRC_heur, 0.0, 5.9, 4.5, 0.6, 0, 21154.91, 19345.9661, True, 2918
+ESPPRC_heur, 0.0, 5.6, 4.2, 0.6, 0, 21154.91, 19833.2406, True, 2056
+ESPPRC_heur, 0.1, 6.9, 5.4, 0.7, 0, 21154.2655, 20122.6022, True, 1335
+ESPPRC_heur, 0.1, 6.2, 4.8, 0.6, 0, 21154.2655, 20410.8692, True, 678
+ESPPRC_heur, 0.1, 7.1, 5.5, 0.7, 0, 21144.1314, 20043.75, True, 1110
+ESPPRC_heur, 0.1, 7.3, 5.8, 0.7, 0, 21144.1314, 19643.0972, True, 716
+ESPPRC_heur, 0.1, 9.0, 7.3, 0.8, 0, 21143.1577, 20471.8386, True, 576
+ESPPRC_heur, 0.1, 9.4, 7.6, 0.8, 0, 21142.1841, 20672.2158, True, 324
+ESPPRC_heur, 0.1, 9.3, 7.4, 0.9, 0, 21136.0821, 20571.4444, True, 421
+ESPPRC_heur, 0.1, 7.8, 6.1, 0.7, 0, 21134.3342, 20881.6895, True, 182
+ESPPRC_heur, 0.1, 7.9, 6.1, 0.8, 0, 21131.5332, 20781.0357, True, 165
+ESPPRC_heur, 0.1, 8.0, 6.3, 0.7, 0, 21129.495, 20905.1291, True, 97
+ESPPRC_heur, 0.0, 7.7, 6.0, 0.7, 0, 21126.8896, 20897.431, True, 98
+ESPPRC_heur, 0.1, 7.9, 6.2, 0.7, 0, 21125.8456, 20913.641, True, 65
+ESPPRC_heur, 0.0, 8.1, 6.4, 0.8, 0, 21123.678, 20910.7682, True, 73
+ESPPRC_heur, 0.0, 7.5, 5.8, 0.7, 0, 21121.8748, 20902.5359, True, 66
+ESPPRC_heur, 0.1, 7.7, 6.0, 0.7, 0, 21121.7407, 21031.0834, True, 13
+ESPPRC_heur, 0.0, 7.4, 5.8, 0.7, 0, 21121.6979, 21072.5025, True, 11
+ESPPRC_heur, 0.1, 7.4, 5.8, 0.7, 0, 21121.5801, 21061.8347, True, 4
+ng20, 1.0, 86401.0, 68853.0, 17377.5, 0, 21121.5801, 0, 1, 0
+time_limit_exceeded, terminating
+scip_total_time, 110904.928267

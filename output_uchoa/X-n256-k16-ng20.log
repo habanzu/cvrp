@@ -1,0 +1,41 @@
+Instance, X-n256-k16
+capacity, 1225
+min_trucks, 16
+output_file, output_uchoa/X-n256-k16-ng20.log
+Start date, 2022-06-30
+Start time, 11-07-29
+capacity, 1225
+num_vehicles, 16
+abort_early, False
+methods, ['ng20']
+max_vars, 100
+time_limit, 86400
+farley, False
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it, measured total time
+239012, 18916.0, 20000, 1, 20000.0, 21407.7
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ESPPRC_heur, 0.1, 5.6, 4.5, 0.5, 0, 18270.6764, 15109.5181, True, 4562
+ESPPRC_heur, 0.1, 4.5, 3.6, 0.4, 0, 18270.6764, 16538.1978, True, 2931
+ESPPRC_heur, 0.1, 4.3, 3.4, 0.4, 0, 18270.6764, 17316.7441, True, 1594
+ESPPRC_heur, 0.1, 4.3, 3.3, 0.4, 0, 18270.6764, 17086.1185, True, 1935
+ESPPRC_heur, 0.0, 3.7, 2.8, 0.3, 0, 18270.6764, 17752.1933, True, 609
+ESPPRC_heur, 0.0, 3.6, 2.7, 0.3, 0, 18270.6764, 17949.8528, True, 187
+ESPPRC_heur, 0.0, 3.7, 2.7, 0.4, 0, 18269.0068, 17822.7084, True, 307
+ESPPRC_heur, 0.0, 3.7, 2.7, 0.3, 0, 18268.4254, 17784.2926, True, 368
+ESPPRC_heur, 0.1, 3.7, 2.8, 0.3, 0, 18268.4254, 18077.6303, True, 84
+ESPPRC_heur, 0.0, 3.4, 2.5, 0.3, 0, 18267.6271, 17526.628, True, 630
+ESPPRC_heur, -0.0, 3.5, 2.6, 0.3, 0, 18267.6271, 17953.7941, True, 55
+ESPPRC_heur, -0.0, 3.5, 2.6, 0.3, 0, 18267.46, 18197.7494, True, 19
+ESPPRC_heur, -0.0, 3.6, 2.7, 0.3, 0, 18267.1658, 18110.3648, True, 9
+ESPPRC_heur, 0.0, 3.7, 2.8, 0.3, 0, 18266.5959, 18211.3535, True, 12
+ESPPRC_heur, -0.0, 3.7, 2.8, 0.3, 0, 18266.4975, 18188.2477, True, 12
+ESPPRC_heur, -0.0, 3.3, 2.4, 0.3, 0, 18266.1593, 18154.1593, True, 18
+ESPPRC_heur, 0.0, 3.1, 2.3, 0.3, 0, 18265.8188, 18177.5226, True, 7
+ESPPRC_heur, 0.0, 3.0, 2.2, 0.3, 0, 18265.815, 18246.2521, True, 3
+ESPPRC_heur, 0.0, 3.0, 2.2, 0.3, 0, 18265.815, 18262.4025, True, 1
+ng20, 0.7, 86401.0, 66444.9, 19832.4, 0, 18265.815, 0, 1, 0
+time_limit_exceeded, terminating
+scip_total_time, 108032.589666

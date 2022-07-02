@@ -1,0 +1,22 @@
+Instance, X-n384-k52
+capacity, 564
+min_trucks, 53
+output_file, output_uchoa/X-n384-k52-ng20.log
+Start date, 2022-07-02
+Start time, 12-26-08
+capacity, 564
+num_vehicles, 53
+abort_early, False
+methods, ['ng20']
+max_vars, 100
+time_limit, 86400
+farley, False
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it, measured total time
+273501, 66376.0, 20000, 1, 20000.0, 26111.9
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ESPPRC_heur, 0.0, 2.9, 1.7, 0.5, 0, 65358.4203, 64216.3282, True, 27
+ESPPRC_heur, -0.0, 2.9, 1.7, 0.4, 0, 65355.5063, 65166.3304, True, 7
+ESPPRC_heur, 0.0, 2.9, 1.7, 0.5, 0, 65355.4332, 65277.6578, True, 3

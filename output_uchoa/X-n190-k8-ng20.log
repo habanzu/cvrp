@@ -1,0 +1,27 @@
+Instance, X-n190-k8
+capacity, 138
+min_trucks, 8
+output_file, output_uchoa/X-n190-k8-ng20.log
+Start date, 2022-06-26
+Start time, 22-29-45
+capacity, 138
+num_vehicles, 8
+abort_early, False
+methods, ['ng20']
+max_vars, 10000
+time_limit, 86400
+farley, False
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it, measured total time
+125390, 17060.0, 20000, 1, 20000.0, 20472.0
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ng20, 9.6, 18.0, 15.3, 0.9, 1, 16582.5638, -4536.1004, 0, 18557
+ng20, 6.4, 618.3, 595.8, 9.4, 1, 16582.5638, 9093.3322, 0, 48488
+ng20, 7.6, 4627.0, 4501.3, 110.9, 1, 16582.5638, 10296.0731, 0, 21682
+ng20, 6.8, 16513.9, 16186.4, 288.5, 1, 16582.5638, 13386.5515, 0, 88867
+ng20, 6.6, 34530.3, 33498.4, 988.7, 1, 16582.5638, 14788.7461, 0, 20738
+ng20, 6.8, 75416.0, 72784.1, 2564.9, 1, 16582.5638, 14915.4954, 0, 11081
+ng20, 0.2, 86401.1, 81841.0, 4488.8, 0, 16582.5638, 14915.4954, 1, 0
+time_limit_exceeded, terminating
+scip_total_time, 238735.233855

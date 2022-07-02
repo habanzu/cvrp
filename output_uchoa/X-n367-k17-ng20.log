@@ -1,0 +1,16 @@
+Instance, X-n367-k17
+capacity, 218
+min_trucks, 17
+output_file, output_uchoa/X-n367-k17-ng20.log
+Start date, 2022-07-02
+Start time, 20-34-54
+capacity, 218
+num_vehicles, 17
+abort_early, False
+methods, ['ng20']
+max_vars, 100
+time_limit, 86400
+farley, False
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20

@@ -1,0 +1,44 @@
+Instance, E-n30-k3
+capacity, 4500
+min_trucks, 3
+output_file, test_added_vars/E-n30-k3-ng20-v_1000000.log
+Start date, 2022-06-18
+Start time, 20-45-25
+capacity, 4500
+num_vehicles, 3
+abort_early, False
+methods, ['ng20']
+max_vars, 1000000
+time_limit, 7200
+farley, False
+initial time, initial max_it, max_stale_it
+1e-08, 200000000000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it
+65, 534.0, 142, 0.01, 200000.0
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ng20, 2.6, 0.2, 0.1, 0.0, 1, 534.0, 79.2857, 0, 7673
+ng20, 84.0, 687.1, 601.4, 84.3, 1, 529.0, -449.0, 0, 203825
+ng20, 21.5, 11.8, 9.6, 1.9, 1, 529.0, -360.5, 0, 36343
+ng20, 91.6, 5556.5, 5024.8, 526.0, 1, 508.4, 89.3778, 0, 220041
+ng20, 0.8, 6.7, 5.3, 1.1, 1, 493.8252, 419.5175, 0, 1127
+ng20, 0.5, 1.6, 1.3, 0.2, 1, 486.25, 469.9868, 0, 62
+ng20, 0.3, 2.1, 1.7, 0.3, 1, 484.1023, 481.1023, 0, 8
+ng20, 0.0, 2.0, 1.6, 0.3, 1, 484.0972, 484.0972, 0, 0
+scip_total_time, 6474.147918
+Solval, number of paths, impact cutoff
+484.09722222222223, 12, 0.0001
+Elementary, 2-Cycle, Path Value, Path
+True, True, 0.25, (0, 26, 24, 1, 5, 2, 22, 0)
+True, True, 0.125, (0, 22, 2, 4, 6, 29, 0)
+True, True, 0.25, (0, 28, 27, 25, 6, 4, 2, 22, 0)
+True, True, 0.25, (0, 20, 3, 6, 1, 24, 25, 29, 27, 28, 26, 19, 0)
+True, True, 0.125, (0, 20, 22, 3, 6, 1, 24, 25, 29, 27, 28, 26, 19, 0)
+True, True, 0.1111, (0, 18, 23, 15, 16, 13, 7, 17, 9, 12, 11, 21, 0)
+True, True, 0.2222, (0, 18, 23, 10, 11, 12, 8, 14, 9, 17, 7, 13, 16, 15, 0)
+True, True, 0.1111, (0, 21, 14, 8, 9, 17, 7, 13, 16, 15, 12, 10, 23, 18, 0)
+True, True, 0.2222, (0, 21, 14, 8, 12, 11, 15, 10, 23, 18, 0)
+True, True, 0.25, (0, 20, 3, 4, 5, 1, 24, 25, 29, 27, 28, 26, 19, 0)
+True, True, 0.1111, (0, 21, 14, 8, 9, 17, 7, 13, 16, 12, 11, 23, 18, 0)
+True, True, 0.1111, (0, 21, 8, 9, 17, 7, 13, 16, 15, 11, 10, 0)
+all_elementary, True
+all_cyc2, True

@@ -1,0 +1,19 @@
+Instance, X-n491-k59
+capacity, 428
+min_trucks, 59
+output_file, output_uchoa/X-n491-k59-ng20.log
+Start date, 2022-06-25
+Start time, 15-59-00
+capacity, 428
+num_vehicles, 59
+abort_early, False
+methods, ['ng20']
+max_vars, 1000000
+time_limit, 86400
+farley, False
+initial time, initial max_it, max_stale_it
+1e-05, 2000000000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it
+289377, 67189.0, 7049, 10.0, 2000.0
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ng20, 6.5, 83494.8, 54207.1, 18579.1, 1, 65983.5171, 47258.9532, 0, 20081

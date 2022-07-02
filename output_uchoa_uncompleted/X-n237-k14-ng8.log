@@ -1,0 +1,15 @@
+Instance, X-n237-k14
+capacity, 18
+min_trucks, 14
+output_file, output_uchoa/X-n237-k14-ng8.log
+Start date, 2022-06-23
+Start time, 09-32-11
+capacity, 18
+num_vehicles, 14
+abort_early, False
+methods, ['ng8']
+max_vars, 1000000
+time_limit, 86400
+farley, False
+initial time, initial max_it, max_stale_it
+1e-05, 2000000000.0, 20

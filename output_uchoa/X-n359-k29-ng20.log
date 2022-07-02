@@ -1,0 +1,44 @@
+Instance, X-n359-k29
+capacity, 68
+min_trucks, 29
+output_file, output_uchoa/X-n359-k29-ng20.log
+Start date, 2022-07-02
+Start time, 10-41-21
+capacity, 68
+num_vehicles, 29
+abort_early, False
+methods, ['ng20']
+max_vars, 100
+time_limit, 86400
+farley, False
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it, measured total time
+446347, 52110.0, 20000, 1, 20000.0, 38543.7
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ESPPRC_heur, 0.1, 2.3, 1.6, 0.3, 0, 51137.107, 46627.8436, True, 1141
+ESPPRC_heur, 0.0, 2.3, 1.6, 0.2, 0, 51137.107, 48676.4472, True, 529
+ESPPRC_heur, 0.0, 2.3, 1.5, 0.2, 0, 51137.107, 49669.6872, True, 250
+ESPPRC_heur, 0.0, 2.3, 1.5, 0.2, 0, 51126.5752, 48673.1543, True, 294
+ESPPRC_heur, 0.1, 2.6, 1.7, 0.3, 0, 51115.9495, 48452.9454, True, 367
+ESPPRC_heur, 0.0, 2.6, 1.7, 0.3, 0, 51115.9495, 49275.3267, True, 231
+ESPPRC_heur, 0.1, 2.3, 1.6, 0.3, 0, 51111.3735, 50460.3597, True, 145
+ESPPRC_heur, 0.0, 2.6, 1.7, 0.3, 0, 51101.0639, 49575.9744, True, 222
+ESPPRC_heur, 0.0, 2.5, 1.6, 0.3, 0, 51099.9815, 49842.9158, True, 166
+ESPPRC_heur, 0.1, 2.6, 1.7, 0.3, 0, 51088.7632, 50254.4858, True, 162
+ESPPRC_heur, 0.1, 2.6, 1.7, 0.3, 0, 51087.9979, 50799.8325, True, 92
+ESPPRC_heur, 0.0, 2.3, 1.6, 0.3, 0, 51084.9726, 50248.1392, True, 90
+ESPPRC_heur, 0.0, 2.6, 1.7, 0.3, 0, 51082.8639, 50770.2025, True, 51
+ESPPRC_heur, -0.0, 2.6, 1.7, 0.3, 0, 51080.7914, 50783.7767, True, 52
+ESPPRC_heur, -0.0, 2.6, 1.7, 0.3, 0, 51079.4532, 50792.967, True, 38
+ESPPRC_heur, 0.0, 2.5, 1.7, 0.3, 0, 51078.7023, 50903.3434, True, 22
+ESPPRC_heur, 0.0, 2.3, 1.6, 0.3, 0, 51078.3936, 50957.5523, True, 12
+ESPPRC_heur, 0.0, 2.3, 1.6, 0.3, 0, 51078.3743, 50846.3743, True, 6
+ESPPRC_heur, 0.0, 2.3, 1.6, 0.3, 0, 51077.6205, 50903.6205, True, 14
+ESPPRC_heur, 0.0, 2.3, 1.6, 0.3, 0, 51077.6075, 51022.0215, True, 7
+ESPPRC_heur, 0.1, 2.3, 1.6, 0.3, 0, 51077.598, 51074.8866, True, 3
+ESPPRC_heur, -0.0, 2.4, 1.6, 0.3, 0, 51077.5938, 51048.5938, True, 1
+ESPPRC_heur, 0.0, 2.3, 1.6, 0.3, 0, 51077.5434, 51004.8407, True, 7
+ESPPRC_heur, 0.0, 2.3, 1.6, 0.3, 0, 51077.5052, 50903.0702, True, 7
+ESPPRC_heur, 0.0, 2.3, 1.6, 0.3, 0, 51077.4863, 51061.9574, True, 1
