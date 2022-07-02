@@ -1,0 +1,31 @@
+Instance, X-n298-k31
+capacity, 55
+min_trucks, 31
+output_file, output_uchoa/X-n298-k31-ng20.log
+Start date, 2022-07-01
+Start time, 15-38-33
+capacity, 55
+num_vehicles, 31
+abort_early, False
+methods, ['ng20']
+max_vars, 100
+time_limit, 86400
+farley, False
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it, measured total time
+230724, 34258.0, 20000, 1, 20000.0, 24420.1
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ESPPRC_heur, 0.1, 0.5, 0.2, 0.1, 0, 33852.2965, 30284.7803, True, 403
+ESPPRC_heur, 0.0, 0.6, 0.3, 0.1, 0, 33852.2965, 32526.0712, True, 84
+ESPPRC_heur, 0.1, 0.5, 0.2, 0.1, 0, 33850.264, 32247.2047, True, 68
+ESPPRC_heur, 0.0, 0.5, 0.2, 0.1, 0, 33850.2303, 33323.2303, True, 8
+ESPPRC_heur, 0.0, 0.5, 0.2, 0.1, 0, 33850.2303, 33478.2303, True, 8
+ESPPRC_heur, 0.0, 0.5, 0.2, 0.1, 0, 33850.2303, 33605.0343, True, 1
+ng20, 0.4, 37748.4, 30437.7, 7218.9, 1, 33850.2303, 33144.3994, 0, 163
+ESPPRC_heur, 0.0, 0.6, 0.3, 0.1, 0, 33836.0289, 33294.4236, True, 13
+ESPPRC_heur, 0.0, 0.6, 0.3, 0.1, 0, 33835.4689, 33582.5169, True, 4
+ng20, 0.3, 42866.6, 34351.8, 8412.0, 1, 33835.3481, 33347.9986, 0, 47
+ESPPRC_heur, 0.0, 0.5, 0.2, 0.1, 0, 33831.916, 33728.2333, True, 9
+ESPPRC_heur, 0.0, 0.5, 0.2, 0.1, 0, 33831.8478, 33830.2509, True, 1

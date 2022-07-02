@@ -1,0 +1,28 @@
+Instance, X-n322-k28
+capacity, 868
+min_trucks, 28
+output_file, output_uchoa/X-n322-k28-ng20.log
+Start date, 2022-07-01
+Start time, 05-40-52
+capacity, 868
+num_vehicles, 28
+abort_early, False
+methods, ['ng20']
+max_vars, 100
+time_limit, 86400
+farley, False
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it, measured total time
+289758, 29947.0, 20000, 1, 20000.0, 25069.3
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ESPPRC_heur, 0.1, 1.8, 0.9, 0.3, 0, 29418.5298, 27233.4521, True, 781
+ESPPRC_heur, 0.0, 1.6, 0.8, 0.2, 0, 29418.5298, 27987.5888, True, 274
+ESPPRC_heur, 0.0, 1.8, 0.9, 0.3, 0, 29418.5298, 27860.5781, True, 168
+ESPPRC_heur, 0.0, 1.6, 0.9, 0.3, 0, 29414.7958, 28789.7585, True, 63
+ESPPRC_heur, 0.0, 1.7, 1.0, 0.3, 0, 29414.3573, 28923.5162, True, 30
+ESPPRC_heur, -0.0, 1.6, 0.8, 0.2, 0, 29413.6482, 29318.3706, True, 4
+ng20, 0.9, 86401.1, 68372.6, 17852.1, 0, 29413.5431, 0, 1, 0
+time_limit_exceeded, terminating
+scip_total_time, 111671.297132
