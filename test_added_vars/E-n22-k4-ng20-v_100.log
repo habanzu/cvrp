@@ -1,0 +1,39 @@
+Instance, E-n22-k4
+capacity, 6000
+min_trucks, 4
+output_file, test_added_vars/E-n22-k4-ng20-v_100.log
+Start date, 2022-06-18
+Start time, 14-33-36
+capacity, 6000
+num_vehicles, 4
+abort_early, False
+methods, ['ng20']
+max_vars, 100
+time_limit, 7200
+farley, False
+initial time, initial max_it, max_stale_it
+1e-08, 200000000000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it
+55, 375.0, 133, 9.999999999999999e-05, 20000000.0
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ng20, 0.0, 0.0, 0.0, 0.0, 1, 375.0, 31.0, 0, 1158
+ng20, 0.0, 0.0, 0.0, 0.0, 1, 375.0, 245.2857, 0, 384
+ng20, 0.0, 0.0, 0.0, 0.0, 1, 375.0, 324.4, 0, 69
+ng20, 0.0, 0.0, 0.0, 0.0, 1, 375.0, 352.8378, 0, 25
+ng20, 0.0, 0.0, 0.0, 0.0, 1, 375.0, 326.4667, 0, 15
+ng20, 0.0, 0.0, 0.0, 0.0, 1, 373.875, 364.5417, 0, 4
+ng20, 0.0, 0.0, 0.0, 0.0, 1, 373.7083, 367.375, 0, 6
+ng20, 0.0, 0.0, 0.0, 0.0, 1, 373.7083, 373.7083, 0, 0
+scip_total_time, 2.498243
+Solval, number of paths, impact cutoff
+373.7083333333333, 7, 0.0001
+Elementary, 2-Cycle, Path Value, Path
+True, True, 0.25, (0, 10, 1, 2, 5, 7, 9, 0)
+True, True, 0.375, (0, 13, 11, 4, 3, 6, 10, 0)
+True, True, 0.0833, (0, 12, 15, 18, 20, 21, 14, 0)
+True, True, 0.625, (0, 8, 6, 1, 2, 5, 7, 9, 0)
+True, True, 0.125, (0, 11, 4, 3, 1, 2, 7, 0)
+True, True, 0.125, (0, 9, 5, 3, 4, 11, 0)
+True, True, 0.0833, (0, 13, 16, 0)
+all_elementary, True
+all_cyc2, True

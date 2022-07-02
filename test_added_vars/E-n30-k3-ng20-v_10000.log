@@ -1,0 +1,45 @@
+Instance, E-n30-k3
+capacity, 4500
+min_trucks, 3
+output_file, test_added_vars/E-n30-k3-ng20-v_10000.log
+Start date, 2022-06-18
+Start time, 20-44-52
+capacity, 4500
+num_vehicles, 3
+abort_early, False
+methods, ['ng20']
+max_vars, 10000
+time_limit, 7200
+farley, False
+initial time, initial max_it, max_stale_it
+1e-08, 200000000000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it
+65, 534.0, 142, 0.01, 200000.0
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ng20, 2.6, 0.2, 0.1, 0.0, 1, 534.0, 79.2857, 0, 7673
+ng20, 4.7, 664.9, 569.3, 83.7, 1, 529.0, -449.0, 0, 203825
+ng20, 5.4, 182.8, 151.0, 23.7, 1, 529.0, 140.5, 0, 88896
+ng20, 4.7, 246.4, 202.2, 36.7, 1, 506.52, 216.48, 0, 76544
+ng20, 4.8, 411.1, 342.8, 63.0, 1, 496.6667, 338.1667, 0, 38590
+ng20, 0.2, 2.9, 2.2, 0.5, 1, 491.4891, 429.2391, 0, 619
+ng20, 0.1, 1.5, 1.1, 0.2, 1, 487.2989, 470.9143, 0, 61
+ng20, 0.1, 1.5, 1.1, 0.2, 1, 484.6311, 473.2165, 0, 31
+ng20, -0.0, 2.2, 1.7, 0.3, 1, 484.0972, 481.0972, 0, 2
+ng20, 0.0, 2.2, 1.7, 0.3, 1, 484.0972, 484.0972, 0, 0
+scip_total_time, 1541.97122
+Solval, number of paths, impact cutoff
+484.09722222222223, 11, 0.0001
+Elementary, 2-Cycle, Path Value, Path
+True, True, 0.25, (0, 28, 27, 25, 6, 4, 2, 22, 0)
+True, True, 0.125, (0, 20, 22, 3, 6, 1, 24, 25, 29, 27, 28, 26, 19, 0)
+True, True, 0.125, (0, 29, 6, 4, 2, 22, 0)
+True, True, 0.25, (0, 26, 24, 1, 5, 2, 22, 0)
+True, True, 0.2222, (0, 18, 23, 10, 11, 12, 8, 14, 9, 17, 7, 13, 16, 15, 0)
+True, True, 0.25, (0, 20, 3, 6, 1, 24, 25, 29, 27, 28, 26, 19, 0)
+True, True, 0.1111, (0, 21, 14, 8, 9, 17, 7, 13, 16, 15, 12, 10, 23, 18, 0)
+True, True, 0.2222, (0, 21, 14, 8, 12, 11, 15, 10, 23, 18, 0)
+True, True, 0.25, (0, 20, 3, 4, 5, 1, 24, 25, 29, 27, 28, 26, 19, 0)
+True, True, 0.1111, (0, 21, 11, 12, 9, 17, 7, 13, 16, 15, 23, 18, 0)
+True, True, 0.1111, (0, 21, 8, 9, 17, 7, 13, 16, 15, 11, 18, 0)
+all_elementary, True
+all_cyc2, True

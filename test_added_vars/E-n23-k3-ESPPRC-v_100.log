@@ -1,0 +1,58 @@
+Instance, E-n23-k3
+capacity, 4500
+min_trucks, 3
+output_file, test_added_vars/E-n23-k3-ESPPRC-v_100.log
+Start date, 2022-06-18
+Start time, 14-47-16
+capacity, 4500
+num_vehicles, 3
+abort_early, False
+methods, ['ESPPRC']
+max_vars, 100
+time_limit, 7200
+farley, False
+initial time, initial max_it, max_stale_it
+1e-08, 200000000000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it
+35, 569.0, 78, 0.001, 2000000.0
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ESPPRC, 0.0, 0.0, 0.0, 0.0, 1, 567.0, -93.0, 0, 351
+ESPPRC, 0.0, 0.0, 0.0, 0.0, 1, 567.0, -21.0, 0, 1023
+ESPPRC, 0.1, 0.0, 0.0, 0.0, 1, 567.0, 282.0, 0, 1973
+ESPPRC, 0.0, 0.0, 0.0, 0.0, 1, 567.0, 102.0, 0, 1437
+ESPPRC, 0.0, 0.2, 0.1, 0.0, 1, 567.0, 283.8, 0, 8749
+ESPPRC, 0.0, 0.1, 0.0, 0.0, 1, 567.0, 315.2727, 0, 3052
+ESPPRC, 0.1, 0.0, 0.0, 0.0, 1, 567.0, 312.0, 0, 1601
+ESPPRC, 0.0, 0.1, 0.0, 0.0, 1, 567.0, 333.8571, 0, 2471
+ESPPRC, 0.0, 0.2, 0.1, 0.0, 1, 567.0, 336.5385, 0, 3871
+ESPPRC, 0.0, 1.1, 0.7, 0.3, 1, 567.0, 429.6923, 0, 5846
+ESPPRC, 0.0, 0.1, 0.0, 0.0, 1, 567.0, 292.6667, 0, 2905
+ESPPRC, 0.1, 0.3, 0.2, 0.1, 1, 567.0, 385.0541, 0, 3974
+ESPPRC, 0.1, 6.5, 4.3, 2.0, 1, 567.0, 425.25, 0, 10064
+ESPPRC, 0.1, 0.5, 0.3, 0.1, 1, 567.0, 439.2, 0, 2014
+ESPPRC, 0.1, 2.7, 1.8, 0.8, 1, 567.0, 498.9677, 0, 738
+ESPPRC, 0.1, 2.3, 1.6, 0.6, 1, 567.0, 452.1127, 0, 3425
+ESPPRC, 0.1, 2.3, 1.5, 0.7, 1, 567.0, 473.2857, 0, 2562
+ESPPRC, 0.1, 5.4, 3.6, 1.6, 1, 566.7073, 477.7317, 0, 2036
+ESPPRC, 0.0, 3.3, 2.0, 1.2, 1, 564.7059, 514.7166, 0, 467
+ESPPRC, 0.0, 9.3, 6.0, 3.1, 1, 559.882, 538.5449, 0, 74
+ESPPRC, -0.0, 1.6, 1.0, 0.4, 1, 558.9529, 541.0588, 0, 10
+ESPPRC, -0.0, 2.6, 1.6, 0.8, 1, 558.9529, 555.4588, 0, 4
+ESPPRC, -0.0, 3.1, 1.9, 1.0, 1, 558.9529, 558.9529, 0, 0
+scip_total_time, 44.977968
+Solval, number of paths, impact cutoff
+558.9529411764705, 11, 0.0001
+Elementary, 2-Cycle, Path Value, Path
+True, True, 0.0118, (0, 21, 4, 5, 8, 9, 6, 1, 3, 15, 14, 20, 19, 18, 0)
+True, True, 0.0118, (0, 21, 4, 5, 8, 9, 6, 2, 16, 15, 14, 20, 19, 18, 0)
+True, True, 0.4118, (0, 7, 9, 13, 6, 1, 2, 3, 16, 15, 14, 17, 22, 20, 19, 18, 0)
+True, True, 0.0118, (0, 18, 19, 20, 14, 15, 16, 3, 2, 1, 9, 8, 5, 4, 21, 0)
+True, True, 0.0471, (0, 18, 19, 20, 22, 17, 15, 16, 3, 2, 1, 6, 9, 8, 5, 4, 21, 0)
+True, True, 0.0471, (0, 18, 19, 22, 17, 14, 15, 16, 3, 2, 1, 6, 9, 8, 5, 4, 21, 0)
+True, True, 0.0118, (0, 18, 19, 20, 14, 16, 3, 2, 1, 6, 9, 8, 5, 4, 21, 0)
+True, True, 0.4118, (0, 21, 4, 5, 8, 7, 11, 6, 1, 2, 3, 16, 15, 14, 17, 22, 20, 19, 18, 0)
+True, True, 0.0471, (0, 21, 4, 5, 8, 9, 13, 6, 1, 2, 3, 16, 15, 14, 17, 22, 20, 0)
+True, True, 0.1882, (0, 21, 4, 5, 8, 9, 13, 11, 12, 0)
+True, True, 0.0353, (0, 14, 17, 22, 20, 19, 18, 21, 4, 5, 8, 9, 11, 0)
+all_elementary, True
+all_cyc2, True
