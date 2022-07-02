@@ -51,7 +51,7 @@ if __name__ == '__main__':
             time.sleep(10)
             print(f"Current memory: {psutil.virtual_memory().available >> 20} MB")
             if(psutil.virtual_memory().available >> 30 < 10):
-                print("RUN: Memory is sparse, terminating processes.")
+                print("RUN: Memory less than 10 GB, terminating processes.")
                 p.terminate()
                 break
         p.join()
