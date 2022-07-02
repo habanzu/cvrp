@@ -1,0 +1,18 @@
+Instance, X-n162-k11
+capacity, 1174
+min_trucks, 11
+output_file, output_uchoa/X-n162-k11-ng8.log
+Start date, 2022-06-26
+Start time, 18-51-59
+capacity, 1174
+num_vehicles, 11
+abort_early, False
+methods, ['ng8']
+max_vars, 1000000
+time_limit, 86400
+farley, False
+initial time, initial max_it, max_stale_it
+1e-05, 2000000000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it
+131467, 14138.0, 57452, 1.0, 20000.0
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
