@@ -40,12 +40,12 @@ uchoa_K = {file:int(re.search(pattern, file).group(2)) for file in files}
 uchoa_K.update(uchoa_K_exceptions)
 
 methods = ["SPPRC","cyc2","ng8","ng20"]
-test_combinations = [(file,method,uchoa_K[file]) for file, method in itertools.product(files,methods) if 450<= int(re.search(pattern, file).group(1)) < 500]
+test_combinations = [(file,method,uchoa_K[file]) for file, method in itertools.product(files,methods) if 470<= int(re.search(pattern, file).group(1)) < 512]
 # Bis 510 ist alles oben im dict, wegen Speicherproblemen muss das heuntergesetzt werden.
 
-mem_threshold = 20
+mem_threshold = 15
 if __name__ == '__main__':
-    with Pool(11,maxtasksperchild=1) as p:
+    with Pool(5,maxtasksperchild=1) as p:
         async_res = p.starmap_async(runInstance, test_combinations, 1)
         p.close()
         while(not async_res.ready()):
