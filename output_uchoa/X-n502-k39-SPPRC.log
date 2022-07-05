@@ -3,7 +3,7 @@ capacity, 13
 min_trucks, 39
 output_file, output_uchoa/X-n502-k39-SPPRC.log
 Start date, 2022-07-05
-Start time, 10-52-02
+Start time, 10-54-44
 capacity, 13
 num_vehicles, 39
 abort_early, False
