@@ -1,0 +1,16 @@
+Instance, X-n491-k59
+capacity, 428
+min_trucks, 59
+output_file, output_uchoa/X-n491-k59-ng8.log
+Start date, 2022-07-05
+Start time, 10-52-02
+capacity, 428
+num_vehicles, 59
+abort_early, False
+methods, ['ng8']
+max_vars, 100
+time_limit, 86400
+farley, False
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
