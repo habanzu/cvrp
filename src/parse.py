@@ -81,6 +81,15 @@ def parse(Instance, K=0, filename= None):
 
     return G
 
+def parse_header(file):
+    with open(file,'r') as f:
+        lines = f.readlines()
+
+    for line in lines:
+        if line.startswith("ESPPRC_heur"):
+            return 18
+    return 17
+
 def parse_footer(file):
     with open(file,'r') as f:
         lines = f.readlines()
@@ -91,4 +100,15 @@ def parse_footer(file):
 
 def parse_output(file):
     footer = parse_footer(file)
-    return pd.read_csv(file, header=17 ,skipfooter=footer, engine="python", sep=", ")
+    header = parse_header(file)
+    if footer <= 0:
+        print(f"ERROR: Footer is {footer}")
+    return pd.read_csv(file, header=header ,skipfooter=footer, engine="python", sep=", ")
+
+def log_finished(file):
+    with open(file,'r') as f:
+        lines = f.readlines()
+
+    if 'Solval, number of paths, impact cutoff\n' in lines:
+        return True
+    return False
