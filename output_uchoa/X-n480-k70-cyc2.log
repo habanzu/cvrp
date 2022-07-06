@@ -1,0 +1,16 @@
+Instance, X-n480-k70
+capacity, 52
+min_trucks, 70
+output_file, output_uchoa/X-n480-k70-cyc2.log
+Start date, 2022-07-06
+Start time, 06-35-41
+capacity, 52
+num_vehicles, 70
+abort_early, False
+methods, ['cyc2']
+max_vars, 100
+time_limit, 86400
+farley, False
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
