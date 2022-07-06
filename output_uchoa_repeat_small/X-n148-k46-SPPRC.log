@@ -1,0 +1,150 @@
+Instance, X-n148-k46
+capacity, 18
+min_trucks, 47
+output_file, output_uchoa_repeat_small/X-n148-k46-SPPRC.log
+Start date, 2022-07-06
+Start time, 11-44-48
+capacity, 18
+num_vehicles, 47
+abort_early, False
+methods, ['SPPRC']
+max_vars, 100
+time_limit, 86400
+farley, False
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it, measured total time
+2796, 43448.0, 3362, 1, 20000.0, 3385.6
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 43147.395, 10576.395, 0, 315
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 43026.4417, 24132.4417, 0, 152
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 42643.5425, 29642.0523, 0, 128
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 42528.0312, 34835.6979, 0, 61
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 42384.1257, 38201.1257, 0, 34
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 42353.9876, 40918.6799, 0, 7
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 42349.8162, 41174.8162, 0, 1
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 42344.2607, 42344.2607, 0, 0
+scip_total_time, 3386.298785
+Solval, number of paths, impact cutoff
+42344.26067251462, 117, 0.0001
+Elementary, 2-Cycle, Path Value, Path
+True, True, 0.75, (0, 131, 144, 65, 0)
+True, True, 0.6667, (0, 94, 41, 78, 0)
+True, True, 1.0, (0, 56, 30, 0)
+True, True, 0.75, (0, 124, 121, 140, 0)
+True, True, 0.75, (0, 93, 21, 0)
+True, True, 1.0, (0, 22, 55, 27, 0)
+True, True, 0.5, (0, 2, 122, 86, 0)
+True, True, 0.5, (0, 34, 139, 0)
+True, True, 1.0, (0, 18, 75, 0)
+True, True, 0.5, (0, 7, 81, 120, 0)
+True, True, 0.5, (0, 26, 130, 57, 0)
+True, True, 1.0, (0, 105, 40, 0)
+True, True, 1.0, (0, 118, 62, 107, 0)
+True, True, 0.5, (0, 35, 113, 0)
+True, True, 1.0, (0, 88, 44, 0)
+True, True, 1.0, (0, 98, 67, 61, 14, 0)
+True, True, 0.1, (0, 21, 58, 0)
+True, True, 0.4441, (0, 8, 125, 135, 115, 0)
+True, True, 0.4896, (0, 31, 90, 116, 0)
+True, True, 1.0, (0, 25, 29, 69, 38, 0)
+True, True, 0.5, (0, 84, 122, 0)
+True, True, 0.5, (0, 47, 73, 0)
+True, True, 0.5, (0, 123, 146, 79, 92, 0)
+True, True, 0.5, (0, 139, 91, 0)
+True, True, 1.0, (0, 99, 42, 0)
+True, True, 0.5, (0, 32, 113, 0)
+True, True, 0.25, (0, 121, 132, 0)
+True, True, 0.1, (0, 21, 72, 0)
+True, True, 0.25, (0, 140, 93, 0)
+True, True, 0.9, (0, 43, 58, 72, 0)
+True, True, 0.5, (0, 83, 95, 0)
+True, True, 0.5, (0, 46, 126, 73, 0)
+True, True, 0.25, (0, 65, 144, 102, 19, 0)
+True, True, 0.5, (0, 142, 112, 123, 0)
+True, True, 0.5, (0, 46, 89, 0)
+True, True, 0.8333, (0, 1, 5, 0)
+True, True, 0.0278, (0, 85, 77, 109, 0)
+True, True, 0.5, (0, 45, 141, 51, 0)
+True, True, 1.0, (0, 106, 129, 0)
+True, True, 0.5, (0, 74, 90, 0)
+True, True, 0.875, (0, 80, 119, 48, 6, 100, 0)
+True, True, 0.5, (0, 92, 146, 128, 0)
+True, True, 0.5, (0, 134, 84, 86, 0)
+True, True, 0.5, (0, 134, 109, 85, 0)
+True, True, 0.0197, (0, 130, 26, 0)
+True, True, 0.4803, (0, 114, 125, 37, 26, 0)
+True, True, 0.4046, (0, 130, 114, 4, 0)
+True, True, 0.25, (0, 143, 28, 97, 0)
+True, True, 0.5, (0, 132, 83, 0)
+True, True, 0.125, (0, 80, 119, 48, 37, 0)
+True, True, 0.2434, (0, 37, 115, 135, 8, 0)
+True, True, 0.25, (0, 143, 132, 124, 0)
+True, True, 0.75, (0, 87, 28, 97, 0)
+True, True, 0.5, (0, 79, 91, 128, 0)
+True, True, 0.1667, (0, 145, 71, 1, 0)
+False, False, 0.2083, (0, 63, 24, 63, 24, 63, 24, 63, 0)
+False, False, 0.1667, (0, 7, 57, 7, 57, 7, 57, 0)
+False, False, 0.1667, (0, 71, 5, 71, 0)
+False, False, 0.1111, (0, 36, 13, 66, 13, 66, 0)
+False, False, 0.5, (0, 19, 64, 138, 64, 0)
+False, False, 0.5, (0, 45, 147, 141, 147, 0)
+False, False, 0.25, (0, 68, 10, 54, 10, 68, 0)
+False, False, 0.5, (0, 137, 110, 137, 0)
+False, False, 0.5, (0, 59, 71, 59, 0)
+False, False, 0.5, (0, 76, 95, 76, 0)
+False, False, 0.5, (0, 104, 32, 104, 0)
+False, False, 0.4167, (0, 3, 12, 3, 0)
+False, False, 0.0477, (0, 4, 31, 15, 31, 15, 31, 4, 0)
+False, False, 0.1944, (0, 50, 9, 11, 9, 11, 0)
+False, False, 0.5, (0, 82, 136, 82, 136, 0)
+False, False, 0.5, (0, 39, 89, 39, 0)
+False, False, 0.1852, (0, 111, 49, 145, 49, 145, 49, 145, 49, 145, 49, 0)
+False, False, 0.05, (0, 43, 21, 43, 0)
+False, False, 0.25, (0, 143, 87, 143, 0)
+False, False, 0.0576, (0, 114, 31, 15, 31, 15, 114, 0)
+False, False, 0.5, (0, 108, 74, 108, 0)
+False, False, 0.25, (0, 68, 54, 10, 54, 68, 0)
+False, False, 0.0833, (0, 133, 78, 133, 24, 11, 0)
+False, False, 0.25, (0, 117, 12, 117, 15, 0)
+False, True, 0.5, (0, 20, 120, 81, 20, 0)
+False, False, 0.5, (0, 23, 47, 23, 0)
+False, False, 0.3333, (0, 52, 103, 101, 103, 0)
+False, True, 0.4028, (0, 50, 11, 9, 50, 0)
+False, False, 0.3333, (0, 52, 101, 103, 101, 52, 0)
+False, False, 0.25, (0, 94, 133, 78, 133, 0)
+False, True, 0.0625, (0, 100, 135, 115, 100, 0)
+False, False, 0.0833, (0, 96, 34, 96, 0)
+False, False, 0.25, (0, 2, 112, 2, 0)
+False, False, 0.125, (0, 115, 6, 115, 8, 0)
+False, False, 0.125, (0, 54, 10, 54, 10, 0)
+False, False, 0.0417, (0, 9, 24, 63, 24, 63, 24, 11, 0)
+False, False, 0.3728, (0, 15, 16, 117, 16, 0)
+False, False, 0.5, (0, 70, 35, 70, 17, 0)
+False, False, 0.125, (0, 19, 138, 102, 138, 102, 19, 0)
+False, False, 0.1272, (0, 16, 117, 16, 31, 0)
+False, False, 0.2222, (0, 33, 36, 66, 13, 66, 36, 33, 0)
+False, False, 0.5, (0, 60, 51, 60, 0)
+False, False, 0.25, (0, 127, 77, 142, 77, 0)
+True, True, 0.0833, (0, 133, 41, 94, 0)
+False, False, 0.4074, (0, 111, 96, 34, 96, 111, 0)
+False, False, 0.5, (0, 53, 4, 53, 126, 0)
+False, False, 0.3333, (0, 110, 127, 77, 127, 0)
+False, False, 0.0757, (0, 37, 125, 37, 130, 0)
+True, True, 0.25, (0, 102, 131, 41, 133, 0)
+False, False, 0.125, (0, 31, 102, 138, 102, 138, 0)
+False, False, 0.0833, (0, 11, 9, 24, 63, 24, 9, 0)
+False, False, 0.0093, (0, 34, 145, 49, 145, 49, 0)
+False, False, 0.1944, (0, 85, 109, 85, 0)
+False, False, 0.0185, (0, 145, 49, 145, 49, 145, 49, 145, 96, 0)
+False, True, 0.0833, (0, 110, 127, 85, 110, 0)
+False, False, 0.25, (0, 116, 135, 116, 0)
+False, False, 0.25, (0, 17, 112, 17, 142, 0)
+False, True, 0.0104, (0, 8, 116, 90, 8, 0)
+False, False, 0.1667, (0, 8, 12, 3, 12, 15, 0)
+False, False, 0.0556, (0, 33, 66, 13, 66, 13, 33, 0)
+False, False, 0.1389, (0, 109, 77, 109, 0)
+False, False, 0.2222, (0, 33, 36, 13, 66, 13, 36, 33, 0)
+all_elementary, False
+all_cyc2, False

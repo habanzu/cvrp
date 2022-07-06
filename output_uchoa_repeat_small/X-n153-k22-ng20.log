@@ -1,0 +1,67 @@
+Instance, X-n153-k22
+capacity, 144
+min_trucks, 23
+output_file, output_uchoa_repeat_small/X-n153-k22-ng20.log
+Start date, 2022-07-06
+Start time, 14-10-07
+capacity, 144
+num_vehicles, 23
+abort_early, False
+methods, ['ng20']
+max_vars, 100
+time_limit, 86400
+farley, False
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it, measured total time
+1017, 21223.0, 702, 10, 2000.0, 6941.2
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ESPPRC_heur, 0.0, 0.6, 0.4, 0.1, 0, 21158.0293, -6222.5987, True, 6949
+ESPPRC_heur, 0.1, 0.8, 0.6, 0.1, 0, 21158.0293, -21262.1663, True, 10682
+ESPPRC_heur, 0.1, 0.5, 0.4, 0.1, 0, 21158.0293, 1886.167, True, 5575
+ESPPRC_heur, 0.1, 0.4, 0.3, 0.0, 0, 21158.0293, 6583.696, True, 4640
+ESPPRC_heur, 0.0, 0.4, 0.3, 0.0, 0, 21158.0293, 8438.1578, True, 4286
+ESPPRC_heur, 0.0, 0.4, 0.2, 0.0, 0, 21158.0293, 10323.2688, True, 3507
+ESPPRC_heur, 0.1, 0.3, 0.2, 0.0, 0, 21158.0293, 10209.541, True, 2083
+ESPPRC_heur, 0.0, 0.3, 0.2, 0.0, 0, 21158.0293, 15197.1451, True, 1396
+ESPPRC_heur, 0.1, 0.4, 0.3, 0.0, 0, 21088.644, 6697.6288, True, 2925
+ESPPRC_heur, 0.0, 0.5, 0.3, 0.0, 0, 21088.644, 12215.3447, True, 3171
+ESPPRC_heur, 0.1, 0.4, 0.3, 0.0, 0, 21088.644, 14418.7989, True, 2804
+ESPPRC_heur, 0.1, 0.5, 0.4, 0.0, 0, 21088.644, 11479.4677, True, 3509
+ESPPRC_heur, 0.1, 0.4, 0.3, 0.0, 0, 21088.644, 13441.0421, True, 2686
+ESPPRC_heur, 0.1, 0.4, 0.3, 0.0, 0, 21088.644, 15341.9704, True, 2091
+ESPPRC_heur, 0.0, 0.4, 0.3, 0.0, 0, 21088.644, 13910.2601, True, 1850
+ESPPRC_heur, 0.1, 0.4, 0.3, 0.0, 0, 21083.3682, 5234.2492, True, 2511
+ESPPRC_heur, 0.0, 0.4, 0.2, 0.0, 0, 21072.6107, 17732.3652, True, 1329
+ESPPRC_heur, 0.1, 0.3, 0.2, 0.0, 0, 21063.3909, 17485.556, True, 1298
+ESPPRC_heur, -0.0, 0.4, 0.2, 0.0, 0, 21052.7582, 16771.7516, True, 1708
+ESPPRC_heur, 0.0, 0.4, 0.2, 0.0, 0, 21049.527, 16463.5798, True, 1865
+ESPPRC_heur, 0.0, 0.4, 0.2, 0.0, 0, 21049.527, 19042.3561, True, 1182
+ESPPRC_heur, 0.1, 0.3, 0.2, 0.0, 0, 21044.519, 19060.7812, True, 893
+ESPPRC_heur, 0.0, 0.3, 0.2, 0.0, 0, 21035.7844, 19209.8793, True, 910
+ESPPRC_heur, 0.1, 0.2, 0.1, 0.0, 0, 21029.5132, 19053.8168, True, 897
+ESPPRC_heur, 0.0, 0.3, 0.2, 0.0, 0, 21029.5132, 19268.5308, True, 901
+ESPPRC_heur, 0.1, 0.3, 0.2, 0.0, 0, 21023.5087, 19968.9544, True, 615
+ESPPRC_heur, 0.0, 0.3, 0.1, 0.0, 0, 21019.4235, 19674.1241, True, 643
+ESPPRC_heur, 0.0, 0.3, 0.2, 0.0, 0, 21016.2452, 19772.0768, True, 560
+ESPPRC_heur, 0.1, 0.2, 0.1, 0.0, 0, 21015.4811, 19793.0311, True, 356
+ESPPRC_heur, 0.0, 0.3, 0.1, 0.0, 0, 21013.0831, 20219.3594, True, 301
+ESPPRC_heur, 0.0, 0.3, 0.2, 0.0, 0, 21010.9072, 20335.4371, True, 310
+ESPPRC_heur, -0.0, 0.3, 0.1, 0.0, 0, 21007.2973, 20447.9328, True, 202
+ESPPRC_heur, 0.0, 0.3, 0.1, 0.0, 0, 21004.2717, 20524.1887, True, 112
+ESPPRC_heur, -0.0, 0.3, 0.1, 0.0, 0, 20994.8062, 20512.7871, True, 91
+ESPPRC_heur, 0.0, 0.3, 0.1, 0.0, 0, 20985.2283, 20650.7748, True, 99
+ESPPRC_heur, 0.1, 0.2, 0.1, 0.0, 0, 20984.3815, 20650.7173, True, 60
+ESPPRC_heur, 0.1, 0.2, 0.1, 0.0, 0, 20983.8871, 20772.5904, True, 37
+ESPPRC_heur, 0.1, 0.2, 0.1, 0.0, 0, 20983.8333, 20822.8333, True, 28
+ESPPRC_heur, -0.0, 0.3, 0.2, 0.0, 0, 20982.4767, 20810.6532, True, 8
+ESPPRC_heur, -0.0, 0.3, 0.2, 0.0, 0, 20982.1428, 20878.7613, True, 8
+ESPPRC_heur, -0.0, 0.3, 0.2, 0.0, 0, 20982.1286, 20959.8343, True, 2
+ng20, 0.1, 3069.4, 2775.1, 286.4, 1, 20982.1279, 20588.2333, 0, 276
+ESPPRC_heur, 0.0, 0.2, 0.1, 0.0, 0, 20981.3146, 20899.5048, True, 16
+ESPPRC_heur, 0.0, 0.2, 0.1, 0.0, 0, 20981.1641, 20965.1477, True, 2
+ng20, 0.1, 2994.5, 2727.2, 259.7, 1, 20981.1443, 20796.6086, 0, 69
+ESPPRC_heur, 0.0, 0.2, 0.1, 0.0, 0, 20979.6515, 20893.0466, True, 5
+ng20, 0.1, 3257.2, 3005.2, 243.6, 1, 20979.6515, 20902.1096, 0, 29
+ESPPRC_heur, -0.0, 0.3, 0.2, 0.0, 0, 20979.5766, 20976.3168, True, 1

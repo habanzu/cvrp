@@ -1,0 +1,16 @@
+Instance, X-n176-k26
+capacity, 142
+min_trucks, 26
+output_file, output_uchoa_repeat_small/X-n176-k26-ng20.log
+Start date, 2022-07-06
+Start time, 17-51-40
+capacity, 142
+num_vehicles, 26
+abort_early, False
+methods, ['ng20']
+max_vars, 100
+time_limit, 86400
+farley, False
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
