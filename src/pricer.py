@@ -158,8 +158,13 @@ class VRPPricer(Pricer):
             items = (method, duration, *time_measurements, pricing_success, round(upper_bound,4), round(lower_bound,4), abort_early, num_paths)
             src.output.write_labelling_result(self.model.graph.graph["output_file"], items)
 
-        if not farkas and pricing_success and self.data['farley']:
-            _, upper_bound, lower_bound, abort_early, _, time_measurements = self.labelling(dual,farkas,time_limit,max_vars, farley = True)
+        if self.data['farley'] and not farkas and pricing_success:
+            method = self.data['methods'][0]
+            if method.startswith("ng"):
+                ngParam = int(method.strip("ng"))
+            else:
+                ngParam = 0
+            _, upper_bound, lower_bound, abort_early, _, time_measurements = self.labelling(dual,farkas,time_limit,max_vars, farley = True, ngParam=ngParam)
             if abort_early:
                 print(f"PRICER_PY: Farley exceeded time limit.")
                 if len(self.data['farley_bound']) == 0:

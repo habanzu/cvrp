@@ -76,8 +76,9 @@ bool Label::dominates(const Label& x, const bool elementary, const bool ngPath, 
         if(!elementary && !ngPath && !farley)
             return true;
         // TODO: For Farley with ng Paths, this code needs to be adapted
-        if(farley)
-            return (this->farley_val >= x.farley_val);
+        if(farley && !(this->farley_val >= x.farley_val))
+            return false;
+            // return (this->farley_val >= x.farley_val);
         auto& own_comparator = ngPath ? this->ng_memory : this->pred_field;
         auto& x_comparator = ngPath ? x.ng_memory : x.pred_field;
 
@@ -398,6 +399,10 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
     const bool ngPath = (ngParam != 0);
     unsigned num_paths = 0;
 
+    if(farley && neighborhoods.size() == 0){
+        cout << "PRICER_C ERROR: neighborhood cant be empty for farley."  << endl;
+    }
+
     while(!queue_empty(q)){
         // Compile time flags for speeding up things a little bit
         // constexpr bool elementary = false;
@@ -526,9 +531,10 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
     }
     if(farley){
         *farley_res = best_farley_val;
-    }
-    for(unsigned i=0;i<new_vars.size();++i){
-        new_vars[i]->write_path_to_output(result+i*max_path_len);
+    } else {
+        for(unsigned i=0;i<new_vars.size();++i){
+            new_vars[i]->write_path_to_output(result+i*max_path_len);
+        }
     }
     auto end= high_resolution_clock::now();
     additional_information[1] = duration_cast<milliseconds>(end - t0).count();
