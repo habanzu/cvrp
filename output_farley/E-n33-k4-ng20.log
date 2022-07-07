@@ -1,16 +1,16 @@
 Instance, E-n33-k4
 capacity, 8000
 min_trucks, 4
-output_file, output_E/E-n33-k4-ng20.log
+output_file, output_farley/E-n33-k4-ng20.log
 Start date, 2022-07-07
-Start time, 10-33-48
+Start time, 10-54-57
 capacity, 8000
 num_vehicles, 4
 abort_early, False
 methods, ['ng20']
 max_vars, 100
-time_limit, 86400
-farley, False
+time_limit, 43200
+farley, True
 ESPPRC_heur, True
 initial time, initial max_it, max_stale_it
 1, 20000.0, 20
@@ -35,11 +35,11 @@ ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 835.0, 560.7089, True, 331
 ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 835.0, 594.3261, True, 299
 ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 835.0, 605.6501, True, 237
 ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 835.0, 567.003, True, 399
-ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 835.0, 681.7878, True, 232
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 835.0, 681.7878, True, 232
 ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 834.1519, 484.2388, True, 320
 ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 831.1341, 656.3326, True, 244
 ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 825.7036, 677.5634, True, 110
-ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 822.3538, 744.3278, True, 127
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 822.3538, 744.3278, True, 127
 ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 819.2932, 713.6652, True, 136
 ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 817.8364, 752.8335, True, 83
 ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 815.0435, 738.9275, True, 65
@@ -51,8 +51,3 @@ ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 806.7532, 776.6494, True, 15
 ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 806.7287, 786.7287, True, 8
 ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 804.8778, 792.9303, True, 7
 ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 804.2778, 800.2778, True, 2
-ng20, 0.1, 344.8, 283.5, 60.4, 1, 803.7778, 775.3333, 0, 87
-ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 803.5, 773.5, True, 12
-ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 803.4681, 791.2695, True, 3
-ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 803.3984, 796.2422, True, 2
-ng20, 0.1, 641.7, 500.2, 140.3, 1, 803.3981, 799.3981, 0, 18

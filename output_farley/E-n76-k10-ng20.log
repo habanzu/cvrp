@@ -1,0 +1,72 @@
+Instance, E-n76-k10
+capacity, 140
+min_trucks, 10
+output_file, output_farley/E-n76-k10-ng20.log
+Start date, 2022-07-07
+Start time, 10-54-57
+capacity, 140
+num_vehicles, 10
+abort_early, False
+methods, ['ng20']
+max_vars, 100
+time_limit, 43200
+farley, True
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it, measured total time
+22, 830.0, 32, 1, 20000.0, 38.7
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 830.0, -1580.0, True, 541
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 830.0, -2090.0, True, 592
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 830.0, -1500.0, True, 670
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 830.0, -1761.1111, True, 811
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 830.0, -1125.8084, True, 1096
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 830.0, -530.1614, True, 914
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 830.0, -686.6823, True, 844
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, -263.4705, True, 1289
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, -131.6661, True, 1062
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, -425.9026, True, 1197
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, -174.3763, True, 1159
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, -127.111, True, 1292
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, -617.1449, True, 1439
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, -97.5031, True, 949
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 830.0, -178.1505, True, 1150
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, -453.0379, True, 1286
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, -318.6737, True, 1554
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, -202.9916, True, 1564
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, 17.6848, True, 1066
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, 82.3115, True, 1068
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, 182.1401, True, 1027
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 830.0, 205.8357, True, 736
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, 54.8699, True, 1174
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, 266.7349, True, 1045
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, 273.2005, True, 751
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 830.0, 319.5892, True, 721
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, 513.4664, True, 684
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, 319.222, True, 1135
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 830.0, 479.5912, True, 575
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, 521.2584, True, 602
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 830.0, 605.215, True, 446
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, 611.79, True, 491
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, 526.4201, True, 529
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, 649.5949, True, 388
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, 545.4718, True, 450
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, 644.958, True, 406
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, 706.6356, True, 273
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, 677.0049, True, 366
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 830.0, 651.1202, True, 298
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 830.0, 666.585, True, 272
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 826.6282, 194.9852, True, 1030
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 826.6102, 634.5635, True, 387
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 826.4658, 739.7025, True, 195
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 823.2244, 704.4638, True, 216
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 821.1925, 742.0795, True, 117
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 816.6359, 745.993, True, 93
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 815.2234, 785.1672, True, 47
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 814.1809, 784.1809, True, 17
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 813.5032, 804.8669, True, 10
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 813.3013, 786.2567, True, 12
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 813.1811, 800.2973, True, 9
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 813.142, 789.92, True, 9
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 812.8374, 810.5389, True, 4

@@ -1,0 +1,16 @@
+Instance, E-n76-k14
+capacity, 100
+min_trucks, 14
+output_file, output_farley/E-n76-k14-ng20.log
+Start date, 2022-07-07
+Start time, 10-54-57
+capacity, 100
+num_vehicles, 14
+abort_early, False
+methods, ['ng20']
+max_vars, 100
+time_limit, 43200
+farley, True
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
