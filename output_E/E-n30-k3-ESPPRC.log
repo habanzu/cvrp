@@ -1,0 +1,87 @@
+Instance, E-n30-k3
+capacity, 4500
+min_trucks, 3
+output_file, output_E/E-n30-k3-ESPPRC.log
+Start date, 2022-07-07
+Start time, 10-37-19
+capacity, 4500
+num_vehicles, 3
+abort_early, False
+methods, ['ESPPRC']
+max_vars, 100
+time_limit, 86400
+farley, False
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it, measured total time
+6, 534.0, 27, 1, 20000.0, 29.1
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, -183.0, True, 32
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, -72.0, True, 79
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, -390.0, True, 133
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 130.0, True, 175
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, -50.5714, True, 288
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 351.6, True, 141
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 250.7557, True, 206
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 216.75, True, 249
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 356.5714, True, 115
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 296.2286, True, 153
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 298.1786, True, 184
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 208.5, True, 178
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 211.3287, True, 258
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 158.25, True, 271
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 225.0581, True, 228
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 286.323, True, 249
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 323.2985, True, 246
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 243.2286, True, 361
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 232.3135, True, 298
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 110.0082, True, 458
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 358.3548, True, 168
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 366.2043, True, 166
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 285.6105, True, 183
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 534.0, 305.3377, True, 237
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 515.9432, 376.1266, True, 118
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 511.1607, 435.4643, True, 89
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 503.5, 457.6, True, 27
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 500.5, 452.5, True, 29
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 497.3625, 450.2625, True, 6
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 496.6025, 425.5625, True, 25
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 495.386, 436.4449, True, 9
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 494.4167, 455.4167, True, 17
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 489.6875, 457.4375, True, 9
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 489.2292, 456.2292, True, 4
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 489.2292, 474.2292, True, 5
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 488.9911, 485.9911, True, 2
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 488.753, 485.753, True, 1
+ESPPRC, 0.1, 2.5, 1.9, 0.5, 1, 488.5149, 457.9435, 0, 259
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 485.017, 482.017, True, 2
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 485.017, 484.7443, True, 1
+ESPPRC, 0.0, 1.9, 1.5, 0.3, 1, 485.0069, 480.5069, 0, 15
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 484.3472, 481.7222, True, 1
+ESPPRC, -0.0, 1.7, 1.4, 0.2, 1, 484.3472, 481.3472, 0, 2
+ESPPRC, -0.0, 2.0, 1.6, 0.3, 1, 484.0972, 484.0972, 0, 0
+scip_total_time, 38.390339
+Solval, number of paths, impact cutoff
+484.09722222222223, 18, 0.0001
+Elementary, 2-Cycle, Path Value, Path
+True, True, 0.125, (0, 19, 26, 28, 27, 29, 25, 24, 6, 1, 5, 4, 3, 20, 0)
+True, True, 0.25, (0, 19, 26, 28, 27, 29, 25, 24, 1, 5, 4, 3, 20, 0)
+True, True, 0.125, (0, 29, 6, 5, 2, 0)
+True, True, 0.25, (0, 20, 22, 2, 5, 4, 3, 19, 0)
+True, True, 0.25, (0, 28, 27, 25, 6, 4, 2, 22, 0)
+True, True, 0.1111, (0, 18, 23, 10, 15, 16, 13, 7, 17, 9, 8, 14, 21, 0)
+True, True, 0.1111, (0, 18, 23, 15, 16, 13, 7, 17, 9, 12, 11, 21, 0)
+True, True, 0.1111, (0, 18, 10, 12, 11, 15, 16, 13, 7, 17, 9, 14, 21, 0)
+True, True, 0.1111, (0, 21, 14, 8, 9, 17, 7, 13, 16, 12, 11, 10, 23, 0)
+True, True, 0.2222, (0, 21, 14, 8, 12, 11, 15, 10, 23, 18, 0)
+True, True, 0.1111, (0, 21, 14, 8, 9, 17, 7, 13, 16, 12, 11, 23, 18, 0)
+True, True, 0.1111, (0, 10, 11, 15, 16, 13, 7, 17, 9, 8, 21, 0)
+True, True, 0.1111, (0, 18, 23, 10, 12, 15, 16, 13, 7, 17, 9, 8, 14, 21, 0)
+True, True, 0.2222, (0, 23, 10, 11, 12, 8, 14, 9, 17, 7, 13, 16, 15, 18, 0)
+True, True, 0.125, (0, 20, 22, 3, 6, 1, 24, 25, 29, 27, 28, 26, 19, 0)
+True, True, 0.125, (0, 29, 6, 4, 2, 22, 0)
+True, True, 0.25, (0, 22, 2, 5, 1, 24, 26, 0)
+True, True, 0.25, (0, 19, 26, 28, 27, 29, 25, 24, 1, 6, 3, 20, 0)
+all_elementary, True
+all_cyc2, True
