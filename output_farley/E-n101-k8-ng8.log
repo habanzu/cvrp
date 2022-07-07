@@ -1,0 +1,16 @@
+Instance, E-n101-k8
+capacity, 200
+min_trucks, 8
+output_file, output_farley/E-n101-k8-ng8.log
+Start date, 2022-07-07
+Start time, 16-16-50
+capacity, 200
+num_vehicles, 8
+abort_early, False
+methods, ['ng8']
+max_vars, 100
+time_limit, 43200
+farley, True
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20

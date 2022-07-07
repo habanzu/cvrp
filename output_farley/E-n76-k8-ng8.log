@@ -1,0 +1,95 @@
+Instance, E-n76-k8
+capacity, 180
+min_trucks, 8
+output_file, output_farley/E-n76-k8-ng8.log
+Start date, 2022-07-07
+Start time, 16-16-50
+capacity, 180
+num_vehicles, 8
+abort_early, False
+methods, ['ng8']
+max_vars, 100
+time_limit, 43200
+farley, True
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it, measured total time
+55, 735.0, 87, 1, 20000.0, 93.8
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 735.0, -1505.0, True, 764
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, -2781.0, True, 1083
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, -1382.1613, True, 1280
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 735.0, -1221.8889, True, 1058
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, -942.6124, True, 1278
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, -207.0435, True, 1800
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, -503.5133, True, 1673
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, -69.6883, True, 978
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, -790.5333, True, 1840
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 735.0, -147.2737, True, 996
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, -173.4626, True, 1668
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 24.8489, True, 1286
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, -101.0295, True, 1610
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, -130.4551, True, 1467
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, -349.5957, True, 1541
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, -61.5148, True, 1641
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 149.535, True, 1301
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 82.205, True, 1340
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, -549.3081, True, 1752
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 28.7115, True, 1151
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 85.5924, True, 1512
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, -102.0406, True, 1599
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 233.4487, True, 1091
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, -100.312, True, 1311
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, -130.598, True, 1668
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, -177.2529, True, 2220
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 158.7647, True, 1486
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 245.4159, True, 1356
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 381.8692, True, 1002
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 355.4059, True, 1100
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 372.2684, True, 988
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 392.5696, True, 1016
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 344.4368, True, 1149
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 101.152, True, 1488
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 272.3208, True, 1040
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 382.7981, True, 950
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 342.6714, True, 914
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 356.1398, True, 951
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 484.3394, True, 735
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 502.9929, True, 738
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 340.3339, True, 843
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 425.0904, True, 729
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 517.5153, True, 611
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 481.1669, True, 746
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 514.9892, True, 662
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 511.4854, True, 672
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 533.8608, True, 684
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 494.1404, True, 695
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 585.125, True, 460
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 585.8321, True, 392
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 522.7476, True, 546
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 590.3028, True, 377
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 735.0, 556.5394, True, 434
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 734.3733, 646.3346, True, 227
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 731.1825, 581.385, True, 414
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 730.9094, 634.621, True, 328
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 730.0673, 641.3569, True, 274
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 727.6499, 661.9006, True, 205
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 725.3907, 662.9477, True, 184
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 723.485, 650.2469, True, 207
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 722.5324, 673.5768, True, 155
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 721.9701, 673.796, True, 135
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 720.9572, 683.1788, True, 106
+ESPPRC_heur, 0.1, 0.0, 0.0, 0.0, 0, 720.305, 690.2913, True, 67
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 720.0451, 701.5051, True, 37
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 719.715, 709.0725, True, 20
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 719.527, 696.5973, True, 24
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 719.5172, 699.454, True, 10
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 719.2096, 707.8179, True, 11
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 719.1035, 703.1035, True, 5
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 718.8763, 713.293, True, 4
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 718.874, 709.859, True, 6
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 718.8613, 711.5623, True, 5
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 718.8366, 716.4372, True, 1
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 718.8264, 714.7814, True, 1
+ng8, 0.1, 0.9, 0.6, 0.1, 1, 718.8159, 703.2992, 0, 44

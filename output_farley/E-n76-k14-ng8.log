@@ -1,0 +1,38 @@
+Instance, E-n76-k14
+capacity, 100
+min_trucks, 14
+output_file, output_farley/E-n76-k14-ng8.log
+Start date, 2022-07-07
+Start time, 16-16-50
+capacity, 100
+num_vehicles, 14
+abort_early, False
+methods, ['ng8']
+max_vars, 100
+time_limit, 43200
+farley, True
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it, measured total time
+159, 1021.0, 118, 1, 20000.0, 124.8
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 1020.1667, -1681.8333, True, 1000
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 1020.1667, -422.7083, True, 819
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 1020.1667, -279.22, True, 824
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 1020.1667, 79.1621, True, 671
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 1020.1667, -55.8059, True, 669
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 1020.1667, 563.6813, True, 501
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 1020.1667, 364.9996, True, 728
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 1020.1667, 613.1589, True, 417
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 1020.1667, 775.4858, True, 260
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 1017.0, 456.0781, True, 525
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 1014.642, 664.8148, True, 340
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 1014.1096, 795.0833, True, 236
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 1011.9048, 818.5714, True, 178
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 1009.0841, 924.6212, True, 98
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 1005.8198, 919.2789, True, 56
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 1004.3227, 934.3227, True, 15
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 1003.9168, 951.3779, True, 25
+ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 1003.1377, 990.5787, True, 3
+ng8, -0.0, 0.2, 0.1, 0.0, 1, 1003.116, 962.4673, 0, 14
