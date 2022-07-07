@@ -1,0 +1,59 @@
+Instance, E-n22-k4
+capacity, 6000
+min_trucks, 4
+output_file, output_E/E-n22-k4-SPPRC.log
+Start date, 2022-07-07
+Start time, 10-33-48
+capacity, 6000
+num_vehicles, 4
+abort_early, False
+methods, ['SPPRC']
+max_vars, 100
+time_limit, 86400
+farley, False
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it, measured total time
+8, 375.0, 28, 1, 20000.0, 29.2
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 375.0, -985.0, 0, 113
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 375.0, -481.0, 0, 113
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 375.0, -1206.3333, 0, 108
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 375.0, -207.0, 0, 110
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 375.0, -301.6667, 0, 218
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 375.0, 11.4667, 0, 160
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 375.0, 149.5333, 0, 166
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 375.0, -1149.0, 0, 245
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 375.0, -17.2122, 0, 145
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 375.0, 166.6259, 0, 159
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 371.3017, 219.5549, 0, 65
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 347.5052, 274.1719, 0, 50
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 344.9905, 329.2762, 0, 7
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 344.3383, 335.6183, 0, 4
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 343.9139, 343.9139, 0, 0
+scip_total_time, 29.66573
+Solval, number of paths, impact cutoff
+343.9138888888889, 19, 0.0001
+Elementary, 2-Cycle, Path Value, Path
+True, True, 0.6667, (0, 17, 20, 18, 15, 12, 0)
+False, False, 0.25, (0, 11, 4, 3, 4, 11, 0)
+False, False, 0.3333, (0, 14, 19, 21, 19, 0)
+False, False, 0.25, (0, 14, 16, 14, 16, 0)
+False, False, 0.1667, (0, 17, 21, 19, 21, 17, 0)
+False, False, 0.0556, (0, 8, 6, 1, 2, 1, 2, 1, 6, 8, 0)
+False, False, 0.0167, (0, 12, 15, 12, 15, 12, 0)
+False, False, 0.125, (0, 7, 5, 7, 5, 0)
+False, False, 0.1944, (0, 10, 8, 6, 2, 1, 2, 1, 6, 8, 10, 0)
+False, False, 0.5, (0, 16, 13, 11, 13, 0)
+False, False, 0.25, (0, 9, 5, 7, 5, 9, 0)
+False, False, 0.1333, (0, 15, 18, 20, 18, 15, 0)
+False, False, 0.0556, (0, 10, 6, 2, 1, 2, 1, 2, 6, 8, 0)
+False, False, 0.0333, (0, 18, 20, 18, 15, 12, 0)
+False, False, 0.0278, (0, 6, 3, 4, 3, 4, 3, 6, 0)
+False, False, 0.1667, (0, 14, 20, 21, 19, 21, 0)
+False, False, 0.1667, (0, 10, 6, 2, 1, 2, 1, 6, 10, 0)
+False, False, 0.25, (0, 12, 9, 7, 5, 7, 9, 0)
+False, False, 0.2222, (0, 10, 8, 3, 4, 3, 4, 3, 8, 0)
+all_elementary, False
+all_cyc2, False

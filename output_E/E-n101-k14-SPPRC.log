@@ -1,0 +1,16 @@
+Instance, E-n101-k14
+capacity, 112
+min_trucks, 14
+output_file, output_E/E-n101-k14-SPPRC.log
+Start date, 2022-07-07
+Start time, 10-35-26
+capacity, 112
+num_vehicles, 14
+abort_early, False
+methods, ['SPPRC']
+max_vars, 100
+time_limit, 86400
+farley, False
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
