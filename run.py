@@ -42,7 +42,7 @@ files = [file.rstrip(".vrp") for file in os.listdir("Instances/E") if (not file.
 # uchoa_K.update(uchoa_K_exceptions)
 
 # methods = ["SPPRC","cyc2","ng8","ng20","ESPPRC"]
-methods = ["SPPRC"]
+methods = ["ng8"]
 
 # test_combinations = [(file,method,uchoa_K[file]) for file, method in itertools.product(files,methods) if 100<= int(re.search(pattern, file).group(1)) < 200]
 # Bis 510 ist alles oben im dict, wegen Speicherproblemen muss das heuntergesetzt werden.
@@ -51,7 +51,7 @@ test_combinations = [(file,method) for file, method in itertools.product(files,m
 
 mem_threshold = 25
 if __name__ == '__main__':
-    with Pool(11,maxtasksperchild=1) as p:
+    with Pool(10,maxtasksperchild=1) as p:
         async_res = p.starmap_async(runInstance, test_combinations, 1)
         p.close()
         while(not async_res.ready()):
