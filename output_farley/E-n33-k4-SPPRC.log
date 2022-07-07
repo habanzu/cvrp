@@ -1,0 +1,74 @@
+Instance, E-n33-k4
+capacity, 8000
+min_trucks, 4
+output_file, output_farley/E-n33-k4-SPPRC.log
+Start date, 2022-07-07
+Start time, 12-58-51
+capacity, 8000
+num_vehicles, 4
+abort_early, False
+methods, ['SPPRC']
+max_vars, 100
+time_limit, 43200
+farley, True
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it, measured total time
+14, 835.0, 30, 1, 20000.0, 32.4
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+SPPRC, 0.3, 0.0, 0.0, 0.0, 1, 835.0, -50117.0, 0, 1074
+Farley, 0.3, 0.0, 0.0, 0.0, 0, 835.0, 24.8058, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 835.0, -13997.0, 0, 467
+Farley, 0.1, 0.1, 0.1, 0.0, 0, 835.0, 111.2735, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 835.0, -9411.2462, 0, 630
+Farley, 0.1, 0.2, 0.1, 0.0, 0, 835.0, 118.1604, 0, Not Applicable
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 835.0, -4917.0, 0, 558
+Farley, 0.1, 1.5, 1.2, 0.3, 0, 835.0, 122.8233, 0, Not Applicable
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 835.0, -4881.0, 0, 542
+Farley, 0.0, 3.9, 3.0, 0.8, 0, 835.0, 148.6553, 0, Not Applicable
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 835.0, -5825.0, 0, 568
+Farley, 0.0, 4.0, 3.0, 0.9, 0, 835.0, 114.6503, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 835.0, -5979.3417, 0, 565
+Farley, 0.1, 0.6, 0.5, 0.1, 0, 835.0, 129.3188, 0, Not Applicable
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 835.0, -2949.0, 0, 646
+Farley, 0.1, 2.8, 2.2, 0.6, 0, 835.0, 204.5582, 0, Not Applicable
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 835.0, -3204.6512, 0, 705
+Farley, 0.1, 51.9, 41.6, 10.2, 0, 835.0, 191.3646, 0, Not Applicable
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 835.0, -1954.8895, 0, 944
+Farley, 0.0, 18.3, 14.0, 4.1, 0, 835.0, 258.7411, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 835.0, -3439.3986, 0, 1645
+Farley, 0.1, 32.0, 24.6, 7.2, 0, 835.0, 258.7411, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 835.0, -1179.7378, 0, 669
+Farley, 0.1, 24.2, 18.7, 5.4, 0, 835.0, 334.429, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 835.0, -4752.8515, 0, 1288
+Farley, 0.1, 0.4, 0.3, 0.1, 0, 835.0, 112.6235, 0, Not Applicable
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 835.0, -1915.1678, 0, 476
+Farley, 0.0, 1.0, 0.7, 0.3, 0, 835.0, 170.1828, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 835.0, -1161.4188, 0, 501
+Farley, 0.0, 1.4, 1.0, 0.3, 0, 835.0, 252.8204, 0, Not Applicable
+SPPRC, 0.0, 0.0, 0.0, 0.0, 1, 835.0, -476.5943, 0, 500
+Farley, 0.1, 0.6, 0.4, 0.2, 0, 835.0, 399.6481, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 835.0, -3918.2066, 0, 2618
+Farley, 0.2, 827.1, 707.8, 118.6, 0, 835.0, 259.377, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 835.0, -4039.7947, 0, 1293
+Farley, 0.1, 140.0, 118.2, 21.5, 0, 835.0, 188.7726, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 835.0, -9597.8525, 0, 1534
+Farley, 0.1, 388.2, 335.7, 52.0, 0, 835.0, 140.15, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 835.0, -9126.7908, 0, 1483
+Farley, 0.1, 499.7, 429.8, 69.3, 0, 835.0, 167.7262, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 835.0, -2534.656, 0, 847
+Farley, 0.1, 1.3, 1.1, 0.2, 0, 835.0, 161.4973, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 835.0, -2552.6137, 0, 1171
+Farley, 0.0, 10.3, 8.5, 1.7, 0, 835.0, 222.6452, 0, Not Applicable
+SPPRC, 0.1, 0.1, 0.0, 0.0, 1, 835.0, -5116.3722, 0, 3738
+Farley, 0.3, 4478.9, 4028.0, 448.4, 0, 835.0, 200.2902, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 835.0, -3681.2945, 0, 1875
+Farley, 0.2, 21.5, 18.0, 3.3, 0, 835.0, 237.6541, 0, Not Applicable
+SPPRC, 0.2, 0.1, 0.1, 0.0, 1, 835.0, -1925.9571, 0, 5795
+Farley, 0.3, 832.3, 729.9, 101.5, 0, 835.0, 244.1722, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 835.0, -1159.6207, 0, 1368
+Farley, 0.0, 526.1, 456.9, 68.5, 0, 835.0, 250.1078, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 835.0, -788.7934, 0, 2163
+Farley, 0.1, 1090.5, 936.6, 152.9, 0, 835.0, 376.3227, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 835.0, -190.0694, 0, 1526

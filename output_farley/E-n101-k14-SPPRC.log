@@ -1,0 +1,26 @@
+Instance, E-n101-k14
+capacity, 112
+min_trucks, 14
+output_file, output_farley/E-n101-k14-SPPRC.log
+Start date, 2022-07-07
+Start time, 12-58-51
+capacity, 112
+num_vehicles, 14
+abort_early, False
+methods, ['SPPRC']
+max_vars, 100
+time_limit, 43200
+farley, True
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it, measured total time
+180, 1067.0, 310, 1, 20000.0, 319.8
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 1066.5, -4127.5, 0, 2625
+Farley, 0.2, 6060.6, 5100.7, 954.7, 0, 1066.5, 238.5592, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 1066.5, -5304.7667, 0, 2595
+Farley, 0.1, 1846.1, 1577.9, 266.0, 0, 1066.5, 195.2699, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 1066.5, -3105.5, 0, 2057
+Farley, 0.1, 1277.4, 1079.3, 196.3, 0, 1066.5, 297.7155, 0, Not Applicable
+SPPRC, 0.1, 0.0, 0.0, 0.0, 1, 1066.5, -5127.6, 0, 1869
