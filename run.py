@@ -7,7 +7,7 @@ import os, itertools, re, psutil, time
 
 def runInstance(Instance, method, K=0,max_vars=0):
     try:
-        G = parse(Instance, K,filename=f"output_E/{Instance}-{method}")
+        G = parse(Instance, K,filename=f"output_farley/{Instance}-{method}")
     except ValueError:
         return
 
@@ -20,8 +20,8 @@ def runInstance(Instance, method, K=0,max_vars=0):
         pricer.data['max_vars']= int(1e2)
     else:
         pricer.data['max_vars'] = max_vars
-    pricer.data['time_limit'] = 86400
-    pricer.data['farley'] = False
+    pricer.data['time_limit'] = 43200
+    pricer.data['farley'] = True
     pricer.data["ESPPRC_heur"] = True
 
     model.includePricer(pricer, "pricer","does pricing")
@@ -41,7 +41,9 @@ files = [file.rstrip(".vrp") for file in os.listdir("Instances/E") if (not file.
 # uchoa_K = {file:int(re.search(pattern, file).group(2)) for file in files}
 # uchoa_K.update(uchoa_K_exceptions)
 
-methods = ["SPPRC","cyc2","ng8","ng20","ESPPRC"]
+# methods = ["SPPRC","cyc2","ng8","ng20","ESPPRC"]
+methods = ["ng20"]
+
 # test_combinations = [(file,method,uchoa_K[file]) for file, method in itertools.product(files,methods) if 100<= int(re.search(pattern, file).group(1)) < 200]
 # Bis 510 ist alles oben im dict, wegen Speicherproblemen muss das heuntergesetzt werden.
 test_combinations = [(file,method) for file, method in itertools.product(files,methods)]
@@ -49,7 +51,7 @@ test_combinations = [(file,method) for file, method in itertools.product(files,m
 
 mem_threshold = 25
 if __name__ == '__main__':
-    with Pool(24,maxtasksperchild=1) as p:
+    with Pool(13,maxtasksperchild=1) as p:
         async_res = p.starmap_async(runInstance, test_combinations, 1)
         p.close()
         while(not async_res.ready()):
