@@ -7,7 +7,7 @@ import os, itertools, re, psutil, time
 
 def runInstance(Instance, method, K=0,max_vars=0):
     try:
-        G = parse(Instance, K,filename=f"output_uchoa_repeat_small/{Instance}-{method}")
+        G = parse(Instance, K,filename=f"output_E/{Instance}-{method}")
     except ValueError:
         return
 
@@ -32,18 +32,22 @@ def runInstance(Instance, method, K=0,max_vars=0):
 
     write_solution(model, pricer)
 
-uchoa_K_exceptions = {"X-n101-k25":26,"X-n148-k46":47,"X-n153-k22":23,"X-n172-k51":53,"X-n195-k51":53,"X-n233-k16":17,"X-n270-k35":36,"X-n289-k60":61,"X-n294-k50":51,"X-n313-k71":72,"X-n336-k84":86,"X-n384-k52":53,"X-n429-k61":62,"X-n469-k138":139}
-pattern = r"X-n(\d+)-k(\d+)"
+# uchoa_K_exceptions = {"X-n101-k25":26,"X-n148-k46":47,"X-n153-k22":23,"X-n172-k51":53,"X-n195-k51":53,"X-n233-k16":17,"X-n270-k35":36,"X-n289-k60":61,"X-n294-k50":51,"X-n313-k71":72,"X-n336-k84":86,"X-n384-k52":53,"X-n429-k61":62,"X-n469-k138":139}
+# pattern = r"X-n(\d+)-k(\d+)"
 
-files = [file.rstrip(".vrp") for file in os.listdir("Instances/Uchoa") if (not file.endswith("sol"))]
-uchoa_K = {file:int(re.search(pattern, file).group(2)) for file in files}
-uchoa_K.update(uchoa_K_exceptions)
+# files = [file.rstrip(".vrp") for file in os.listdir("Instances/Uchoa") if (not file.endswith("sol"))]
+files = [file.rstrip(".vrp") for file in os.listdir("Instances/E") if (not file.endswith("sol"))]
 
-methods = ["SPPRC","cyc2","ng8","ng20"]
-test_combinations = [(file,method,uchoa_K[file]) for file, method in itertools.product(files,methods) if 100<= int(re.search(pattern, file).group(1)) < 200]
+# uchoa_K = {file:int(re.search(pattern, file).group(2)) for file in files}
+# uchoa_K.update(uchoa_K_exceptions)
+
+methods = ["SPPRC","cyc2","ng8","ng20","ESPPRC"]
+# test_combinations = [(file,method,uchoa_K[file]) for file, method in itertools.product(files,methods) if 100<= int(re.search(pattern, file).group(1)) < 200]
 # Bis 510 ist alles oben im dict, wegen Speicherproblemen muss das heuntergesetzt werden.
+test_combinations = [(file,method) for file, method in itertools.product(files,methods)]
 
-mem_threshold = 20
+
+mem_threshold = 25
 if __name__ == '__main__':
     with Pool(24,maxtasksperchild=1) as p:
         async_res = p.starmap_async(runInstance, test_combinations, 1)
