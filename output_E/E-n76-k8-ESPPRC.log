@@ -92,3 +92,6 @@ ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 718.874, 709.859, True, 6
 ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 718.8613, 711.5623, True, 5
 ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 718.8366, 716.4372, True, 1
 ESPPRC_heur, 0.0, 0.0, 0.0, 0.0, 0, 718.8264, 714.7814, True, 1
+ESPPRC, 1.4, 86401.1, 20034.8, 66323.1, 0, 718.8159, 0, 1, 0
+time_limit_exceeded, terminating
+scip_total_time, 86501.87966
