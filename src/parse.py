@@ -4,7 +4,7 @@ import re
 
 from src.output import create_file
 
-def parse(Instance, K=0, filename= None):
+def parse_graph(Instance, K=0, filename= None):
     print(f"MAIN: Instance {Instance}")
     if Instance[0] == "E":
         dir = "E"
