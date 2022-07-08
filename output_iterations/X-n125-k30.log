@@ -14,3 +14,16 @@ farley, False
 ESPPRC_heur, True
 initial time, initial max_it, max_stale_it
 1, 20000.0, 20
+heuristic Number of routes, heuristic Best Solution Value, heuristic number of iterations, adjusted time, adjusted max_it, measured total time
+24128, 55549.0, 20000, 1, 20000.0, 20106.2
+method, python time, total time, propagated dominance time, unpropagated dominance time, pricing_success, upper_bound, lower_bound, abort_early, num_paths, 
+ESPPRC_heur, 0.1, 0.3, 0.2, 0.1, 0, 55319.7867, -6003.8497, True, 8185
+ESPPRC_heur, -0.0, 0.4, 0.2, 0.1, 0, 55319.7867, -11338.3951, True, 7373
+ESPPRC_heur, 0.0, 0.3, 0.2, 0.1, 0, 55319.7867, 21561.3018, True, 3947
+ESPPRC_heur, 0.0, 0.3, 0.2, 0.1, 0, 55319.7867, 17849.1806, True, 4332
+ESPPRC_heur, 0.0, 0.3, 0.1, 0.1, 0, 55319.7867, 42493.7261, True, 917
+ESPPRC_heur, 0.0, 0.3, 0.1, 0.1, 0, 55319.7867, 49578.4988, True, 393
+ESPPRC_heur, 0.0, 0.3, 0.1, 0.1, 0, 55319.7867, 47373.12, True, 570
+ESPPRC_heur, 0.0, 0.3, 0.2, 0.1, 0, 55319.7867, 52527.9685, True, 173
+ESPPRC_heur, -0.0, 0.3, 0.1, 0.1, 0, 55319.7867, 55017.9685, True, 9
+ESPPRC_heur, -0.0, 0.3, 0.1, 0.1, 0, 55319.0713, 55068.0187, True, 3
