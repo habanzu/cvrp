@@ -13,7 +13,6 @@ def runInstance(Instance, methods, K=0,max_vars=0):
         return
 
     model = VRP(G)
-    print("Model created")
 
     # Create pricer
     pricer = VRPPricer(G)
@@ -47,7 +46,7 @@ methods = ["ng20","ng8","cyc2","SPPRC"]
 # methods = ["ng8"]
 
 # test_combinations = [(file,method,uchoa_K[file]) for file, method in itertools.product(files,methods) if 100<= int(re.search(pattern, file).group(1)) < 200]
-test_combinations = [(file,methods,uchoa_K[file]) for file in files if 100<= int(re.search(pattern, file).group(1)) < 120]
+test_combinations = [(file,methods,uchoa_K[file]) for file in files if 100<= int(re.search(pattern, file).group(1)) < 200]
 # Bis 510 ist alles oben im dict, wegen Speicherproblemen muss das heuntergesetzt werden.
 # test_combinations = [(file,method) for file, method in itertools.product(files,methods)]
 
