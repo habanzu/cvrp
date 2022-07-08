@@ -1,0 +1,16 @@
+Instance, X-n195-k51
+capacity, 181
+min_trucks, 53
+output_file, output_iterations/X-n195-k51.log
+Start date, 2022-07-08
+Start time, 11-25-32
+capacity, 181
+num_vehicles, 53
+abort_early, False
+methods, ['ng20', 'ng8', 'cyc2', 'SPPRC']
+max_vars, 100
+time_limit, 86400
+farley, False
+ESPPRC_heur, True
+initial time, initial max_it, max_stale_it
+1, 20000.0, 20
