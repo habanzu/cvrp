@@ -94,16 +94,37 @@ def parse_footer(file):
     with open(file,'r') as f:
         lines = f.readlines()
 
-    for i, line in enumerate(lines[::-1]):
-        if line.startswith("scip_total_time"):
-            return i + 1
+    if log_finished(file):
+        for i, line in enumerate(lines[::-1]):
+            if line.startswith("scip_total_time"):
+                return i + 1
+    else:
+        for line in lines:
+            if line.startswith("scip_total_time"):
+                return 2
+        return 0
 
 def parse_output(file):
     footer = parse_footer(file)
     header = parse_header(file)
-    if footer <= 0:
-        print(f"ERROR: Footer is {footer}")
     return pd.read_csv(file, header=header ,skipfooter=footer, engine="python", sep=", ")
+
+def parse_sol_val(Instance):
+    if Instance[0] == "E":
+        dir = "E"
+    elif Instance[0] == "X":
+        dir = "Uchoa"
+    else:
+        raise ValueError("Instance Class is not known to the parser.")
+    file = f"Instances/{dir}/{Instance}.sol"
+
+    with open(file,'r') as f:
+        lines = f.readlines()
+
+    for line in lines:
+        if line.startswith("Cost"):
+            return line.split(" ")[1]
+
 
 def log_finished(file):
     with open(file,'r') as f:
