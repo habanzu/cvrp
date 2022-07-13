@@ -94,6 +94,21 @@ def parse_footer(file):
     with open(file,'r') as f:
         lines = f.readlines()
 
+    cyc2, elementary = False, False
+
+    for line in lines:
+        if line.startswith("all_elementary"):
+            if line.split(", ")[1] == "True\n":
+                elementary = True
+        if line.startswith("all_cyc2"):
+            if line.split(", ")[1] == "True\n":
+                cyc2 = True
+    return (elementary, cyc2)
+
+def parse_size_of_footer(file):
+    with open(file,'r') as f:
+        lines = f.readlines()
+
     if log_finished(file):
         for i, line in enumerate(lines[::-1]):
             if line.startswith("scip_total_time"):
@@ -105,7 +120,7 @@ def parse_footer(file):
         return 0
 
 def parse_output(file):
-    footer = parse_footer(file)
+    footer = parse_size_of_footer(file)
     header = parse_header(file)
     return pd.read_csv(file, header=header ,skipfooter=footer, engine="python", sep=", ")
 
