@@ -85,7 +85,7 @@ def plot_all(dfs, time=False, smoothed=True, save=False, ng20=True, pgf=False):
         plt.savefig(save_string)
     plt.close()
 
-def automatic_plotting(dir):
+def automatic_plotting(dir,smoothed=True):
     files = [file.rstrip(".vrp") for file in os.listdir("Instances/Uchoa") if (not file.endswith("sol"))]
 
     methods = ["SPPRC","cyc2","ng8","ng20"]
@@ -99,6 +99,6 @@ def automatic_plotting(dir):
                 if log.endswith(f"{method}.log") and parse.log_finished(log):
                     data.append(parse.parse_output(log))
         if len(data) > 0:
-            plot_all(data,time=True,smoothed=True, save=f"{dir}/{file}")
-            plot_all(data,time=True,smoothed=True, save=f"{dir}/{file}", ng20=False)
-            plot_all(data,time=False,smoothed=True, save=f"{dir}/{file}")
+            plot_all(data,time=True,smoothed=smoothed, save=f"{dir}/{file}-smoothed")
+            plot_all(data,time=True,smoothed=smoothed, save=f"{dir}/{file}", ng20=False)
+            plot_all(data,time=False,smoothed=smoothed, save=f"{dir}/{file}")
