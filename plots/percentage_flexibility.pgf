@@ -458,7 +458,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=2.027118in,y=2.710000in,,base]{\color{textcolor}\sffamily\fontsize{12.000000}{14.400000}\selectfont 2-cycle, \(\displaystyle \rho \approx 0.65\)}%
+\pgftext[x=2.027118in,y=2.710000in,,base]{\color{textcolor}\sffamily\fontsize{12.000000}{14.400000}\selectfont 2-cycle, \(\displaystyle \rho_{p} \approx 0.65\)}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfsetbuttcap%
@@ -835,7 +835,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=5.041910in,y=2.710000in,,base]{\color{textcolor}\sffamily\fontsize{12.000000}{14.400000}\selectfont ng8, \(\displaystyle \rho \approx 0.86\)}%
+\pgftext[x=5.041910in,y=2.710000in,,base]{\color{textcolor}\sffamily\fontsize{12.000000}{14.400000}\selectfont ng8, \(\displaystyle \rho_{p} \approx 0.86\)}%
 \end{pgfscope}%
 \end{pgfpicture}%
 \makeatother%
