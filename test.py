@@ -1,14 +1,14 @@
 from src.model import VRP, create_constraints, output_variables
 from src.pricer import VRPPricer
-from src.parse import parse
+from src.parse import parse_graph
 from src.output import write_solution
 
 Instance = "X-n101-k25"
-G = parse(Instance, 26,filename=f"output/{Instance}-debug")
+G = parse_graph(Instance, 26,filename=f"output/{Instance}")
 
 model = VRP(G)
 
-# Create pricer
+# Refer to the notebook CVRP.ipynb for an explantion of these parameters
 pricer = VRPPricer(G)
 pricer.data['methods'] = ["SPPRC"]
 pricer.data['max_vars']= 10000

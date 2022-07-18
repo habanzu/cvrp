@@ -3,6 +3,7 @@
 A repository for the bachelor's thesis of Georg Meinhardt in the summer term of 2022.
 It provides an implementation of a Branch-and-Price algorithm for the Capacitated Vehicle Routing Problem.
 Goal of the thesis is to analyse preliminary lower bounds.
+The supervisor was Lukas Schuermann and the reviewers Prof. Dr. Petra Mutzel and Prof. Dr. Stephan Held.
 
 ## Installation
 A working version of SCIP is required.
@@ -13,29 +14,31 @@ Details can be found at the [pyscipopt repository]{https://github.com/scipopt/Py
 
 Further Python libraries are required, all available via `pip` or `conda`.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+To run the labelling algorithms, it is required to compile the C++ code.
+In order to do so, open a terminal and switch to the directory `Labelling` (e.g. `cd cvrp/Labelling`).
+Then execute `make` if you are running Mac OS or `make linux` if you are running Linux.
+For linux, g++ needs to be installed.
+For MacOS, clang needs to be installed, which should be shipped with the Xcode command line tools.
 
+## Usage
+To gain an idea how to use this code, take a look at the notebook `CVRP.ipynb` and run the cells from top to bottom.
+Install all python modules as required and do not forget to compile the C++ code beforehand.
+Further notebooks are described below.
+The python files `test.py` and `run.py` have been used for the systematic test runs.
+`test.py` will perform a test on a single instance, `run.py` will perform the test of a large class in parallel.
+
+## Further Notebooks
 
 ## Data
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
+The data of the test runs, on which the thesis is based, can be found in in the directory `output_data`.
+`output_uchoa` and `output_E` contain the logs of the respective data set.
+`output_farley` contains the evaluation results of the Farley Labelling run on the E dataset.
+`output_iterations` contains the data, which as used in section 4.2.7 of the thesis (title: Avoiding Hard ESPPRC Relaxations).
+The archive contains additional unstructured logs, which were produced during the test runs.
+Notable to mention is `test_added_vars`, as it contains test runs on the E dataset on how many variables should be added after each pricing round.
+This data was the baseline for deciding how many variables would be added in the test runs of the thesis.
+It was not analysed further.
 
 ## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+The thesis has been submitted at the 19th July of 2022.
+No further work has been done.
