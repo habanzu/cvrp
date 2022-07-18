@@ -51,16 +51,6 @@ def plot_all(dfs, time=False, smoothed=True, save=False, ng20=True, pgf=False):
         plt.plot(x_values,final_val, "--" + color_map[method], label="$Z^*_{" + method + "}$")
 
         plt.title(save.split("/")[-1])
-        # if pricer.data['farley']:
-        #     farley_bounds = pricer.data['farley_bound']
-        #     plt.plot(x_values, farley_bounds, label="Farley Bound")
-
-        # T = nx.minimum_spanning_tree(G)
-        # K = G.graph['min_trucks']
-        # lowest_remaining_edge_weights = [weight for u,v,weight in G.edges().data('weight') if not T.has_edge(u,v)]
-        # mst = T.size(weight='weight') + sum(sorted(lowest_remaining_edge_weights)[:K])
-        # mst = [mst for i in range(len(upper_bounds))]
-        # plt.plot(x_values, mst, "--", label="MST Bound")
 
     plt.ylim((ymin*0.99,ymax*1.01))
 

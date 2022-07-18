@@ -140,7 +140,6 @@ def parse_sol_val(Instance):
         if line.startswith("Cost"):
             return int(line.split(" ")[1].strip("\n"))
 
-
 def log_finished(file):
     with open(file,'r') as f:
         lines = f.readlines()

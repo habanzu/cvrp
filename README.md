@@ -28,6 +28,17 @@ The python files `test.py` and `run.py` have been used for the systematic test r
 `test.py` will perform a test on a single instance, `run.py` will perform the test of a large class in parallel.
 
 ## Further Notebooks
+In the directory `notebooks` additional notebooks can be found.
+These were used for the Evaluation.
+The paths should be correct, but maybe there occurs an error when unsing them because of a wrong path.
+In the archive, the notebooks for evaluating cspy and pylgrim can be found.
+These do not work anymore and requrie updating, due to naming changes.
+
+## Understanding the source code
+The main file is to understand the BnP process is `pricer.py`.
+The C++ code is called from there.
+To understand how SCIP works, take a look at `model.py`.
+`plot.py` contains code for automatically plotting all the instances at once.
 
 ## Data
 The data of the test runs, on which the thesis is based, can be found in in the directory `output_data`.
@@ -42,3 +53,7 @@ It was not analysed further.
 ## Project status
 The thesis has been submitted at the 19th July of 2022.
 No further work has been done.
+
+## DVD Version
+If you obtained this code through the DVD version, please refer to the gitlab repository instead.
+Comments have been added, after the dvd has been burned.

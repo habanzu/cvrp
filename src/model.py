@@ -12,7 +12,6 @@ class VRP(Model):
     def __init__(self,graph):
         super().__init__()
 
-        # self.original_graph = graph
         self.graph = graph
         self.vars = {}
         self.cons = []
