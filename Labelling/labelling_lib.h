@@ -32,6 +32,7 @@ struct Label{
 };
 
 extern "C" {
+    // These methods can be used in python.
     void initGraph(const unsigned num_nodes, const unsigned* node_data, const double* edge_data, const double capacity, const unsigned max_path_len, const unsigned* ngParams);
     unsigned labelling(const double * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, unsigned* additional_information, const unsigned ngParam, double* farley_res, const bool ESPPRC_heur);
 }

@@ -2,6 +2,8 @@ import networkx as nx
 import pandas as pd
 import re
 
+""" This file is used to pass input files and create the relevant networkx data structure"""
+
 from src.output import create_file
 
 def parse_graph(Instance, K=0, filename= None):

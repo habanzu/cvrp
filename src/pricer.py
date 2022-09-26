@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import src.output
 
-# Import the C++ library into python 
+# Import the C++ library into python
 from cffi import FFI
 ffi = FFI()
 labelling_lib = ffi.dlopen("Labelling/labelling_lib.so")
@@ -54,6 +54,7 @@ class VRPPricer(Pricer):
         self.data['max_path_len'] = math.ceil(2*self.data['capacity'] / minimal_demands) + 2
         print(f"PRICER_PY: The maximal path length is {self.data['max_path_len']}")
 
+        # Create arrays to interact with the C code
         edges = nx.adjacency_matrix(self.model.graph,dtype=np.double).toarray()
         edges = list(edges.flatten())
         edges_arr = ffi.new("double[]",edges)
@@ -65,16 +66,15 @@ class VRPPricer(Pricer):
         ngParams.insert(0,len(ngParams))
         ngParams_ptr = ffi.new("unsigned[]",ngParams)
         print(f"PRICER_PY: The neighborhood has been initialized to {ngParams[1:]} neighbors.")
+        # Call the C code to initialize the required C data structures
         labelling_lib.initGraph(num_nodes,nodes_arr,edges_arr, capacity_ptr, self.data['max_path_len'], ngParams_ptr)
 
     def pricerfarkas(self):
         dual = [self.model.getDualfarkasLinear(con) for con in self.data['cons']]
-#         print(f"PRICER_PY: Farkas Values are {dual}")
         return self.SPPRC_chooser(dual, farkas=True)
 
     def pricerredcost(self):
         dual = [self.model.getDualsolLinear(con) for con in self.data['cons']]
-#         print(f"PRICER_PY: Dual variables are {dual}")
         return self.SPPRC_chooser(dual, farkas=False)
 
     def addVar(self, path, farkas):
@@ -102,6 +102,7 @@ class VRPPricer(Pricer):
         return var
 
     def SPPRC_chooser(self, dual, farkas):
+        """The pricing is split into two functions. First the SPPRC_chooser method handles the top level of choosing the desired ESPPRC relaxation. It handles all specialities of the used relaxation. The labelling method deals with the C code."""
         max_vars = self.data['max_vars']
         time_limit = self.data['time_limit']
         if "ESPPRC_heur" in self.data:
@@ -110,6 +111,7 @@ class VRPPricer(Pricer):
             heuristic_espprc = False
         pricing_success = 0
 
+        # Heuristic explained in A.5. If a variable with negative reduced cost is found ,the pricing is terminated and the variable added to SCIP.
         if heuristic_espprc and not self.data['methods'] == ['SPPRC']:
             start = time.time()
             paths, upper_bound, lower_bound, abort_early, num_paths, time_measurements  = self.labelling(dual,farkas,time_limit,max_vars, heuristic_espprc=True)
@@ -126,6 +128,7 @@ class VRPPricer(Pricer):
             else:
                 print("PRICER_PY: Heuristic failed. Running exact pricing.")
 
+        # Call the desired ESPPRC relaxations set in self.data['methods']
         for i, method in enumerate(self.data['methods']):
             start = time.time()
             if method == 'ESPPRC':
@@ -149,6 +152,7 @@ class VRPPricer(Pricer):
                         lower_bound = self.data['bounds'][method][-1][1]
                 self.data['bounds'][method].append((upper_bound,lower_bound))
 
+            # Add the variables of the first relaxation, which successfully terminated.
             if not pricing_success and ((len(paths) > 0 or not abort_early)):
                 pricing_success = 1
                 for path in paths:
@@ -158,6 +162,7 @@ class VRPPricer(Pricer):
             items = (method, duration, *time_measurements, pricing_success, round(upper_bound,4), round(lower_bound,4), abort_early, num_paths)
             src.output.write_labelling_result(self.model.graph.graph["output_file"], items)
 
+        # Calculate the farley bound
         if self.data['farley'] and not farkas and pricing_success:
             method = self.data['methods'][0]
             if method.startswith("ng"):
@@ -186,10 +191,11 @@ class VRPPricer(Pricer):
         return {'result':SCIP_RESULT.SUCCESS}
 
     def labelling(self, dual,farkas, time_limit, max_vars, elementary=False, cyc2=False, ngParam=0, farley=False, heuristic_espprc=False):
+        """See docstring of SPPRC_chooser."""
         if farley and farkas:
             raise ValueError("PRICER_PY ERROR: Farley can't be called with Farkas Pricing")
 
-        # TODO: Possible improvement: result can be reused every time
+        # Create the arrays to interact with the C code
         pointer_dual = ffi.new("double[]",dual)
         result_arr = ffi.new("unsigned[]",max_vars*self.data['max_path_len'])
         additional_information_ptr = ffi.new("unsigned[4]",[0 for i in range(4)])
@@ -198,6 +204,7 @@ class VRPPricer(Pricer):
         else:
             farley_ptr = ffi.new("double*",0)
 
+        # Call the C code
         num_paths = labelling_lib.labelling(pointer_dual, farkas, time_limit, elementary, max_vars, cyc2, result_arr, additional_information_ptr, ngParam, farley_ptr, heuristic_espprc)
         abort_early = additional_information_ptr[0]
         time_measurements = tuple(round(additional_information_ptr[i]/1e3,1) for i in range(1,4))
@@ -213,6 +220,7 @@ class VRPPricer(Pricer):
             else:
                 return [], 0 , 0, abort_early, num_paths, time_measurements
 
+        # Translate the returned data blob in python data structures.
         lowest_cost = 0
         paths = []
         for i in range(min(num_paths,max_vars)):
@@ -235,6 +243,7 @@ class VRPPricer(Pricer):
             return paths, 0 , 0, abort_early, num_paths, time_measurements
 
     def cspy(self, dual, farkas):
+        """ This code was used for evaluating cspy, see A.2 of the thesis. It may not work anymore. A working version can be found in the history of git repository."""
         G = self.data["cspy_graph"]
         for (u,v) in G.edges():
             old_v = v

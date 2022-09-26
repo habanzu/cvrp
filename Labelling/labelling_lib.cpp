@@ -16,6 +16,7 @@ using std::multiset;
 using namespace std::chrono;
 
 struct less_than {
+    // Provides the ability to sort the labels using algorithms from the standard library
     bool operator()(const Label& label1, const Label& label2) const{
         if(label1.load == label2.load)
             return (label1.cost < label2.cost);
@@ -24,6 +25,7 @@ struct less_than {
 };
 
 struct cyc2_dominant_labels{
+    // 2-cycle elimination has a different
     // label1->cost <= label2->cost should always be true
     unsigned num_labels;
     multiset<Label, less_than>::const_iterator label1;
@@ -336,6 +338,7 @@ vector<bitset<neighborhood_size> > init_neighborhoods(const unsigned num_nodes, 
 }
 
 void initGraph(const unsigned num_nodes, const unsigned* node_data, const double* edge_data, const double capacity, const unsigned max_path_len, const unsigned* ngParams){
+    // copy the data from the python code to the C code, so that it does not need to be passed as an argument during labelling.
     if(num_nodes > neighborhood_size){
         cout << "PRICER_C ERROR: The number of nodes is to large for the Label struct. Abort." << endl;
         return;
@@ -372,13 +375,14 @@ void initGraph(const unsigned num_nodes, const unsigned* node_data, const double
 }
 
 unsigned labelling(const double * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, unsigned* additional_information, const unsigned ngParam, double* farley_res, const bool ESPPRC_heur){
+    // This function implements algorithm 1 from the thesis. Start here for understanding the file. Alternatively look at initGraph() fist and then here.
     auto t0= high_resolution_clock::now();
     unsigned total_time;
     duration<double> time_propagated_dominance {0};
     duration<double> time_unpropagated_dominance {0};
 
+    // Initialize the data structures of the labelling algorithm
     vector<multiset<Label, less_than>> q;
-    // TODO: Wieso wirft vector<vector< const Label>> einen Fehler?
     vector<list<Label> > propagated;
     vector<Label*> new_vars;
     propagated.resize(num_nodes);
@@ -403,18 +407,16 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
         cout << "PRICER_C ERROR: neighborhood cant be empty for farley."  << endl;
     }
 
+    // Propagate labels in the queue as long as possible
+    // See algorithm 1 in the thesis
     while(!queue_empty(q)){
-        // Compile time flags for speeding up things a little bit
-        // constexpr bool elementary = false;
-        // constexpr bool cyc2 = false;
-        // constexpr bool ngPath = true;
-        // constexpr bool farley = false;
         unsigned queue_index = index_minimum_load_in_queue(q);
         auto it_q = q[queue_index].begin();
         propagated[it_q->v].push_back(*it_q);
         Label& x = propagated[it_q->v].back();
         q[queue_index].erase(it_q);
 
+        // Consider all labels reachable.
         for(unsigned i=1;i<num_nodes;++i){
             if (i == x.v || dual[i-1] <= 0 )
                 continue;
@@ -453,14 +455,14 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
                     newlabel = Label{i, x.v, newcost, newload, &x};
                 }
             }
-
+            // Dominance check when using 2-cycle elimination.
             if(cyc2){
                 const auto& new_label_it = q[i].insert(newlabel);
                 if(cyc2_dominates(q[i], new_label_it))
                     q[i].erase(new_label_it);
                 continue;
             }
-
+            // Dominance check otherwise
             auto t5 = high_resolution_clock::now();
             for(Label& label: propagated[i]){
                 if(label.dominates(newlabel, elementary, ngPath, farley)){
@@ -472,6 +474,7 @@ unsigned labelling(const double * dual, const bool farkas, const unsigned time_l
             auto t6 = high_resolution_clock::now();
             time_propagated_dominance += t6 - t5;
 
+            // Add undominated labels
             if(!dominated){
                 for(auto it = q[i].begin(); it != q[i].end(); ){
                     if(it->load <= newlabel.load && it->dominates(newlabel, elementary, ngPath, farley)){

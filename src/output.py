@@ -2,6 +2,8 @@ import os
 from datetime import datetime
 import numpy as np
 
+""" This file is used to write parameters and results to the output file"""
+
 def write_attributes(G, pricer):
     with open(G.graph["output_file"],"a") as f:
         for k, v in G.graph.items():

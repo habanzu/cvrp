@@ -21,7 +21,6 @@ def create_constraints(model, pricer, heuristic_time=0.001, heuristic_stale_it=2
     write_attributes(model.graph,pricer)
     # Create a valid set of variables and the constraints to it
     for i in range(1,G.number_of_nodes()):
-        #TODO: I should check, whether these paths are indeed feasible.
         path = (0,i,0)
         cost = nx.path_weight(G,path,"weight")
         var = model.addVar(vtype="C",obj=cost)
@@ -33,6 +32,7 @@ def create_constraints(model, pricer, heuristic_time=0.001, heuristic_stale_it=2
     convexity_constraint = model.addCons(sum(model.vars.values()) <= G.graph['min_trucks'], modifiable=True)
     model.cons.append(convexity_constraint)
 
+    # Add the paths returned by the heuristic of Vidal (section A.2)
     if heuristic_time > 0 and heuristic_max_it > 0:
         paths = heuristic(model,heuristic_time, heuristic_max_it, heuristic_stale_it, pricer.data['time_limit'])
         for path in paths:
@@ -50,6 +50,7 @@ def create_constraints(model, pricer, heuristic_time=0.001, heuristic_stale_it=2
             model.vars[path] = var
 
 def output_variables(model, pricer):
+    """Print the values of the variables to the screen."""
     sol = model.getBestSol()
     # Flushing should probably prevent the console output from SCIP mix up with the following print
     sys.stdout.flush()
@@ -74,6 +75,7 @@ def output_variables(model, pricer):
         print("Solution contains non elementary paths.")
 
 def heuristic(model, heuristic_time, max_it, max_stale_it, time_limit):
+    """Run the heuristic by Vidal to create valid initial solutions (section A.4)"""
     heuristic_start_time = time.time()
     data = dict()
     G = model.graph
@@ -93,6 +95,7 @@ def heuristic(model, heuristic_time, max_it, max_stale_it, time_limit):
 
     paths, stale_it, i, best_cost, start = [], 0, 0, 0, time.time()
 
+    # Repeatedly run the heuristic. The number of calls is adaptevily set and can also be changed by parameters.
     while(stale_it < max_stale_it) and i < max_it:
         found_new = False
         if i == 0:

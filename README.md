@@ -30,7 +30,8 @@ The python files `test.py` and `run.py` have been used for the systematic test r
 ## Further Notebooks
 In the directory `notebooks` additional notebooks can be found.
 These were used for the Evaluation.
-The paths should be correct, but maybe there occurs an error when unsing them because of a wrong path.
+They have been moved after usage, so there  may occurs an error when using them because of a wrong path.
+Setting the correct paths should fix this behaviour.
 In the archive, the notebooks for evaluating cspy and pylgrim can be found.
 These do not work anymore and requrie updating, due to naming changes.
 
@@ -39,6 +40,8 @@ The main file is to understand the BnP process is `pricer.py`.
 The C++ code is called from there.
 To understand how SCIP works, take a look at `model.py`.
 `plot.py` contains code for automatically plotting all the instances at once.
+
+To understand the C code, start with the functions initGraph() and labelling(), as these are interfaced by python.
 
 ## Data
 The data of the test runs, on which the thesis is based, can be found in in the directory `output_data`.

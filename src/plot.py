@@ -3,6 +3,8 @@ import pandas as pd
 import src.parse as parse
 import os
 
+""" The functions in this file can be used to automatically plot all results of a directory."""
+
 def plot_all(dfs, time=False, smoothed=True, save=False, ng20=True, pgf=False):
     dfs = [df.copy() for df in dfs]
     plt.figure(figsize=(7.3,4),dpi=400)
