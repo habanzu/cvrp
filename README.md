@@ -3,7 +3,7 @@
 A repository for the bachelor's thesis of Georg Meinhardt in the summer term of 2022.
 It provides an implementation of a Branch-and-Price algorithm for the Capacitated Vehicle Routing Problem.
 Goal of the thesis is to analyse preliminary lower bounds.
-The supervisor was Lukas Schuermann and the reviewers Prof. Dr. Petra Mutzel and Prof. Dr. Stephan Held.
+The supervisor was Lukas Schuermann and the reviewers were Prof. Dr. Petra Mutzel and Prof. Dr. Stephan Held.
 
 ## Installation
 A working version of SCIP is required.
@@ -55,8 +55,8 @@ It was not analysed further.
 
 ## Project status
 The thesis has been submitted at the 19th July of 2022.
-No further work has been done.
+Since then, only comments have been added.
 
 ## DVD Version
 If you obtained this code through the DVD version, please refer to the gitlab repository instead.
-Comments have been added, after the dvd has been burned.
+Comments have been added, after the DVD has been burned.
