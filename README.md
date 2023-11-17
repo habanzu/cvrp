@@ -56,7 +56,3 @@ It was not analysed further.
 ## Project status
 The thesis has been submitted at the 19th July of 2022.
 Since then, only comments have been added.
-
-## DVD Version
-If you obtained this code through the DVD version, please refer to the gitlab repository instead.
-Comments have been added, after the DVD has been burned.
