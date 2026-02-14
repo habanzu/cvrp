@@ -13,10 +13,10 @@ import os
 import sys
 
 sys.path.insert(0, ".")
-from src.labelling import load_labelling_lib
+from src.labelling import LabellingLib
 from tests.conftest import solve_instance
 
-ffi, lib = load_labelling_lib()
+lib = LabellingLib()
 
 # Synthetic graph: 6 nodes (depot=0, customers=1..5)
 
@@ -40,36 +40,12 @@ MAX_VARS = 20
 
 
 def init_graph():
-    nodes_arr = ffi.new("unsigned[]", DEMANDS)
-    edges_arr = ffi.new("double[]", FLAT_EDGES)
-    ng_params = ffi.new("unsigned[]", [0])
-    lib.initGraph(NUM_NODES, nodes_arr, edges_arr, CAPACITY, MAX_PATH_LEN, ng_params)
+    lib.init_graph(NUM_NODES, DEMANDS, FLAT_EDGES, CAPACITY, MAX_PATH_LEN, [0])
 
 
-def run_labelling(elementary=False):
-    dual_arr = ffi.new("double[]", DUALS)
-    result_arr = ffi.new("unsigned[]", MAX_VARS * MAX_PATH_LEN)
-    info_arr = ffi.new("unsigned[4]", [0, 0, 0, 0])
-    farley_ptr = ffi.new("double*", 0)
-
-    num_paths = lib.labelling(
-        dual_arr, False, 60, elementary, MAX_VARS, False,
-        result_arr, info_arr, 0, farley_ptr, False,
-    )
-    return num_paths, result_arr
-
-
-def extract_paths(num_paths, result_arr):
-    paths = []
-    for i in range(min(num_paths, MAX_VARS)):
-        path_data = list(result_arr[i * MAX_PATH_LEN : (i + 1) * MAX_PATH_LEN])
-        path = [0]
-        for j in range(1, MAX_PATH_LEN):
-            path.append(path_data[j])
-            if path_data[j] == 0:
-                break
-        paths.append(tuple(path))
-    return paths
+def do_labelling(elementary=False):
+    result = lib.run_labelling(DUALS, MAX_PATH_LEN, MAX_VARS, elementary=elementary)
+    return result.num_paths, result.paths
 
 
 def reduced_cost(path):
@@ -84,8 +60,7 @@ def compute_load(path):
 
 def capture_mode(elementary):
     init_graph()
-    num_paths, result_arr = run_labelling(elementary=elementary)
-    paths = extract_paths(num_paths, result_arr)
+    num_paths, paths = do_labelling(elementary=elementary)
 
     # Structural invariants — fail loudly if broken
     assert all(p[0] == 0 and p[-1] == 0 for p in paths), "Not all paths start/end at depot"

@@ -13,7 +13,7 @@ from src.parse import parse_graph
 from src.model import VRP, create_constraints
 from src.pricer import VRPPricer
 from src.output import write_solution
-from src.labelling import load_labelling_lib
+from src.labelling import LabellingLib
 
 
 def solve_instance(name, k, methods, max_vars, time_limit):
@@ -45,6 +45,10 @@ def solve_instance(name, k, methods, max_vars, time_limit):
     return model, pricer
 
 
+# ---------------------------------------------------------------------------
+# Fixtures: parsed graphs (cheap — just parsing, no solving)
+# ---------------------------------------------------------------------------
+
 @pytest.fixture(scope="session")
 def graph_e_n22_k4():
     return parse_graph("E-n22-k4", K=0, filename="output/test-E-n22-k4-fixture")
@@ -59,6 +63,10 @@ def graph_e_n23_k3():
 def graph_e_n30_k3():
     return parse_graph("E-n30-k3", K=0, filename="output/test-E-n30-k3-fixture")
 
+
+# ---------------------------------------------------------------------------
+# Fixtures: solved instances (expensive — cached per session)
+# ---------------------------------------------------------------------------
 
 @pytest.fixture(scope="session")
 def solved_e_n22_k4_ng8():
@@ -80,32 +88,29 @@ def solved_e_n30_k3_ng8():
     return solve_instance("E-n30-k3", k=0, methods=["ng8"], max_vars=100, time_limit=300)
 
 
+# ---------------------------------------------------------------------------
+# CFFI helpers
+# ---------------------------------------------------------------------------
+
 @pytest.fixture(scope="session")
-def cffi_lib():
-    """Return (ffi, lib) for the labelling C library."""
-    return load_labelling_lib()
+def labelling_lib():
+    """Return a LabellingLib instance."""
+    return LabellingLib()
 
 
 @pytest.fixture(scope="session")
-def init_e_n22_k4_graph(cffi_lib, graph_e_n22_k4):
-    """Call initGraph for E-n22-k4, return (ffi, lib, G, max_path_len)."""
-    ffi, lib = cffi_lib
+def init_e_n22_k4_graph(labelling_lib, graph_e_n22_k4):
+    """Call initGraph for E-n22-k4, return (lib, G, max_path_len)."""
     G = graph_e_n22_k4
 
     demands = list(nx.get_node_attributes(G, "demand").values())
-    nodes_arr = ffi.new("unsigned[]", demands)
-
-    edges = nx.adjacency_matrix(G, dtype=np.double).toarray().flatten().tolist()
-    edges_arr = ffi.new("double[]", edges)
-
+    flat_edges = nx.adjacency_matrix(G, dtype=np.double).toarray().flatten().tolist()
     num_nodes = G.number_of_nodes()
     capacity = float(G.graph["capacity"])
 
     minimal_demands = sum(sorted(demands[1:])[:2])
     max_path_len = math.ceil(2 * capacity / minimal_demands) + 2
 
-    ng_params_arr = ffi.new("unsigned[]", [1, 8])
+    labelling_lib.init_graph(num_nodes, demands, flat_edges, capacity, max_path_len, [1, 8])
 
-    lib.initGraph(num_nodes, nodes_arr, edges_arr, capacity, max_path_len, ng_params_arr)
-
-    return ffi, lib, G, max_path_len
+    return labelling_lib, G, max_path_len

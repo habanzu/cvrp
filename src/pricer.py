@@ -6,9 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import src.output
 
-# Import the C++ library into python
-from src.labelling import load_labelling_lib
-ffi, labelling_lib = load_labelling_lib()
+from src.labelling import LabellingLib
+labelling = LabellingLib()
 
 class VRPPricer(Pricer):
     def __init__(self,G):
@@ -44,27 +43,22 @@ class VRPPricer(Pricer):
         demands = list(nx.get_node_attributes(self.model.graph,"demand").values())
         if not np.all(np.array(demands[1:])):
            raise ValueError("PRICER_PY ERROR: The demands of all nodes must be > 0.")
-        nodes_arr = ffi.new("unsigned[]",demands)
 
         minimal_demands = sum(sorted(demands[1:])[:2])
 
         self.data['max_path_len'] = math.ceil(2*self.data['capacity'] / minimal_demands) + 2
         print(f"PRICER_PY: The maximal path length is {self.data['max_path_len']}")
 
-        # Create arrays to interact with the C code
         edges = nx.adjacency_matrix(self.model.graph,dtype=np.double).toarray()
-        edges = list(edges.flatten())
-        edges_arr = ffi.new("double[]",edges)
+        flat_edges = list(edges.flatten())
 
-        num_nodes = ffi.cast("unsigned",self.model.graph.number_of_nodes())
+        num_nodes = self.model.graph.number_of_nodes()
 
-        capacity_ptr = ffi.cast("double",self.data['capacity'])
         ngParams = [int(method.strip("ng")) for method in self.data['methods'] if method.startswith("ng")]
         ngParams.insert(0,len(ngParams))
-        ngParams_ptr = ffi.new("unsigned[]",ngParams)
         print(f"PRICER_PY: The neighborhood has been initialized to {ngParams[1:]} neighbors.")
-        # Call the C code to initialize the required C data structures
-        labelling_lib.initGraph(num_nodes,nodes_arr,edges_arr, capacity_ptr, self.data['max_path_len'], ngParams_ptr)
+
+        labelling.init_graph(num_nodes, demands, flat_edges, self.data['capacity'], self.data['max_path_len'], ngParams)
 
     def pricerfarkas(self):
         dual = [self.model.getDualfarkasLinear(con) for con in self.data['cons']]
@@ -111,7 +105,7 @@ class VRPPricer(Pricer):
         # Heuristic explained in A.5. If a variable with negative reduced cost is found ,the pricing is terminated and the variable added to SCIP.
         if heuristic_espprc and not self.data['methods'] == ['SPPRC']:
             start = time.time()
-            paths, upper_bound, lower_bound, abort_early, num_paths, time_measurements  = self.labelling(dual,farkas,time_limit,max_vars, heuristic_espprc=True)
+            paths, upper_bound, lower_bound, abort_early, num_paths, time_measurements  = self.do_labelling(dual,farkas,time_limit,max_vars, heuristic_espprc=True)
             if num_paths > 0:
                 abort_early = True
                 method = "ESPPRC_heur"
@@ -129,14 +123,14 @@ class VRPPricer(Pricer):
         for i, method in enumerate(self.data['methods']):
             start = time.time()
             if method == 'ESPPRC':
-                paths, upper_bound, lower_bound, abort_early, num_paths, time_measurements  = self.labelling(dual,farkas,time_limit,max_vars,elementary=True)
+                paths, upper_bound, lower_bound, abort_early, num_paths, time_measurements  = self.do_labelling(dual,farkas,time_limit,max_vars,elementary=True)
             elif method.startswith("ng"):
                 ngParam = int(method.strip("ng"))
-                paths, upper_bound, lower_bound, abort_early, num_paths, time_measurements  = self.labelling(dual,farkas,time_limit,max_vars,ngParam=ngParam)
+                paths, upper_bound, lower_bound, abort_early, num_paths, time_measurements  = self.do_labelling(dual,farkas,time_limit,max_vars,ngParam=ngParam)
             elif method == 'cyc2':
-                paths, upper_bound, lower_bound, abort_early, num_paths, time_measurements  = self.labelling(dual,farkas,time_limit,max_vars,cyc2=True)
+                paths, upper_bound, lower_bound, abort_early, num_paths, time_measurements  = self.do_labelling(dual,farkas,time_limit,max_vars,cyc2=True)
             elif method == 'SPPRC':
-                paths, upper_bound, lower_bound, abort_early, num_paths, time_measurements  = self.labelling(dual,farkas,time_limit,max_vars)
+                paths, upper_bound, lower_bound, abort_early, num_paths, time_measurements  = self.do_labelling(dual,farkas,time_limit,max_vars)
             else:
                 raise ValueError("Method in pricerdata methods does not exist.")
             if abort_early:
@@ -166,7 +160,7 @@ class VRPPricer(Pricer):
                 ngParam = int(method.strip("ng"))
             else:
                 ngParam = 0
-            _, upper_bound, lower_bound, abort_early, _, time_measurements = self.labelling(dual,farkas,time_limit,max_vars, farley = True, ngParam=ngParam)
+            _, upper_bound, lower_bound, abort_early, _, time_measurements = self.do_labelling(dual,farkas,time_limit,max_vars, farley = True, ngParam=ngParam)
             if abort_early:
                 print(f"PRICER_PY: Farley exceeded time limit.")
                 if len(self.data['farley_bound']) == 0:
@@ -187,47 +181,31 @@ class VRPPricer(Pricer):
 
         return {'result':SCIP_RESULT.SUCCESS}
 
-    def labelling(self, dual,farkas, time_limit, max_vars, elementary=False, cyc2=False, ngParam=0, farley=False, heuristic_espprc=False):
+    def do_labelling(self, dual,farkas, time_limit, max_vars, elementary=False, cyc2=False, ngParam=0, farley=False, heuristic_espprc=False):
         """See docstring of SPPRC_chooser."""
         if farley and farkas:
             raise ValueError("PRICER_PY ERROR: Farley can't be called with Farkas Pricing")
 
-        # Create the arrays to interact with the C code
-        pointer_dual = ffi.new("double[]",dual)
-        result_arr = ffi.new("unsigned[]",max_vars*self.data['max_path_len'])
-        additional_information_ptr = ffi.new("unsigned[4]",[0 for i in range(4)])
-        if farley:
-            farley_ptr = ffi.new("double*",1)
-        else:
-            farley_ptr = ffi.new("double*",0)
-
-        # Call the C code
-        num_paths = labelling_lib.labelling(pointer_dual, farkas, time_limit, elementary, max_vars, cyc2, result_arr, additional_information_ptr, ngParam, farley_ptr, heuristic_espprc)
-        abort_early = additional_information_ptr[0]
-        time_measurements = tuple(round(additional_information_ptr[i]/1e3,1) for i in range(1,4))
+        result = labelling.run_labelling(
+            dual, self.data['max_path_len'], max_vars,
+            farkas=farkas, time_limit=time_limit, elementary=elementary,
+            cyc2=cyc2, ng_param=ngParam, farley=farley, heuristic_espprc=heuristic_espprc,
+        )
 
         upper_bound = self.model.getObjVal()
         if farley:
-            return [], upper_bound, upper_bound*farley_ptr[0], abort_early, num_paths, time_measurements
+            return [], upper_bound, upper_bound*result.farley_value, result.abort_early, result.num_paths, result.time_measurements
 
-        result = np.frombuffer(ffi.buffer(result_arr),dtype=np.uintc)
-        if(num_paths == 0):
+        if result.num_paths == 0:
             if not farkas:
-                return [], upper_bound, upper_bound, abort_early, num_paths, time_measurements
+                return [], upper_bound, upper_bound, result.abort_early, result.num_paths, result.time_measurements
             else:
-                return [], 0 , 0, abort_early, num_paths, time_measurements
+                return [], 0 , 0, result.abort_early, result.num_paths, result.time_measurements
 
-        # Translate the returned data blob in python data structures.
+        # Compute lower bound from reduced costs
         lowest_cost = 0
-        paths = []
-        for i in range(min(num_paths,max_vars)):
-            single_result = result[i*self.data['max_path_len']:(i+1)*self.data['max_path_len']]
-            result_indices = np.insert(np.nonzero(single_result),0,0)
-            result_indices = np.append(result_indices,0)
-            path = tuple(single_result[result_indices])
-            paths.append(path)
+        for path in result.paths:
             weight = nx.path_weight(self.model.graph,path,"weight")
-
             if not farkas:
                 red_cost = weight - sum([dual[i-1] for i in path[1:-1]])
                 if red_cost < lowest_cost:
@@ -235,9 +213,9 @@ class VRPPricer(Pricer):
 
         if not farkas:
             lower_bound = upper_bound + self.data['num_vehicles']*lowest_cost
-            return paths, upper_bound, lower_bound, abort_early, num_paths, time_measurements
+            return result.paths, upper_bound, lower_bound, result.abort_early, result.num_paths, result.time_measurements
         else:
-            return paths, 0 , 0, abort_early, num_paths, time_measurements
+            return result.paths, 0 , 0, result.abort_early, result.num_paths, result.time_measurements
 
     def cspy(self, dual, farkas):
         """ This code was used for evaluating cspy, see A.2 of the thesis. It may not work anymore. A working version can be found in the history of git repository."""
