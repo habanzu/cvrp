@@ -7,11 +7,8 @@ import numpy as np
 import src.output
 
 # Import the C++ library into python
-from cffi import FFI
-ffi = FFI()
-labelling_lib = ffi.dlopen("Labelling/labelling_lib.so")
-funDefs = "void initGraph(const unsigned num_nodes, const unsigned* node_data, const double* edge_data, const double capacity, const unsigned max_path_len, const unsigned* ngParams); unsigned labelling(const double * dual, const bool farkas, const unsigned time_limit, const bool elementary, const unsigned long max_vars, const bool cyc2, unsigned* result, unsigned* additional_information, const unsigned ngParam, double* farley_res, const bool ESPPRC_heur);"
-ffi.cdef(funDefs, override=True)
+from src.labelling import load_labelling_lib
+ffi, labelling_lib = load_labelling_lib()
 
 class VRPPricer(Pricer):
     def __init__(self,G):
@@ -232,7 +229,7 @@ class VRPPricer(Pricer):
             weight = nx.path_weight(self.model.graph,path,"weight")
 
             if not farkas:
-                red_cost = weight - sum([dual[i-1] for i in path[:-1]])
+                red_cost = weight - sum([dual[i-1] for i in path[1:-1]])
                 if red_cost < lowest_cost:
                     lowest_cost = red_cost
 
